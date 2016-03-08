@@ -31,7 +31,17 @@ describe( 'lib/jwt', function() {
 
     var originalConfigData;
 
+    var pubKey;
+    var privKey;
+
     before( function( done ) {
+
+        var RSAKey = new NodeRSA({b: 512});
+
+        var keyPair = RSAKey.generateKeyPair( 512 );
+
+        privKey = keyPair.exportKey( 'private' );
+        pubKey = keyPair.exportKey( 'public' );
 
         configUtils.readConfig( function( err, content ) {
 
@@ -235,8 +245,39 @@ describe( 'lib/jwt', function() {
             });
         });
 
-        it( 'config file with no values set', function( done ) {
 
+        it( 'update all config values via config file with public key', function( done ) {
+
+
+            var configData = {
+
+                jwt: {
+
+                    algorithm: 'RS256',
+                    public_key: pubKey,
+                    token_name: 'Bearer'
+                }
+            };
+
+            writeConfigData( JSON.stringify( configData ), function( err ) {
+
+                if( err ) {
+
+                    return done( err );
+                }
+
+                require( '../../lib/config' ).wait( function() {
+
+                    jwt = require( '../../lib/jwt' );
+
+                    expect( jwt.configuration() ).to.eql( { algorithm: 'RS256', key: pubKey, stageVars: false, tokenName: 'Bearer' } );
+
+                    done();
+                }); 
+            });
+        });
+
+        it( 'config file with no values set', function( done ) {
 
             var configData = {
 
@@ -264,21 +305,11 @@ describe( 'lib/jwt', function() {
     
     describe( '.validate', function() {
 
-        var pubKey;
-        var privKey;
-
         before( function() {
 
             freshy.unload( '../../lib/jwt' );
 
             jwt = require( '../../lib/jwt' );
-
-            var RSAKey = new NodeRSA({b: 512});
-
-            var keyPair = RSAKey.generateKeyPair( 512 );
-
-            privKey = keyPair.exportKey( 'private' );
-            pubKey = keyPair.exportKey( 'public' );
         });
 
         function testValidate( claims, algorithm, secret, publicKey, event, tokenName ) {

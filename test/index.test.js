@@ -6,6 +6,8 @@ var freshy = require( 'freshy' );
 
 var jwtSimple = require( 'jwt-simple' );
 
+var configUtils = require( './lib/config-utils' );
+
 function makeSuccessContext( done, expected ) {
 
     if( !expected ) {
@@ -154,6 +156,57 @@ describe( 'index', function() {
             vandium.validation( {
 
                 name: vandium.types.string()
+            });
+        });
+    });
+
+    describe( 'auto-configure', function() {
+
+        var originalConfigData;
+
+        before( function( done ) {
+
+            configUtils.readConfig( function( err, content ) {
+
+                originalConfigData = content;
+
+                configUtils.writeConfig( "{}", done );
+            });
+        });
+
+        after( function( done ) {
+
+            if( originalConfigData ) {
+
+                configUtils.writeConfig( originalConfigData, done );
+            }
+        });
+
+        it( 'auto update when vandium.json is present', function( done ) {
+
+            configUtils.writeConfig( JSON.stringify( { jwt: { algorithm: 'HS256', secret: 'my-secret' } }), function( err ) {
+
+                if( err ) {
+
+                    return done( err );
+                }
+
+                vandium = require( '../index' );
+
+                var config = require( '../lib/config' );
+
+                // wait for config to load
+                config.wait( function() {
+
+                    var token = jwtSimple.encode( { user: 'fred' }, 'my-secret', 'HS256' );
+
+                    var handler = vandium( function( event, context ) {
+
+                        context.succeed( event.jwt.claims.user );
+                    });
+
+                    handler( { jwt: token }, makeSuccessContext( done, 'fred' ) );
+                }); 
             });
         });
     });
