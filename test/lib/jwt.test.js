@@ -2,6 +2,8 @@
 
 var expect = require( 'chai' ).expect;
 
+process.env.LAMBDA_TASK_ROOT = require( 'app-root-path' ).path;
+
 var fs = require( 'fs' );
 
 var freshy = require( 'freshy' );
@@ -210,7 +212,7 @@ describe( 'lib/jwt', function() {
                 jwt: {
 
                     algorithm: 'HS512',
-                    key: 'super-secret',
+                    secret: 'super-secret',
                     token_name: 'Bearer'
                 }
             };
@@ -462,6 +464,18 @@ describe( 'lib/jwt', function() {
         it( 'fail when token is missing', function() {
 
             expect( jwt.validate.bind( null, {} ) ).to.throw( 'authentication error: missing jwt token' );
+        });
+
+        it( 'error handling on jwt-simple', function() {
+
+            jwt.configure( { algorith: 'HS256', secret: 'my-secret' } );
+
+            var event = {
+
+                jwt: 'bad.token'
+            };
+
+            expect( jwt.validate.bind( null, event ) ).to.throw( 'authentication error:' );
         });
     });
 });
