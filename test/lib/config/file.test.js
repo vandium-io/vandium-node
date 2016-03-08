@@ -8,6 +8,7 @@ var file = require( '../../../lib/config/file' );
 
 var configUtils = require( '../config-utils' );
 
+process.env.LAMBDA_TASK_ROOT = require( 'app-root-path' ).path;
 
 describe( 'lib/config/file', function() {
 
