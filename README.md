@@ -12,7 +12,7 @@ Vandium is a wrapper for [AWS Lambda](https://aws.amazon.com/lambda/details) fun
 ## Installation
 Install via npm.
 
-	npm install vandium
+	npm install vandium --save
 
 ## Getting Started
 
@@ -78,7 +78,7 @@ For a string that is between 1 and 250 characters long and required, the followi
 }
 ```
 
-Regex expressitions can be used:
+Regex expressions can be used:
 
 ```js
 {
@@ -284,7 +284,7 @@ vandium.jwt().configure( {
 
 exports.handler = vandium( function( event, context ) {
 	
-	console.log( 'jwt verified - claims: ' + event.jwt.claims );
+	console.log( 'jwt verified - claims: ', JSON.stringify( event.jwt.claims, null, 4 ) );
 	
 	context.succeed( 'ok' );
 });
@@ -296,6 +296,7 @@ To configure JWT validation from a configuration file, place a `jwt` configurati
 
 For example, the following `vandium.json` file would contain the following to validate using the `HS256` algorithm with a shared secret:
 
+#####Figure A: vandium.json located at root of your project
 ```json
 {
 	"jwt": {
@@ -307,23 +308,11 @@ For example, the following `vandium.json` file would contain the following to va
 
 ### Configuring JWT using API Gateway Stage Variables
 
-AWS API Gateway supports the use of stage variables to provide configuration information when the lambda function is invoked.
+AWS API Gateway supports the use of stage variables to provide configuration information when the lambda function is invoked. Note that Vandium JWT configuration using stage variables only works when invoking your lambda function within API gateway.
 
-#### configure via code:
+#### Configuration instructions:
 
-```js
-vandium.jwt();
-```
-
-or
-
-```js
-vandium.jwt().configure();
-```
-
-#### configure via configuration file:
-
-Inside your `vandium.json` file:
+__Step 1:__ In the root directory of your project, create a file called `vandium.json` with the following contents:
 
 ```json
 {
@@ -333,17 +322,101 @@ Inside your `vandium.json` file:
 }
 ```
 
-### Stage Variable Names
+<br>
+__Step 2:__ In API Gateway, create an API method with your Vandium-wrapped lambda function attached.
+
+<br>
+__Step 3:__ Set up a mapping template to extract the information provided in the stage variables (setting up the stage variables will be explained in the next step). In your API Gateway method, go to the __integration request__ page and select __Mapping Templates__. For content type, input __application/json__. After that, change the __Input passthrough__ setting to __Mapping template__, then input a mapping template in one of the following forms:
+<br>
+
+* Using `HS256`, `HS384`, or `HS512` without a custom token name: 
+ 
+```json
+{
+    "jwt": "$input.params().header.get('Authorization')",
+    "VANDIUM_JWT_ALGORITHM": "$stageVariables.VANDIUM_JWT_ALGORITHM",
+    "VANDIUM_JWT_SECRET": "$stageVariables.VANDIUM_JWT_SECRET"
+}
+``` 
+ >__Note:__ In all of these example templates, "Authorization" is used as the HTTP header name that contains the JWT.  
+
+
+* Using `HS256`, `HS384`, or `HS512` with a custom token name:
+
+```json
+{
+    "myTokenName": "$input.params().header.get('Authorization')",
+    "VANDIUM_JWT_ALGORITHM": "$stageVariables.VANDIUM_JWT_ALGORITHM",
+    "VANDIUM_JWT_SECRET": "$stageVariables.VANDIUM_JWT_SECRET",
+    "VANDIUM_JWT_TOKEN_NAME": "$stageVariables.VANDIUM_JWT_TOKEN_NAME"
+}
+```
+>__Note:__ In this example, the JWT token will appear in your lambda function as `event.myTokenName`. If a custom token name is not used, the JWT will appear as `event.jwt`. 
+
+<br>
+
+* Using `RS256` without a custom token name:
+
+```json
+{
+    "jwt": "$input.params().header.get('Authorization')",
+    "VANDIUM_JWT_ALGORITHM": "$stageVariables.VANDIUM_JWT_ALGORITHM",
+    "VANDIUM_JWT_SECRET": "$stageVariables.VANDIUM_JWT_SECRET",
+    "VANDIUM_JWT_PUBKEY": "$stageVariables.VANDIUM_JWT_PUBKEY"
+}
+```
+
+* Using `RS256` with a custom token name:
+
+```json
+{
+    "myTokenName": "$input.params().header.get('Authorization')",
+    "VANDIUM_JWT_ALGORITHM": "$stageVariables.VANDIUM_JWT_ALGORITHM",
+    "VANDIUM_JWT_SECRET": "$stageVariables.VANDIUM_JWT_SECRET",
+    "VANDIUM_JWT_PUBKEY": "$stageVariables.VANDIUM_JWT_PUBKEY",
+    "VANDIUM_JWT_TOKEN_NAME": "$stageVariables.VANDIUM_JWT_TOKEN_NAME"
+}
+```
+
+
+<br>
+Here is how the mapping template setup should look like:
+
+![Mapping Template Example](https://raw.githubusercontent.com/vandium-io/vandium-node-dev/michael/docs/img/%20stageVaraibleTemplateExample.png?token=AMktROdlMhy0VTMzKlqQ-uCIAzpLR5Uzks5W6bOZwA%3D%3D)
+
+This example uses an `HS256`, `HS384`, or `HS512` JWT validation algorithm with the custom token name myTokenName.
+
+
+
+For more information about AWS API Gateway mapping templates, check out the official documentation:
+
+[API Gateway Mapping Template Reference](http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html)
+
+<br>
+__Step 4:__ Setting up the stage variables. Deploy your API then go to the stage editor for the stage you just deployed. In the Stage Variables tab, set up the stage variables as specified in the following chart.
+
+
+### Stage Variable Setup
 
 The following stage variables can be used to provide the correct values to the JWT validation handler:
 
-| Name                        | Description
-------------------------------|----------------------------
-| VANDIUM\_JWT\_ALGORITHM     | Algorithm to use. Can be `HS256`, `HS384`, `HS512` or `RS256`
-| VANDIUM\_JWT\_SECRET        | Shared secret value used with algorithm types: `HS256`, `HS384` and `HS512`
-| VANDIUM\_JWT\_PUBKEY        | Public key used with algorithm type `RS256`
-| VANDIUM\_JWT\_TOKEN\_NAME   | Name of the token variable in the event. Default value is `jwt`
+| Name                        | Description                                      |  Required when using algorithms
+------------------------------|--------------------------------------------------|----------------------------
+| VANDIUM\_JWT\_ALGORITHM     | Algorithm type                     | `HS256`, `HS384`, `HS512`, or `RS256`
+| VANDIUM\_JWT\_SECRET        | Shared secret value                              | `HS256`, `HS384`, or `HS512`
+| VANDIUM\_JWT\_PUBKEY        | Public key                                       | `RS256`
+| VANDIUM\_JWT\_TOKEN\_NAME   | Name of the token variable in the event. Default value is `jwt` | Optional
 
+
+Here is an example stage variable setup on the AWS browser console using the `HS256` algorithm and a token with a custom name myTokenName:
+
+![Stage Variables Example](https://raw.githubusercontent.com/vandium-io/vandium-node-dev/michael/docs/img/stageVariableExample.png?token=AMktRMeqvvzoFJISzdD9jbPNzwpiIHcNks5W6bRSwA%3D%3D)
+
+If you're not using a custom token name, then you can omit the `VANDIUM_JWT_TOKEN_NAME` stage variable.
+
+For more information on how API Gateway stage variables work, check out the official documentation:
+
+[Deploy an API with Stage Variables in Amazon API Gateway](http://docs.aws.amazon.com/apigateway/latest/developerguide/stage-variables.html)
 
 ## Configuration via S3
 
@@ -358,7 +431,7 @@ To configure your settings (currently only jwt is supported), add the following 
 }
 ```
 
-The object located inside S3 must be a valid JSON file and can contain configuration parameters as described in this document.
+The object located inside S3 must be a valid JSON file that contains configuration parameters as described in this document (__see Figure A__).
 
 ## NPM Warnings
 
