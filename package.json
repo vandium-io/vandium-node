@@ -1,19 +1,24 @@
 {
   "name": "vandium",
   "version": "1.0.0",
-  "description": "Vandium node aws lambda wrapper",
+  "description": "Vandium Node.js AWS Lambda wrapper",
   "main": "index.js",
+  "keywords":[ "JWT", "AWS", "Lambda", "validation", "wrapper", "api", "gateway" ],
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/vandium-io/vandium-node.git"
+  },  
   "scripts": {
     "test": "./node_modules/.bin/mocha",
     "coverage": "istanbul cover _mocha -- -R spec --recursive"
   },
   "author": "Vandium Software Inc.",
-  "license": "BSD",
+  "license": "BSD-3-Clause",
   "dependencies": {
-    "joi": "^5.1.0",
-    "jwt-simple": "^0.4.1",
-    "lodash": "^3.10.1",
-    "loglevel": "^1.4.0"
+    "joi": "5.1.0",
+    "jwt-simple": "0.4.1",
+    "lodash": "3.10.1",
+    "loglevel": "1.4.0"
   },
   "devDependencies": {
     "aws-sdk": "^2.2.39",
