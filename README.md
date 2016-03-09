@@ -1,6 +1,6 @@
 # vandium-node
 
-Vandium is a wrapper for [AWS lambda](https://aws.amazon.com/lambda/details) functions running on [Node.js](https://nodejs.org).
+Vandium is a wrapper for [AWS Lambda](https://aws.amazon.com/lambda/details) functions running on [Node.js](https://nodejs.org).
 
 ## Features
 * Powerful input validation
@@ -22,8 +22,6 @@ Vandium can be used with minimal change to your existing code.
 var vandium = require( 'vandium' );
 
 exports.handler = vandium( function( event, context ) {
-	
-	console.log( 'your lambda function' );
 	
 	context.succeed( 'ok' );
 });
@@ -51,7 +49,7 @@ When the lambda function is invoked, the event object will be checked for a pres
 
 ## Validation
 
-Vandium allows validations on basic types, objects and arrays. Additionally validation can be performed on nested values inside objects and arrays. Vandium's validation system uses [joi (version 5.1.0)](https://github.com/hapijs/joi/tree/v5.1.0) internally and thus most of it's functionality may be used.
+Vandium allows validations on basic types, objects and arrays. Additionally validation can be performed on nested values inside objects and arrays. Vandium's validation system uses [joi (version 5.1.0)](https://github.com/hapijs/joi/tree/v5.1.0) internally and thus most of its functionality may be used.
 
 ### Types
 
