@@ -42,7 +42,7 @@ describe( 'lib/config/s3', function() {
                 }
             };
 
-            getObjectStub.yieldsAsync( null, JSON.stringify( controlJSON ) );
+            getObjectStub.yieldsAsync( null, { Body: JSON.stringify( controlJSON ) } );
 
             s3Loader.load( { bucket: 'My-Bucket', key: 'My-Key' }, function( err, json ) {
 

@@ -169,7 +169,7 @@ describe( 'lib/config/index', function() {
                 }
             }
 
-            getObjectStub.yieldsAsync( null, JSON.stringify( s3Data ) );
+            getObjectStub.yieldsAsync( null, { Body: JSON.stringify( s3Data ) } );
             
             var configData = {
 
@@ -211,7 +211,7 @@ describe( 'lib/config/index', function() {
             });
         });
 
-            it( 'configuration file with error condition', function( done ) {
+        it( 'configuration file with error condition', function( done ) {
 
             freshy.unload( 'aws-sdk' );
             freshy.unload( '../../../lib/config/s3' );
