@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/vandium-io/vandium-node.svg?branch=master)](https://travis-ci.org/vandium-io/vandium-node)
+
 # vandium-node
 
 Vandium is a wrapper for [AWS Lambda](https://aws.amazon.com/lambda/details) functions running on [Node.js](https://nodejs.org).
