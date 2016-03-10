@@ -9,8 +9,8 @@
     "url" : "https://github.com/vandium-io/vandium-node.git"
   },  
   "scripts": {
-    "test": "./node_modules/.bin/mocha",
-    "coverage": "istanbul cover _mocha -- -R spec --recursive"
+    "test": "./node_modules/.bin/mocha --recursive",
+    "coverage": "./node_modules/.bin/istanbul cover node_modules/mocha/bin/_mocha -- -R spec --recursive"
   },
   "author": "Vandium Software Inc.",
   "license": "BSD-3-Clause",
