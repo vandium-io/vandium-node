@@ -12,21 +12,14 @@ process.env.LAMBDA_TASK_ROOT = require( 'app-root-path' ).path;
 
 describe( 'lib/config/file', function() {
 
-    var originalConfigData;
-
     before( function( done ) {
 
-        configUtils.readConfig( function( err, content ) {
-
-            originalConfigData = content;
-
-            done();
-        });
+        configUtils.removeConfig( done );
     });
 
     after( function( done ) {
 
-        configUtils.writeConfig( originalConfigData, done );
+        configUtils.removeConfig( done );
     });
 
     describe( '.load', function() {

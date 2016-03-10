@@ -53,6 +53,16 @@ describe( 'index', function() {
 
     var vandium;
 
+    before( function( done ) {
+
+        configUtils.removeConfig( done );
+    });
+
+    after( function( done ) {
+
+        configUtils.removeConfig( done );
+    });
+
     beforeEach( function() {
 
         freshy.unload( '../index' );
@@ -166,20 +176,12 @@ describe( 'index', function() {
 
         before( function( done ) {
 
-            configUtils.readConfig( function( err, content ) {
-
-                originalConfigData = content;
-
-                configUtils.writeConfig( "{}", done );
-            });
+            configUtils.removeConfig( done );
         });
 
         after( function( done ) {
 
-            if( originalConfigData ) {
-
-                configUtils.writeConfig( originalConfigData, done );
-            }
+            configUtils.removeConfig( done );
         });
 
         it( 'auto update when vandium.json is present', function( done ) {

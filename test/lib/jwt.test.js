@@ -29,8 +29,6 @@ describe( 'lib/jwt', function() {
         configUtils.writeConfig( configData, callback );
     }
 
-    var originalConfigData;
-
     var pubKey;
     var privKey;
 
@@ -43,20 +41,12 @@ describe( 'lib/jwt', function() {
         privKey = keyPair.exportKey( 'private' );
         pubKey = keyPair.exportKey( 'public' );
 
-        configUtils.readConfig( function( err, content ) {
-
-            originalConfigData = content;
-
-            writeConfigData( "{}", done );
-        });
+        configUtils.removeConfig( done );
     });
 
     after( function( done ) {
 
-        if( originalConfigData ) {
-
-            writeConfigData( originalConfigData, done );
-        }
+        configUtils.removeConfig( done );
     });
 
     beforeEach( function( done )  {

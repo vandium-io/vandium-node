@@ -12,8 +12,6 @@ var configUtils = require( '../config-utils' );
 
 describe( 'lib/config/index', function() {
 
-    var originalConfigData;
-
     var getObjectStub;
     var getObjectSpy;
 
@@ -21,12 +19,7 @@ describe( 'lib/config/index', function() {
 
     before( function( done ) {
 
-        configUtils.readConfig( function( err, content ) {
-
-            originalConfigData = content;
-
-            configUtils.removeConfig( done );
-        });
+        configUtils.removeConfig( done );
     });
 
     describe( '.config', function() {
@@ -305,6 +298,6 @@ describe( 'lib/config/index', function() {
         freshy.unload( 'aws-sdk' );
         freshy.unload( '../../../lib/config/s3' );
 
-        configUtils.writeConfig( originalConfigData, done );        
+        configUtils.removeConfig( done );        
     });
 });
