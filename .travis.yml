@@ -3,4 +3,5 @@ node_js:
   - "0.10"
 install:
   - npm install -g npm@2
+  - npm install
 script: npm run coverage
