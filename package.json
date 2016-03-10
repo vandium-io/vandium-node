@@ -3,11 +3,19 @@
   "version": "1.0.0",
   "description": "Vandium Node.js AWS Lambda wrapper",
   "main": "index.js",
-  "keywords":[ "JWT", "AWS", "Lambda", "validation", "wrapper", "api", "gateway" ],
+  "keywords": [
+    "JWT",
+    "AWS",
+    "Lambda",
+    "validation",
+    "wrapper",
+    "api",
+    "gateway"
+  ],
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/vandium-io/vandium-node.git"
-  },  
+    "type": "git",
+    "url": "https://github.com/vandium-io/vandium-node.git"
+  },
   "scripts": {
     "test": "./node_modules/.bin/mocha --recursive",
     "coverage": "./node_modules/.bin/istanbul cover node_modules/mocha/bin/_mocha -- -R spec --recursive"
@@ -21,14 +29,15 @@
     "loglevel": "1.4.0"
   },
   "devDependencies": {
-    "aws-sdk": "^2.2.39",
     "app-root-path": "^1.0.0",
+    "aws-sdk": "^2.2.39",
     "chai": "^3.4.1",
     "dotenv": "^2.0.0",
     "freshy": "^1.0.2",
     "istanbul": "^0.4.2",
     "mocha": "^2.3.4",
     "node-rsa": "^0.3.2",
+    "node-uuid": "^1.4.7",
     "sinon": "^1.17.3"
   }
 }
