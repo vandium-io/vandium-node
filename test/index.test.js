@@ -2,6 +2,8 @@
 
 var expect = require( 'chai' ).expect;
 
+var Promise = require( 'bluebird' );
+
 var freshy = require( 'freshy' );
 
 var jwtSimple = require( 'jwt-simple' );
@@ -130,6 +132,44 @@ describe( 'index', function() {
             });
 
             handler( { name: 'fred' }, makeFailContext( done ) );
+        });
+
+        it( 'handle resolve from a promise', function( done ) {
+
+            vandium = require( '../index' );
+
+            var handler = vandium( function( event, context ) {
+
+                return new Promise( function( resolve, reject ) {
+
+                    setTimeout( function() {
+
+                        resolve( 'ok' );
+
+                    }, 200 );
+                });
+            });
+
+            handler( { }, makeSuccessContext( done ) );
+        });
+
+        it( 'handle reject from a promise', function( done ) {
+
+            vandium = require( '../index' );
+
+            var handler = vandium( function( event, context ) {
+
+                return new Promise( function( resolve, reject ) {
+
+                    setTimeout( function() {
+
+                        reject( new Error( 'bang' ) );
+
+                    }, 200 );
+                });
+            });
+
+            handler( { }, makeFailContext( done ) );        
         });
 	});
 
