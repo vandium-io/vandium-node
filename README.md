@@ -2,14 +2,16 @@
 
 # vandium-node
 
-Vandium is a wrapper for [AWS Lambda](https://aws.amazon.com/lambda/details) functions running on [Node.js](https://nodejs.org).
+Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions using [Node.js](https://nodejs.org).
 
 ## Features
 * Powerful input validation
 * JWT verfication and validation
 * Forces values into correct types
 * Handles uncaught exceptions
+* Promise support
 * Automatically trimmed strings for input event data
+* Low startup overhead
 
 ## Installation
 Install via npm.
@@ -245,6 +247,53 @@ would be converted to a `Buffer` instance with the data parsed and loaded:
     data: Buffer( ... )
 }
 ```
+
+## Using Promises
+Using promises can simplify asynchronous operations and reduce/eliminate the need for nested callbacks.
+
+The following example demonstrates how one would handle promises manually:
+
+```js
+var busLogicModule = require( 'my-bl-module' );
+
+exports.handler = function( event, context ) {
+
+	busLogicModule.getUser( event.user_id )
+		.then( function( user ) {
+			
+			return busLogicModule.requestFollowUp( user );
+		})
+		.then( function( followupDate ) {
+		
+			context.succeed( followupDate );
+		})
+		.catch( function( err ) {
+		
+			context.fail( err );
+		});
+}
+```
+
+The same example using vandium would look like:
+
+```js
+var vandium = require( 'vandium' );
+
+var busLogicModule = require( 'my-bl-module' );
+
+exports.handler = vandium( function( event, context ) {
+	    
+	busLogicModule.getUser( event.user_id )
+		.then( function( user ) {
+			
+			return busLogicModule.requestFollowUp( user );
+		});
+});
+```
+
+Vandium will handle successful and failure conditions.
+
+Promises are supported by ES6/ES2015 and are available in the latest versions of Node.js. An implementation of Promises that works well with the current AWS Lambda environment (Node.js 0.10.36) is [bluebird](http://bluebirdjs.com).
 
 ## JSON Web Token (JWT)
 
