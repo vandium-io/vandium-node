@@ -283,7 +283,7 @@ var busLogicModule = require( 'my-bl-module' );
 
 exports.handler = vandium( function( event, context ) {
 	    
-	busLogicModule.getUser( event.user_id )
+	return busLogicModule.getUser( event.user_id )
 		.then( function( user ) {
 			
 			return busLogicModule.requestFollowUp( user );
