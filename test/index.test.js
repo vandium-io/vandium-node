@@ -115,6 +115,37 @@ describe( 'index', function() {
             handler( { name: 'fred', age: 16, jwt: token }, makeSuccessContext( done ) );
         });
 
+        it( 'simple validation with sql injection protection', function( done ) {
+
+            vandium = require( '../index' );
+
+            vandium.validation( {
+
+                name: vandium.types.string().required(),
+
+                age: vandium.types.number().min( 0 ).max( 120 ).required(),
+
+                jwt: vandium.types.any()
+            });
+
+            vandium.protect().sql().fail();
+
+            vandium.jwt().configure( {
+
+                algorithm: 'HS256',
+                secret: 'super-secret' 
+            });
+
+            var handler = vandium( function( event, context ) {
+
+                context.succeed( 'ok' );
+            });
+
+            var token = jwtSimple.encode( { user: 'fred' }, 'super-secret', 'HS256' );
+
+            handler( { name: 'fred', age: 16, jwt: token }, makeSuccessContext( done ) );
+        });
+
         it( 'validation where value is missing', function( done ) {
 
             vandium = require( '../index' );
