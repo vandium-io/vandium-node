@@ -1,3 +1,10 @@
+## 1.2.0 (2016-03-21)
+
+Added:
+
+* SQL Injection (SQLi) attack detection and protection
+
+
 ## 1.1.0 (2016-03-16)
 
 Added:

@@ -2,11 +2,12 @@
 
 # vandium-node
 
-Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions using [Node.js](https://nodejs.org).
+Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions using [Node.js](https://nodejs.org) for [API Gateway](https://aws.amazon.com/api-gateway), IoT applications, and other event cases.
 
 ## Features
 * Powerful input validation
 * JWT verfication and validation
+* SQL Injection (SQLi) detection and protection
 * Forces values into correct types
 * Handles uncaught exceptions
 * Promise support
@@ -246,6 +247,55 @@ would be converted to a `Buffer` instance with the data parsed and loaded:
 {
     data: Buffer( ... )
 }
+```
+
+## SQL Injection Attack Detection and Protection
+
+The default settings inside Vandium will delect and report SQL injection (SQLi) attacks into `console.log`.
+
+The following report would be written to `console.log` if the event contains a string with a potential attack.
+
+```
+// event
+
+{
+	"user": "admin`--"
+}
+```
+
+```
+// console.log
+
+*** Vandium - SQL Injection Detected - ESCAPED_COMMENT
+key = user
+value =  admin'--
+```
+
+### Stop Execution when Attack is Detected
+
+The protection setting will cause Lambda's `context.fail()` to be called when a potential attack is encountered in addition to a `console.log` report being generated.
+
+To enable attack prevention:
+
+```js
+var vandium = require( 'vandium' );
+
+vandium.protect.sql.fail();	// fail when potential attack is detected
+
+exports.handler = vandium( function( event, context ) {
+	
+	// your handler code here
+});
+```
+
+### Disabling Attack Protection
+
+Attack protection can be disabled completely. To disable:
+
+```js
+var vandium = require( 'vandium' );
+
+vandium.protect.disable();
 ```
 
 ## Using Promises
