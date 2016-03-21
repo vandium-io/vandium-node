@@ -42,9 +42,12 @@ describe( 'lib/protect/sql', function() {
 
             it( 'fail: ' + test[1], function() {
 
+                sql.fail();
+
                 var event = {
 
-                    myField: test[0]
+                    myField: test[0],
+                    other: 'my other field'
                 };
 
                 try {
@@ -58,6 +61,19 @@ describe( 'lib/protect/sql', function() {
                     expect( err.message ).to.equal( 'myField is invalid' );
                     expect( err.attackType ).to.equal( test[1] );
                 }
+            });
+
+            it( 'fail: ' + test[1] + ' - report only', function() {
+
+                sql.report();
+
+                var event = {
+
+                    myField: test[0],
+                    other: 'my other field'
+                };
+
+                sql.scan( event );
             });
         })
     });
