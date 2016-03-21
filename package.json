@@ -1,6 +1,6 @@
 {
   "name": "vandium",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Vandium Node.js AWS Lambda wrapper",
   "main": "index.js",
   "keywords": [
@@ -10,7 +10,13 @@
     "validation",
     "wrapper",
     "api",
-    "gateway"
+    "gateway",
+    "sql",
+    "sql injection",
+    "sqli",
+    "injection",
+    "attack",
+    "IoT"
   ],
   "repository": {
     "type": "git",
