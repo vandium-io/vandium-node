@@ -128,7 +128,7 @@ describe( 'index', function() {
                 jwt: vandium.types.any()
             });
 
-            vandium.protect().sql().fail();
+            vandium.protect().sql.fail();
 
             vandium.jwt().configure( {
 
