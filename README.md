@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/vandium-io/vandium-node.svg?branch=master)](https://travis-ci.org/vandium-io/vandium-node)
+[![npm version](https://badge.fury.io/js/vandium.svg)](https://badge.fury.io/js/vandium)
 
 # vandium-node
 
