@@ -1,3 +1,10 @@
+## 1.2.1 (2016-03-27)
+
+Fixed:
+
+* Synchronous handlers can now return value to the caller
+
+
 ## 1.2.0 (2016-03-21)
 
 Added:
