@@ -8,6 +8,8 @@ var freshy = require( 'freshy' );
 
 var jwtSimple = require( 'jwt-simple' );
 
+var sinon = require( 'sinon' );
+
 var configUtils = require( './lib/config-utils' );
 
 function makeSuccessContext( done, expected ) {
@@ -84,6 +86,29 @@ describe( 'index', function() {
             });
 
             handler( {}, makeSuccessContext( done ) );
+        });
+
+        it( 'simple wrap, return value', function() {
+
+            vandium = require( '../index' );
+
+            var handler = vandium( function( event, context ) {
+
+                context.succeed( 'ok' );
+
+                return 42;
+            });
+
+            var context = {
+
+                succeed: sinon.stub(),
+
+                fail: sinon.stub
+            };
+
+            expect( handler( {}, context ) ).to.equal( 42 );
+            expect( context.succeed.calledOnce ).to.be.true;
+            expect( context.succeed.withArgs( 'ok').calledOnce ).to.be.true;
         });
 
         it( 'simple validation', function( done ) {
