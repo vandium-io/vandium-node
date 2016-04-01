@@ -454,7 +454,7 @@ describe( 'lib/jwt', function() {
         var failTests = [
 
             { desc: 'config with iat + 5min in future',  claims: { user: 'fred', iat: (Date.now()/1000) + 300 }, error: 'authentication error: token used before issue date' },
-            { desc: 'config with expired token', claims: { user: 'fred', exp: (Date.now()/1000) - 1 }, error: 'authentication error: token expired' }
+            { desc: 'config with expired token', claims: { user: 'fred', exp: (Date.now()/1000) - 1 }, error: 'authentication error: Token expired' }
         ];
 
         failTests.forEach( function( test ) {
