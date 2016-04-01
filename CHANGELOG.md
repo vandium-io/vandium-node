@@ -1,3 +1,18 @@
+## 1.2.2 (2016-04-01)
+
+Updated:
+
+* JWT validation engine
+
+Fixed:
+
+* SQL Injection (SQLi) attack detection and protection to examine nested objects inside event
+
+Improved:
+
+* Reduced NPM package size
+
+
 ## 1.2.1 (2016-03-27)
 
 Fixed:

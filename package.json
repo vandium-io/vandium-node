@@ -1,7 +1,7 @@
 {
   "name": "vandium",
-  "version": "1.2.1",
-  "description": "Vandium Node.js AWS Lambda wrapper",
+  "version": "1.2.2",
+  "description": "Vandium AWS Lambda wrapper for Node.js",
   "main": "index.js",
   "keywords": [
     "JWT",
