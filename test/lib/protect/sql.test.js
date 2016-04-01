@@ -63,6 +63,31 @@ describe( 'lib/protect/sql', function() {
                 }
             });
 
+            it( 'fail: nested case - ' + test[1], function() {
+
+                sql.fail();
+
+                var event = {
+
+                    update: {
+                        myField: test[0],
+                    },
+                    other: 'my other field'
+                };
+
+                try {
+
+                    sql.scan( event );
+
+                    throw new Error( 'should never get here' );
+                }
+                catch( err ) {
+
+                    expect( err.message ).to.equal( 'myField is invalid' );
+                    expect( err.attackType ).to.equal( test[1] );
+                }
+            });
+
             it( 'fail: ' + test[1] + ' - report only', function() {
 
                 sql.report();
