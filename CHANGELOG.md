@@ -1,3 +1,15 @@
+## 2.0.0 (TBD)
+
+New:
+* Added support for AWS Lambda callback handler
+
+Changed:
+* When return promises to vandium, the callback pattern is used instead of context.succeed/fail
+
+Compatibility:
+* Requires Node 4.3.2. For 0.10.x support, use version 1.x
+
+
 ## 1.2.2 (2016-04-01)
 
 Updated:
@@ -42,7 +54,7 @@ Added:
 * build status shield
 
 Fixed:
- 
+
 * unit tests failing if a vandium.json file was present
 * documentation typos
 
