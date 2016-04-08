@@ -2,9 +2,11 @@
 
 var expect = require( 'chai' ).expect;
 
-var Promise = require( 'bluebird' );
+process.env.LAMBDA_TASK_ROOT = require( 'app-root-path' ).path;
 
 var freshy = require( 'freshy' );
+
+const LambdaTester = require( 'lambda-tester' );
 
 var jwtSimple = require( 'jwt-simple' );
 
@@ -12,46 +14,7 @@ var sinon = require( 'sinon' );
 
 var configUtils = require( './lib/config-utils' );
 
-function makeSuccessContext( done, expected ) {
-
-    if( !expected ) {
-
-        expected = 'ok';
-    }
-
-    return {
-
-        succeed: function( result ) {
-
-            expect( result ).to.eql( expected );
-
-            done(); 
-        },
-
-        fail: function( err ) {
-
-            done( err );
-        }
-    };
-}
-
-function makeFailContext( done ) {
-
-    return  {
-
-        succeed: function( result ) {
-
-                done( new Error( 'should not succeed' ) );
-            },
-
-        fail: function( err ) {
-
-            expect( err ).to.be.an.instanceof( Error );
-
-            done();
-        }
-    };
-}
+//require( '../lib/logger' ).setLevel( 'debug' );
 
 describe( 'index', function() {
 
@@ -74,9 +37,9 @@ describe( 'index', function() {
         freshy.unload( '../lib/jwt' );
     });
 
-	describe( '.vandium', function( done ) {
+	describe( '.vandium', function() {
 
-		it( 'simple wrap with no jwt or validation', function( done ) {
+		it( 'simple wrap with no jwt or validation', function() {
 
             vandium = require( '../index' );
 
@@ -85,7 +48,43 @@ describe( 'index', function() {
                 context.succeed( 'ok' );
             });
 
-            handler( {}, makeSuccessContext( done ) );
+            return LambdaTester( handler )
+                .expectSucceed( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                });
+        });
+
+        it( 'simple wrap with no jwt or validation using callback( null, result )', function() {
+
+            vandium = require( '../index' );
+
+            var handler = vandium( function( event, context, callback ) {
+
+                callback( null, 'ok' );
+            });
+
+            return LambdaTester( handler )
+                .expectResult( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                });
+        });
+
+        it( 'simple wrap with no jwt or validation using callback( err )', function() {
+
+            vandium = require( '../index' );
+
+            var handler = vandium( function( event, context, callback ) {
+
+                callback( new Error( 'bang' ) );
+            });
+
+            return LambdaTester( handler )
+                .expectError( function( err ) {
+
+                    expect( err.message ).to.equal( 'bang' );
+                });
         });
 
         it( 'simple wrap, return value', function() {
@@ -106,12 +105,13 @@ describe( 'index', function() {
                 fail: sinon.stub
             };
 
+            // Can't use lambda-tester here (just yet!)
             expect( handler( {}, context ) ).to.equal( 42 );
             expect( context.succeed.calledOnce ).to.be.true;
             expect( context.succeed.withArgs( 'ok').calledOnce ).to.be.true;
         });
 
-        it( 'simple validation', function( done ) {
+        it( 'simple validation', function() {
 
             vandium = require( '../index' );
 
@@ -127,7 +127,7 @@ describe( 'index', function() {
             vandium.jwt().configure( {
 
                 algorithm: 'HS256',
-                secret: 'super-secret' 
+                secret: 'super-secret'
             });
 
             var handler = vandium( function( event, context ) {
@@ -137,10 +137,15 @@ describe( 'index', function() {
 
             var token = jwtSimple.encode( { user: 'fred' }, 'super-secret', 'HS256' );
 
-            handler( { name: 'fred', age: 16, jwt: token }, makeSuccessContext( done ) );
+            return LambdaTester( handler )
+                .event( { name: 'fred', age: 16, jwt: token } )
+                .expectSucceed( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                });
         });
 
-        it( 'simple validation with sql injection protection', function( done ) {
+        it( 'simple validation with sql injection protection', function() {
 
             vandium = require( '../index' );
 
@@ -158,7 +163,7 @@ describe( 'index', function() {
             vandium.jwt().configure( {
 
                 algorithm: 'HS256',
-                secret: 'super-secret' 
+                secret: 'super-secret'
             });
 
             var handler = vandium( function( event, context ) {
@@ -168,10 +173,15 @@ describe( 'index', function() {
 
             var token = jwtSimple.encode( { user: 'fred' }, 'super-secret', 'HS256' );
 
-            handler( { name: 'fred', age: 16, jwt: token }, makeSuccessContext( done ) );
+            return LambdaTester( handler )
+                .event( { name: 'fred', age: 16, jwt: token } )
+                .expectSucceed( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                });
         });
 
-        it( 'validation where value is missing', function( done ) {
+        it( 'validation where value is missing', function() {
 
             vandium = require( '../index' );
 
@@ -187,10 +197,15 @@ describe( 'index', function() {
                 context.succeed( 'ok' );
             });
 
-            handler( { name: 'fred' }, makeFailContext( done ) );
+            return LambdaTester( handler )
+                .event( { name: 'fred' } )
+                .expectError( function( err ) {
+
+                    expect( err.message ).to.equal( 'validation error: age is required' );
+                });
         });
 
-        it( 'handle resolve from a promise', function( done ) {
+        it( 'handle resolve from a promise', function() {
 
             vandium = require( '../index' );
 
@@ -206,10 +221,14 @@ describe( 'index', function() {
                 });
             });
 
-            handler( { }, makeSuccessContext( done ) );
+            return LambdaTester( handler )
+                .expectResult( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                });
         });
 
-        it( 'handle reject from a promise', function( done ) {
+        it( 'handle reject from a promise', function() {
 
             vandium = require( '../index' );
 
@@ -225,7 +244,11 @@ describe( 'index', function() {
                 });
             });
 
-            handler( { }, makeFailContext( done ) );        
+            return LambdaTester( handler )
+                .expectError( function( err ) {
+
+                    expect( err.message ).to.equal( 'bang' );
+                });
         });
 	});
 
@@ -239,7 +262,7 @@ describe( 'index', function() {
 
             // stage vars should be enabled by default
             expect( jwt.configuration() ).to.eql( { key: undefined, algorithm: undefined, tokenName: 'jwt', stageVars: true } );
-            
+
             var jwtConfig = vandium.jwt().configure( { algorithm: 'HS256', secret: 'my-secret' } );
             expect( jwtConfig ).to.eql( { key: 'my-secret', algorithm: 'HS256', tokenName: 'jwt', stageVars: false } );
 
@@ -303,8 +326,15 @@ describe( 'index', function() {
                         context.succeed( event.jwt.claims.user );
                     });
 
-                    handler( { jwt: token }, makeSuccessContext( done, 'fred' ) );
-                }); 
+                    LambdaTester( handler )
+                        .event( { jwt: token } )
+                        .expectSucceed( function( result ) {
+
+                            expect( result ).to.equal( 'fred' );
+                            done();
+                        })
+                        .catch( done );
+                });
             });
         });
     });
