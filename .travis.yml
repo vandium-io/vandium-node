@@ -1,8 +1,7 @@
 language: node_js
 node_js:
-  - "0.10"
+  - "4.3"
 install:
-  - nvm use 0.10.36
-  - npm install -g npm@2
+  - nvm use 4.3.2
   - npm install
 script: npm run coverage
