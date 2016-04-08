@@ -1,21 +1,20 @@
 'use strict';
 
+/*jshint expr: true*/
+
 var expect = require( 'chai' ).expect;
 
 var freshy = require( 'freshy' );
 
 var sinon = require( 'sinon' );
 
-var fs = require( 'fs' );
-
 var configUtils = require( '../config-utils' );
 
+process.env.LAMBDA_TASK_ROOT = require( 'app-root-path' ).path;
+
+//var logger = require( '../../../lib/logger' ).setLevel( 'debug' );
+
 describe( 'lib/config/index', function() {
-
-    var getObjectStub;
-    var getObjectSpy;
-
-    var s3Loader;
 
     before( function( done ) {
 
@@ -36,19 +35,19 @@ describe( 'lib/config/index', function() {
 
             config = require( '../../../lib/config' );
 
-            var updateListener = sinon.mock();
+            var updateListener = sinon.stub();
 
             config.on( 'update', updateListener );
-
-            updateListener.once();
 
             config.wait( function() {
 
                 expect( Object.keys( config ).length ).to.equal( 2 );
                 expect( config.on ).to.be.a( 'Function' );
                 expect( config.wait ).to.be.a( 'Function' );
-                
-                updateListener.verify();
+
+                // update will never be called because the config file is loaded during the
+                // require( config )
+                expect( updateListener.called ).to.be.false;
 
                 done();
             });
@@ -73,24 +72,23 @@ describe( 'lib/config/index', function() {
 
                 config = require( '../../../lib/config' );
 
-                var updateListener = sinon.mock();
+                var updateListener = sinon.stub();
 
                 config.on( 'update', updateListener );
 
-                updateListener.once();
-
                 config.wait( function() {
 
-                    expect( Object.keys( config ).length ).to.equal( 3 );
                     expect( config.on ).to.be.a( 'Function' );
                     expect( config.wait ).to.be.a( 'Function' );
                     expect( config.jwt ).to.be.an( 'Object' );
                     expect( config.jwt ).to.eql( configData.jwt );
-                    
-                    updateListener.verify();
-                    
+
+                    // update will never be called because the config file is loaded during the
+                    // require( config )
+                    expect( updateListener.called ).to.be.false;
+
                     done();
-                });                
+                });
             });
         });
 
@@ -104,7 +102,7 @@ describe( 'lib/config/index', function() {
 
                     done();
                 });
-            });  
+            });
         });
 
         it( 'configuration file with "wait" and "on" properties', function( done ) {
@@ -124,22 +122,22 @@ describe( 'lib/config/index', function() {
 
                 config = require( '../../../lib/config' );
 
-                var updateListener = sinon.mock();
+                var updateListener = sinon.stub();
 
                 config.on( 'update', updateListener );
-
-                updateListener.once();
 
                 config.wait( function() {
 
                     expect( Object.keys( config ).length ).to.equal( 2 );
                     expect( config.on ).to.be.a( 'Function' );
                     expect( config.wait ).to.be.a( 'Function' );
-                    
-                    updateListener.verify();
-                    
+
+                    // update will never be called because the config file is loaded during the
+                    // require( config )
+                    expect( updateListener.called ).to.be.false;
+
                     done();
-                });                
+                });
             });
         });
 
@@ -147,10 +145,10 @@ describe( 'lib/config/index', function() {
 
             freshy.unload( 'aws-sdk' );
             freshy.unload( '../../../lib/config/s3' );
-                
+
             var AWS = require( 'aws-sdk' );
 
-            getObjectStub = sinon.stub();
+            let getObjectStub = sinon.stub();
 
             AWS.S3.prototype.getObject = sinon.spy( getObjectStub );
 
@@ -163,7 +161,7 @@ describe( 'lib/config/index', function() {
             }
 
             getObjectStub.yieldsAsync( null, { Body: JSON.stringify( s3Data ) } );
-            
+
             var configData = {
 
                 s3: {
@@ -182,11 +180,9 @@ describe( 'lib/config/index', function() {
 
                 config = require( '../../../lib/config' );
 
-                var updateListener = sinon.mock();
+                var updateListener = sinon.stub();
 
                 config.on( 'update', updateListener );
-
-                updateListener.twice();
 
                 config.wait( function() {
 
@@ -196,11 +192,12 @@ describe( 'lib/config/index', function() {
                     expect( config.jwt ).to.be.an( 'Object' );
                     expect( config.jwt ).to.eql( s3Data.jwt );
                     expect( config.s3 ).to.be.an( 'Object' );
-                    
-                    updateListener.verify();
-                    
+
+                    // never called for file, but called for s3
+                    expect( updateListener.calledOnce ).to.be.true;
+
                     done();
-                });                
+                });
             });
         });
 
@@ -208,8 +205,8 @@ describe( 'lib/config/index', function() {
 
             freshy.unload( 'aws-sdk' );
             freshy.unload( '../../../lib/config/s3' );
-                
-            var AWS = require( 'aws-sdk' );
+
+            let AWS = require( 'aws-sdk' );
 
             configUtils.writeConfig( "bad", function( err ) {
 
@@ -220,22 +217,20 @@ describe( 'lib/config/index', function() {
 
                 config = require( '../../../lib/config' );
 
-                var updateListener = sinon.mock();
+                var updateListener = sinon.stub();
 
                 config.on( 'update', updateListener );
-
-                updateListener.never();
 
                 config.wait( function() {
 
                     expect( Object.keys( config ).length ).to.equal( 2 );
                     expect( config.on ).to.be.a( 'Function' );
                     expect( config.wait ).to.be.a( 'Function' );
-                    
-                    updateListener.verify();
-                    
+
+                    expect( updateListener.called ).to.be.false;
+
                     done();
-                });                
+                });
             });
         });
 
@@ -243,16 +238,16 @@ describe( 'lib/config/index', function() {
 
             freshy.unload( 'aws-sdk' );
             freshy.unload( '../../../lib/config/s3' );
-                
-            var AWS = require( 'aws-sdk' );
 
-            getObjectStub = sinon.stub();
+            let AWS = require( 'aws-sdk' );
+
+            let getObjectStub = sinon.stub();
 
             AWS.S3.prototype.getObject = sinon.spy( getObjectStub );
 
             getObjectStub.yieldsAsync( new Error( 'bang' ) );
-            
-            var configData = {
+
+            let configData = {
 
                 s3: {
 
@@ -270,11 +265,9 @@ describe( 'lib/config/index', function() {
 
                 config = require( '../../../lib/config' );
 
-                var updateListener = sinon.mock();
+                var updateListener = sinon.stub();
 
                 config.on( 'update', updateListener );
-
-                updateListener.once();
 
                 config.wait( function() {
 
@@ -284,11 +277,11 @@ describe( 'lib/config/index', function() {
                     // expect( config.jwt ).to.be.an( 'Object' );
                     // expect( config.jwt ).to.eql( s3Data.jwt );
                     // expect( config.s3 ).to.be.an( 'Object' );
-                    
-                    updateListener.verify();
-                    
+
+                    expect( updateListener.called ).to.be.false;
+
                     done();
-                });                
+                });
             });
         });
     });
@@ -298,6 +291,6 @@ describe( 'lib/config/index', function() {
         freshy.unload( 'aws-sdk' );
         freshy.unload( '../../../lib/config/s3' );
 
-        configUtils.removeConfig( done );        
+        configUtils.removeConfig( done );
     });
 });
