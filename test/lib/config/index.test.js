@@ -141,6 +141,46 @@ describe( 'lib/config/index', function() {
             });
         });
 
+        it( 'configuration file with environment variables', function( done ) {
+
+            const existingKey = 'TEST_EXISTING_' + Date.now();
+
+            const newEnvKey = 'TEST_NEW_' + Date.now();
+
+            const nullEnvKey = 'TEST_NULL_' + Date.now();
+
+            process.env[ existingKey ] = 'Existing';
+
+            let env = {};
+
+            env[ existingKey ] = 'Updated';
+            env[ newEnvKey ] = 'New';
+            env[ nullEnvKey ] = null;
+
+            let configData = {
+
+                env
+            };
+
+            configUtils.writeConfig( JSON.stringify( configData ), function( err ) {
+
+                if( err ) {
+
+                    return done( err );
+                }
+
+                config = require( '../../../lib/config' );
+
+                // make sure existing value was not updated
+                expect( process.env[ existingKey ] ).to.equal( 'Existing' );
+
+                // our key was added
+                expect( process.env[ newEnvKey ] ).to.equal( 'New' );
+
+                done();
+            });
+        });
+
         it( 'simple configuration file with s3 refer', function( done ) {
 
             freshy.unload( 'aws-sdk' );
