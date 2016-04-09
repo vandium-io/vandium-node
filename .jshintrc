@@ -7,6 +7,5 @@
   	  "Promise": true
   },
   "esversion": 6,
-  "mocha": true,
-  "predef": [ "-Promise" ]
+  "mocha": true
 }
