@@ -2,6 +2,10 @@
 
 New:
 * Added support for AWS Lambda callback handler
+* Environment variables can defined inside `vandium.json`
+
+Improved:
+* Uncaught exceptions are logged to `console.log()` and routed to `callback()`
 
 Changed:
 * When return promises to vandium, the callback pattern is used instead of context.succeed/fail
