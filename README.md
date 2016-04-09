@@ -3,17 +3,19 @@
 
 # vandium-node
 
-Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions using [Node.js](https://nodejs.org) for [API Gateway](https://aws.amazon.com/api-gateway), IoT applications, and other event cases.
+Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions using [Node.js](https://nodejs.org) for [API Gateway](https://aws.amazon.com/api-gateway), IoT applications, and other serverless event cases.
 
 ## Features
 * Powerful input validation
 * JWT verfication and validation
 * SQL Injection (SQLi) detection and protection
+* Environment variable mapping
 * Forces values into correct types
 * Handles uncaught exceptions
 * Promise support
 * Automatically trimmed strings for input event data
 * Low startup overhead
+* AWS Lambda Node.js 4.3.2 compatible
 
 ## Installation
 Install via npm.
@@ -27,9 +29,9 @@ Vandium can be used with minimal change to your existing code.
 ```js
 var vandium = require( 'vandium' );
 
-exports.handler = vandium( function( event, context ) {
-	
-	context.succeed( 'ok' );
+exports.handler = vandium( function( event, context, callback ) {
+
+	callback( null, 'ok' );
 });
 ```
 
@@ -43,11 +45,11 @@ vandium.validation( {
 	name: vandium.types.string().required()
 });
 
-exports.handler = vandium( function( event, context ) {
-	
+exports.handler = vandium( function( event, context, callback ) {
+
 	console.log( 'hello: ' + event.name );
-	
-	context.succeed( 'ok' );
+
+	callback( null, 'ok' );
 });
 ```
 
@@ -55,7 +57,7 @@ When the lambda function is invoked, the event object will be checked for a pres
 
 ## Validation
 
-Vandium allows validations on basic types, objects and arrays. Additionally validation can be performed on nested values inside objects and arrays. Vandium's validation system uses [joi (version 5.1.0)](https://github.com/hapijs/joi/tree/v5.1.0) internally and thus most of its functionality may be used.
+Vandium allows validations on basic types, objects and arrays. Additionally validation can be performed on nested values inside objects and arrays. Vandium's validation system uses [joi (version 8.0.x)](https://github.com/hapijs/joi/tree/v8.0.5) internally and thus most of its functionality may be used.
 
 ### Types
 
@@ -100,7 +102,7 @@ Note: Strings are automatically trimmed. To disable this functionality, add an o
 }
 ```
 
-For more information on how to configure strings, see the [joi string reference](https://github.com/hapijs/joi/tree/v5.1.0#string).
+For more information on how to configure strings, see the [joi string reference](https://github.com/hapijs/joi/tree/v8.0.5#string).
 
 #### Numbers
 
@@ -120,7 +122,7 @@ To specify the number of decimal places allowed:
 }
 ```
 
-For more information on how to configure numbers, see the [joi numbers reference](https://github.com/hapijs/joi/tree/v5.1.0#number).
+For more information on how to configure numbers, see the [joi numbers reference](https://github.com/hapijs/joi/tree/v8.0.5#number).
 
 #### Boolean
 
@@ -139,7 +141,7 @@ Ranges can be specified using min and max:
 }
 ```
 
-For more information on how to configure dates, see the [joi date reference](https://github.com/hapijs/joi/tree/v5.1.0#date).
+For more information on how to configure dates, see the [joi date reference](https://github.com/hapijs/joi/tree/v8.0.5#date).
 
 #### Email
 
@@ -163,7 +165,7 @@ Once binary values are processed, they are converted into `Buffer` instances.
 
 #### Any
 
-The `any` validator will match any value. For more information about using this validator, see the [joi any reference](https://github.com/hapijs/joi/tree/v5.1.0#any).
+The `any` validator will match any value. For more information about using this validator, see the [joi any reference](https://github.com/hapijs/joi/tree/v8.0.5#any).
 
 
 #### Object
@@ -173,7 +175,7 @@ The `object` validator allows validation of an object and potentially the values
 ```js
 {
 	job: vandium.types.object().keys({
-	
+
 			name: vandium.types.string().required(),
 			dept: vandium.types.string().required(),
 			salary: vandium.types.number().precision( 2 ).required(),
@@ -183,7 +185,7 @@ The `object` validator allows validation of an object and potentially the values
 }
 ```
 
-For more information on how to configure objects, see the [joi object reference](https://github.com/hapijs/joi/tree/v5.1.0#object).
+For more information on how to configure objects, see the [joi object reference](https://github.com/hapijs/joi/tree/v8.0.5#object).
 
 #### Array
 
@@ -197,7 +199,7 @@ The following example demonstrates matching seven numbers between 1 and 49:
 }
 ```
 
-For more information on how to configure arrays, see the [joi array reference](https://github.com/hapijs/joi/tree/v5.1.0#array).
+For more information on how to configure arrays, see the [joi array reference](https://github.com/hapijs/joi/tree/v8.0.5#array).
 
 
 ### Value Conversion
@@ -267,14 +269,14 @@ The following report would be written to `console.log` if the event contains a s
 ```
 // console.log
 
-*** Vandium - SQL Injection Detected - ESCAPED_COMMENT
+*** vandium - SQL Injection Detected - ESCAPED_COMMENT
 key = user
 value =  admin'--
 ```
 
 ### Stop Execution when Attack is Detected
 
-The protection setting will cause Lambda's `context.fail()` to be called when a potential attack is encountered in addition to a `console.log` report being generated.
+The protection setting will cause Lambda's `callback( error )` to be called when a potential attack is encountered in addition to a `console.log` report being generated.
 
 To enable attack prevention:
 
@@ -283,8 +285,8 @@ var vandium = require( 'vandium' );
 
 vandium.protect.sql.fail();	// fail when potential attack is detected
 
-exports.handler = vandium( function( event, context ) {
-	
+exports.handler = vandium( function( event, context, callback ) {
+
 	// your handler code here
 });
 ```
@@ -307,20 +309,20 @@ The following example demonstrates how one would handle promises manually:
 ```js
 var busLogicModule = require( 'my-bl-module' );
 
-exports.handler = function( event, context ) {
+exports.handler = function( event, context, callback ) {
 
 	busLogicModule.getUser( event.user_id )
 		.then( function( user ) {
-			
+
 			return busLogicModule.requestFollowUp( user );
 		})
 		.then( function( followupDate ) {
-		
-			context.succeed( followupDate );
+
+			callback( null, followupDate );
 		})
 		.catch( function( err ) {
-		
-			context.fail( err );
+
+			callback( err );
 		});
 }
 ```
@@ -332,19 +334,18 @@ var vandium = require( 'vandium' );
 
 var busLogicModule = require( 'my-bl-module' );
 
-exports.handler = vandium( function( event, context ) {
-	    
+exports.handler = vandium( function( event /* no need for context or callback */ ) {
+
 	return busLogicModule.getUser( event.user_id )
 		.then( function( user ) {
-			
+
 			return busLogicModule.requestFollowUp( user );
 		});
 });
 ```
 
-Vandium will handle successful and failure conditions.
+Vandium will handle successful and failure conditions and route them appropriately to the callback function.
 
-Promises are supported by ES6/ES2015 and are available in the latest versions of Node.js. An implementation of Promises that works well with the current AWS Lambda environment (Node.js 0.10.36) is [bluebird](http://bluebirdjs.com).
 
 ## JSON Web Token (JWT)
 
@@ -380,15 +381,15 @@ var vandium = require( 'vandium' );
 vandium.jwt().configure( {
 
         algorithm: 'HS256',
-        secret: 'super-secret' 
+        secret: 'super-secret'
     });
 
 
-exports.handler = vandium( function( event, context ) {
-	
+exports.handler = vandium( function( event, context, callback ) {
+
 	console.log( 'jwt verified - claims: ', JSON.stringify( event.jwt.claims, null, 4 ) );
-	
-	context.succeed( 'ok' );
+
+	callback( null, 'ok' );
 });
 ```
 
@@ -431,15 +432,15 @@ AWS API Gateway supports the use of stage variables to provide configuration inf
 **Step 3:** Set up a mapping template to extract the information provided in the stage variables (setting up the stage variables will be explained in the next step). In your API Gateway method, go to the **integration request** page and select **Mapping Templates**. For content type, input **application/json**. After that, change the **Input passthrough** setting to **Mapping template**, then input a mapping template in one of the following forms:
 <br>
 
-* Using `HS256`, `HS384`, or `HS512` without a custom token name: 
- 
+* Using `HS256`, `HS384`, or `HS512` without a custom token name:
+
 ```json
 {
     "jwt": "$input.params().header.get('Authorization')",
     "VANDIUM_JWT_ALGORITHM": "$stageVariables.VANDIUM_JWT_ALGORITHM",
     "VANDIUM_JWT_SECRET": "$stageVariables.VANDIUM_JWT_SECRET"
 }
-``` 
+```
  >**Note:** In all of these example templates, "Authorization" is used as the HTTP header name that contains the JWT.  
 
 
@@ -453,7 +454,7 @@ AWS API Gateway supports the use of stage variables to provide configuration inf
     "VANDIUM_JWT_TOKEN_NAME": "$stageVariables.VANDIUM_JWT_TOKEN_NAME"
 }
 ```
->**Note:** In this example, the JWT token will appear in your lambda function as `event.myTokenName`. If a custom token name is not used, the JWT will appear as `event.jwt`. 
+>**Note:** In this example, the JWT token will appear in your lambda function as `event.myTokenName`. If a custom token name is not used, the JWT will appear as `event.jwt`.
 
 <br>
 
@@ -520,7 +521,29 @@ For more information on how API Gateway stage variables work, check out the offi
 
 [Deploy an API with Stage Variables in Amazon API Gateway](http://docs.aws.amazon.com/apigateway/latest/developerguide/stage-variables.html)
 
-## Configuration via S3
+
+The object located inside S3 must be a valid JSON file that contains configuration parameters as described in this document (*see Figure A*).
+
+## Configuration
+
+To configure vandium, place a JSON file called `vandium.json` in the root of your project. When present, vandium will load it synchronously. Currently the configuration file supports environment variable definintions, JWT settings and a link to s3 to load additional settings not available at deployment time.
+
+### Environment Variable Mapping
+
+Environment variables can be defined under the `env` object and can contain multiple key-value pairs that will loaded into the `process.env` object after the `require( 'vandium' )` statement. 
+
+```json
+{
+	"env" {
+		"MY_APP_ID": "9313e239-1cb4-42be-8c81-1ca8240ec09c"
+	}
+}
+```
+
+The above environment variable setting would set the value of `process.env.MY_APP_ID` to the value specified in the `vandium.json` file. Please note that vandium will **not** overwrite any environment variables that have already been set by the environment.
+
+
+### Configuration via S3
 
 To configure your settings (currently only jwt is supported), add the following information to your `vandium.json` configuration file that is located at the root of your project:
 
@@ -533,49 +556,46 @@ To configure your settings (currently only jwt is supported), add the following 
 }
 ```
 
-The object located inside S3 must be a valid JSON file that contains configuration parameters as described in this document (*see Figure A*).
 
-## NPM Warnings
+## AWS Lambda Load Time and Execution Times
 
-The validation code uses `joi` and has two dependencies on sister modules that state that node 0.10.40 is "wanted" as indicated by the following console output:
+Load times are conservative 95 ms with ~1 ms impact to execution. Please keep in mind that Lambda functions can be loaded once and executed multiple times and thus low on impact and [billing](https://aws.amazon.com/lambda/pricing) is rounded to the nearest 100 ms.
 
-```sh
-npm WARN engine topo@1.1.0: wanted: {"node":">=0.10.40"} (current: {"node":"0.10.36","npm":"2.14.20"})
-npm WARN engine hoek@2.16.3: wanted: {"node":">=0.10.40"} (current: {"node":"0.10.36","npm":"2.14.20"})
-vandium@1.0.0 node_modules/vandium
-├── app-root-path@1.0.0
-├── jwt-simple@0.4.1
-├── loglevel@1.4.0
-├── lodash@3.10.1
-└── joi@5.1.0 (topo@1.1.0, isemail@1.2.0, hoek@2.16.3, moment@2.12.0)
+A sample using the [vandium-node-test](https://github.com/vandium-io/vandium-node-test) project yielded the following output (128 MB configuration) in the first run (load cycle):
+
 ```
+START RequestId: 4e1074b0-fe78-11e5-a558-abb47d1106fb Version: $LATEST
+END RequestId: 4e1074b0-fe78-11e5-a558-abb47d1106fb
+REPORT RequestId: 4e1074b0-fe78-11e5-a558-abb47d1106fb	Duration: 93.82 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 45 MB
+```	
 
-Running the tests for `joi` in the 0.10.36 environment provides the following output that indicates that the code base is operating as intended.
+With subsequent runs of:
 
-```sh
- joi@5.1.0 test /Users/rhyatt/vandium/vandium-node-test/node_modules/vandium/node_modules/joi
-> lab -t 100 -a code
-
-
-  
-  ..................................................
-  ..................................................
-  ..................................................
-  ..................................................
-  ..................................................
-  ..................................................
-  ..................................................
-  ..................................................
-  ..................................................
-  ..................................................
-  ...........................
-
-527 tests complete
-Test duration: 619 ms
-Assertions count: 2188 (verbosity: 4.15)
-No global variable leaks detected
-Coverage: 100.00%
 ```
+START RequestId: 6beefb86-fe79-11e5-9169-11bdb702cc89 Version: $LATEST
+END RequestId: 6beefb86-fe79-11e5-9169-11bdb702cc89
+REPORT RequestId: 6beefb86-fe79-11e5-9169-11bdb702cc89	Duration: 1.68 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 45 MB
+
+START RequestId: 7237de86-fe79-11e5-af41-6fd2163d3d4d Version: $LATEST
+END RequestId: 7237de86-fe79-11e5-af41-6fd2163d3d4d
+REPORT RequestId: 7237de86-fe79-11e5-af41-6fd2163d3d4d	Duration: 1.33 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 45 MB
+
+START RequestId: 79031093-fe79-11e5-b2c4-437071716f77 Version: $LATEST
+END RequestId: 79031093-fe79-11e5-b2c4-437071716f77
+REPORT RequestId: 79031093-fe79-11e5-b2c4-437071716f77	Duration: 0.70 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 45 MB
+```	
+
+We have also included a set of load benchmarks that can be found in the `benchmark` folder.
+
+## AWS Lambda Compatibility
+
+Vandium is compatible with AWS Lambda environments that support Node.js 4.3.2. If you require support for the previous version of Node.js (0.10.x) then use version 1.x.
+
+
+## Feedback
+
+We'd love to get feedback on how to make this tool better. Feel free to contact us at `feedback@vandium.io`
+
 
 ## License
 
