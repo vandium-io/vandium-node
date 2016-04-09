@@ -1,12 +1,12 @@
 'use strict';
 
-var expect = require( 'chai' ).expect;
+/*jshint expr: true*/
 
-var fs = require( 'fs' );
+const expect = require( 'chai' ).expect;
 
-var file = require( '../../../lib/config/file' );
+const file = require( '../../../lib/config/file' );
 
-var configUtils = require( '../config-utils' );
+const configUtils = require( '../config-utils' );
 
 process.env.LAMBDA_TASK_ROOT = require( 'app-root-path' ).path;
 

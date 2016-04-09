@@ -1,18 +1,20 @@
 'use strict';
 
-var expect = require( 'chai' ).expect;
+/*jshint expr: true*/
+
+const expect = require( 'chai' ).expect;
 
 process.env.LAMBDA_TASK_ROOT = require( 'app-root-path' ).path;
 
-var freshy = require( 'freshy' );
+const freshy = require( 'freshy' );
 
 const LambdaTester = require( 'lambda-tester' );
 
-var jwtSimple = require( 'jwt-simple' );
+const jwtSimple = require( 'jwt-simple' );
 
-var sinon = require( 'sinon' );
+const sinon = require( 'sinon' );
 
-var configUtils = require( './lib/config-utils' );
+const configUtils = require( './lib/config-utils' );
 
 //require( '../lib/logger' ).setLevel( 'debug' );
 
@@ -209,7 +211,7 @@ describe( 'index', function() {
 
             vandium = require( '../index' );
 
-            var handler = vandium( function( event, context ) {
+            var handler = vandium( function( /*event, context, callback*/ ) {
 
                 return new Promise( function( resolve, reject ) {
 
@@ -232,7 +234,7 @@ describe( 'index', function() {
 
             vandium = require( '../index' );
 
-            var handler = vandium( function( event, context ) {
+            var handler = vandium( function( /*event, context, callback*/ ) {
 
                 return new Promise( function( resolve, reject ) {
 
@@ -290,8 +292,6 @@ describe( 'index', function() {
     });
 
     describe( 'auto-configure', function() {
-
-        var originalConfigData;
 
         before( function( done ) {
 

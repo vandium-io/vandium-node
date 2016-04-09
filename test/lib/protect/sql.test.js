@@ -1,8 +1,8 @@
 'use strict';
 
-var expect = require( 'chai' ).expect;
+const expect = require( 'chai' ).expect;
 
-var sql = require( '../../../lib/protect/sql' );
+const sql = require( '../../../lib/protect/sql' );
 
 describe( 'lib/protect/sql', function() {
 

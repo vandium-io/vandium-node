@@ -1,5 +1,7 @@
 'use strict';
 
+/*jshint expr: true*/
+
 var expect = require( 'chai' ).expect;
 
 var freshy = require( 'freshy' );
@@ -9,7 +11,7 @@ var uuid = require( 'node-uuid' );
 describe( 'lib/validation', function() {
 
     var vandium;
-    
+
     var validation;
 
     beforeEach( function() {
@@ -130,7 +132,7 @@ describe( 'lib/validation', function() {
                         name: 'my object'
                     },
                 array: [ 'one', 2, { name: 'three' } ],
-                any: 'anything here' 
+                any: 'anything here'
             };
 
             validation.verify( event );

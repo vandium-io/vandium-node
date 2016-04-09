@@ -1,5 +1,7 @@
 'use strict';
 
+/*jshint expr: true*/
+
 var expect = require( 'chai' ).expect;
 
 process.env.LAMBDA_TASK_ROOT = require( 'app-root-path' ).path;
@@ -88,13 +90,13 @@ describe( 'lib/jwt', function() {
 
                     var settings = jwt.configure( { algorithm: 'RS256', public_key: 'my-secret' } );
 
-                    expect( settings ).to.eql( { algorithm: 'RS256', key: 'my-secret', stageVars: false, tokenName: 'jwt' } );  
+                    expect( settings ).to.eql( { algorithm: 'RS256', key: 'my-secret', stageVars: false, tokenName: 'jwt' } );
                 }
                 else {
 
                     var settings = jwt.configure( { algorithm: algorithm, secret: 'my-secret' } );
 
-                    expect( settings ).to.eql( { algorithm: algorithm, key: 'my-secret', stageVars: false, tokenName: 'jwt' } );                    
+                    expect( settings ).to.eql( { algorithm: algorithm, key: 'my-secret', stageVars: false, tokenName: 'jwt' } );
                 }
             });
         });
@@ -231,7 +233,7 @@ describe( 'lib/jwt', function() {
                     expect( jwt.configuration() ).to.eql( { algorithm: 'HS512', key: 'super-secret', stageVars: false, tokenName: 'Bearer' } );
 
                     done();
-                }); 
+                });
             });
         });
 
@@ -263,7 +265,7 @@ describe( 'lib/jwt', function() {
                     expect( jwt.configuration() ).to.eql( { algorithm: 'RS256', key: pubKey, stageVars: false, tokenName: 'Bearer' } );
 
                     done();
-                }); 
+                });
             });
         });
 
@@ -288,11 +290,11 @@ describe( 'lib/jwt', function() {
                     expect( jwt.configuration() ).to.eql( { algorithm: undefined, key: undefined, stageVars: false, tokenName: 'jwt' } );
 
                     done();
-                }); 
+                });
             });
         });
     });
-    
+
     describe( '.validate', function() {
 
         before( function() {
@@ -438,7 +440,7 @@ describe( 'lib/jwt', function() {
                 else {
 
                     expect( testValidateFail.bind( null, { user: 'fred' }, algorithm, 'my-secret', null, event ) ).to.throw( errorMessage );
-                }                
+                }
             });
         });
 
@@ -470,7 +472,7 @@ describe( 'lib/jwt', function() {
                     else {
 
                          expect( testValidateFail.bind( null, test.claims, algorithm, 'my-secret' ) ).to.throw( test.error );
-                    }                    
+                    }
                 });
             });
         });

@@ -1,10 +1,10 @@
 'use strict';
 
-var fs = require( 'fs' );
+const fs = require( 'fs' );
 
-var appRoot = require( 'app-root-path' );
+const appRoot = require( 'app-root-path' );
 
-var path = appRoot + '/vandium.json';
+const path = appRoot + '/vandium.json';
 
 function readConfig( callback ) {
 

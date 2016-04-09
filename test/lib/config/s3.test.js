@@ -1,10 +1,12 @@
 'use strict';
 
-var expect = require( 'chai' ).expect;
+/*jshint expr: true*/
 
-var freshy = require( 'freshy' );
+const expect = require( 'chai' ).expect;
 
-var sinon = require( 'sinon' );
+const freshy = require( 'freshy' );
+
+const sinon = require( 'sinon' );
 
 
 describe( 'lib/config/s3', function() {
@@ -20,7 +22,7 @@ describe( 'lib/config/s3', function() {
 
             freshy.unload( 'aws-sdk' );
             freshy.unload( '../../../lib/config/s3' );
-                
+
             var AWS = require( 'aws-sdk' );
 
             getObjectStub = sinon.stub();
@@ -52,7 +54,7 @@ describe( 'lib/config/s3', function() {
                 expect( getObjectSpy.calledWith( { Bucket: 'My-Bucket', Key: 'My-Key' } ) ).to.equal( true );
 
                 done();
-            }); 
+            });
         });
 
         it( 's3 error condition', function( done ) {
@@ -70,7 +72,7 @@ describe( 'lib/config/s3', function() {
                 expect( getObjectSpy.calledWith( { Bucket: 'My-Bucket', Key: 'My-Key' } ) ).to.equal( true );
 
                 done();
-            }); 
+            });
         });
     });
 

@@ -1,8 +1,10 @@
 'use strict';
 
-var expect = require( 'chai' ).expect;
+/*jshint expr: true*/
 
-var protect = require( '../../../lib/protect' );
+const expect = require( 'chai' ).expect;
+
+const protect = require( '../../../lib/protect' );
 
 describe( 'lib/protect/index', function() {
 
@@ -20,7 +22,7 @@ describe( 'lib/protect/index', function() {
 
         it( 'no attack', function() {
 
-            var event = {
+            let event = {
 
                 myField: "nothin' exciting"
             };
@@ -32,7 +34,7 @@ describe( 'lib/protect/index', function() {
 
         it( 'potential attack', function() {
 
-            var event = {
+            let event = {
 
                 myField: "''--"
             };
@@ -47,7 +49,7 @@ describe( 'lib/protect/index', function() {
 
         it( 'disable sql', function() {
 
-            var event = {
+            let event = {
 
                 myField: "''--"
             };
@@ -59,7 +61,7 @@ describe( 'lib/protect/index', function() {
             protect.scan( event );
 
             // re-enable
-            var event = {
+            event = {
 
                 myField: "''--"
             };
@@ -71,7 +73,7 @@ describe( 'lib/protect/index', function() {
 
         it( 'disable all', function() {
 
-            var event = {
+            let event = {
 
                 myField: "''--"
             };
@@ -80,7 +82,7 @@ describe( 'lib/protect/index', function() {
 
             protect.disable();
 
-            protect.scan( event );            
+            protect.scan( event );
         });
-    }); 
+    });
 });

@@ -2,13 +2,13 @@
 
 /*jshint expr: true*/
 
-var expect = require( 'chai' ).expect;
+const expect = require( 'chai' ).expect;
 
-var freshy = require( 'freshy' );
+const freshy = require( 'freshy' );
 
-var sinon = require( 'sinon' );
+const sinon = require( 'sinon' );
 
-var configUtils = require( '../config-utils' );
+const configUtils = require( '../config-utils' );
 
 process.env.LAMBDA_TASK_ROOT = require( 'app-root-path' ).path;
 

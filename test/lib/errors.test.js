@@ -1,12 +1,12 @@
 'use strict';
 
-var expect = require( 'chai' ).expect;
+const expect = require( 'chai' ).expect;
 
-var errors = require( '../../lib/errors' );
+const errors = require( '../../lib/errors' );
 
-var AuthenticationFailureError = errors.AuthenticationFailureError;
+const AuthenticationFailureError = errors.AuthenticationFailureError;
 
-var ValidationError = errors.ValidationError;
+const ValidationError = errors.ValidationError;
 
 describe( 'lib/errors', function() {
 
@@ -16,7 +16,7 @@ describe( 'lib/errors', function() {
 
             try {
 
-                throw new AuthenticationFailureError();                
+                throw new AuthenticationFailureError();
             }
             catch( err ) {
 
@@ -29,7 +29,7 @@ describe( 'lib/errors', function() {
 
             try {
 
-                throw new AuthenticationFailureError( 'my-message');                
+                throw new AuthenticationFailureError( 'my-message');
             }
             catch( err ) {
 
@@ -58,7 +58,7 @@ describe( 'lib/errors', function() {
         it( 'with cause', function() {
 
             var cause = new Error( 'something was bad' );
-            
+
             try {
 
                 throw new ValidationError( cause );
@@ -75,7 +75,7 @@ describe( 'lib/errors', function() {
         it( 'with cause but no message', function() {
 
             var cause = new Error();
-            
+
             try {
 
                 throw new ValidationError( cause );
