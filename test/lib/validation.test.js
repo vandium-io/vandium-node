@@ -270,7 +270,7 @@ describe( 'lib/validation', function() {
                 other: 'other data that will cause an exception'
             };
 
-            expect( validation.verify.bind( validation, event ) ).to.throw( 'other is not allowed' );
+            expect( validation.verify.bind( validation, event ) ).to.throw( '"other" is not allowed' );
         });
     });
 });

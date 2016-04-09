@@ -29,10 +29,10 @@
   "author": "Vandium Software Inc.",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "joi": "5.1.0",
-    "jwt-simple": "0.5.0",
-    "lodash": "3.10.1",
-    "loglevel": "1.4.0"
+    "joi": "8.0.x",
+    "jwt-simple": "0.5.x",
+    "lodash": "4.9.x",
+    "loglevel": "1.4.x"
   },
   "devDependencies": {
     "app-root-path": "^1.0.0",

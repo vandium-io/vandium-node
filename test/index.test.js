@@ -203,7 +203,7 @@ describe( 'index', function() {
                 .event( { name: 'fred' } )
                 .expectError( function( err ) {
 
-                    expect( err.message ).to.equal( 'validation error: age is required' );
+                    expect( err.message ).to.contain( 'validation error:' );
                 });
         });
 
