@@ -530,11 +530,11 @@ To configure vandium, place a JSON file called `vandium.json` in the root of you
 
 ### Environment Variable Mapping
 
-Environment variables can be defined under the `env` object and can contain multiple key-value pairs that will loaded into the `process.env` object after the `require( 'vandium' )` statement. 
+Environment variables can be defined under the `env` object and can contain multiple key-value pairs that will loaded into the `process.env` object after the `require( 'vandium' )` statement.
 
 ```json
 {
-	"env" {
+	"env": {
 		"MY_APP_ID": "9313e239-1cb4-42be-8c81-1ca8240ec09c"
 	}
 }
@@ -567,7 +567,7 @@ A sample using the [vandium-node-test](https://github.com/vandium-io/vandium-nod
 START RequestId: 4e1074b0-fe78-11e5-a558-abb47d1106fb Version: $LATEST
 END RequestId: 4e1074b0-fe78-11e5-a558-abb47d1106fb
 REPORT RequestId: 4e1074b0-fe78-11e5-a558-abb47d1106fb	Duration: 93.82 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 45 MB
-```	
+```
 
 With subsequent runs of:
 
@@ -583,7 +583,7 @@ REPORT RequestId: 7237de86-fe79-11e5-af41-6fd2163d3d4d	Duration: 1.33 ms	Billed 
 START RequestId: 79031093-fe79-11e5-b2c4-437071716f77 Version: $LATEST
 END RequestId: 79031093-fe79-11e5-b2c4-437071716f77
 REPORT RequestId: 79031093-fe79-11e5-b2c4-437071716f77	Duration: 0.70 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 45 MB
-```	
+```
 
 We have also included a set of load benchmarks that can be found in the `benchmark` folder.
 
