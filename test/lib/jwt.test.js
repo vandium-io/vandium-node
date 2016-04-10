@@ -4,9 +4,8 @@
 
 var expect = require( 'chai' ).expect;
 
-process.env.LAMBDA_TASK_ROOT = require( 'app-root-path' ).path;
-
-var fs = require( 'fs' );
+// will set LAMBDA_TASK_ROOT
+require( 'lambda-tester' );
 
 var freshy = require( 'freshy' );
 
@@ -18,11 +17,9 @@ var jwt = require( '../../lib/jwt' );
 
 var ALGORITHMS = [ 'HS256', 'HS384', 'HS512', 'RS256' ];
 
-var logger = require( '../../lib/logger' ).setDefaultLevel( 'warn' );
-
-var appRoot = require( 'app-root-path' );
-
 var configUtils = require( './config-utils' );
+
+//var logger = require( '../../lib/logger' ).setLevel( 'debug' );
 
 describe( 'lib/jwt', function() {
 

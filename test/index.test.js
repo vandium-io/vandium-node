@@ -4,8 +4,6 @@
 
 const expect = require( 'chai' ).expect;
 
-process.env.LAMBDA_TASK_ROOT = require( 'app-root-path' ).path;
-
 const freshy = require( 'freshy' );
 
 const LambdaTester = require( 'lambda-tester' );

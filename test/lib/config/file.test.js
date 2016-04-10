@@ -6,9 +6,10 @@ const expect = require( 'chai' ).expect;
 
 const file = require( '../../../lib/config/file' );
 
-const configUtils = require( '../config-utils' );
+// sets LAMBDA_TASK_ROOT
+require( 'lambda-tester' );
 
-process.env.LAMBDA_TASK_ROOT = require( 'app-root-path' ).path;
+const configUtils = require( '../config-utils' );
 
 describe( 'lib/config/file', function() {
 
