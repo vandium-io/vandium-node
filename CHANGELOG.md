@@ -1,4 +1,14 @@
-## 2.0.0 (TBD)
+## 2.0.1 (2016-04-11)
+
+Updated:
+
+* Tests now use version 2.1 of lambda-tester
+
+Fixed:
+
+* Minor documentation fixes
+
+## 2.0.0 (2016-04-09)
 
 New:
 * Added support for AWS Lambda callback handler
