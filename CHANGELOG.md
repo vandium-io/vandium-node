@@ -1,3 +1,9 @@
+## 2.0.2 (2016-04-14)
+
+Updated:
+
+* Minor addition of vandium.logUncaughtExceptions() to prevent uncaught exceptions from being sent to console.log
+
 ## 2.0.1 (2016-04-11)
 
 Updated:
