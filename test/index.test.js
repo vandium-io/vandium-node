@@ -250,6 +250,39 @@ describe( 'index', function() {
                     expect( err.message ).to.equal( 'bang' );
                 });
         });
+
+        it( 'uncaught exceptions', function() {
+
+            vandium = require( '../index' );
+
+            let handler = vandium( function( /*event, context, callback*/ ) {
+
+                throw new Error( 'bang' );
+            });
+
+            return LambdaTester( handler )
+                .expectError( function( err ) {
+
+                    expect( err.message ).to.equal( 'bang' );
+                });
+        });
+
+        it( 'uncaught exceptions - disable logging', function() {
+
+            vandium = require( '../index' );
+            vandium.logUncaughtExceptions( false );
+
+            let handler = vandium( function( /*event, context, callback*/ ) {
+
+                throw new Error( 'bang' );
+            });
+
+            return LambdaTester( handler )
+                .expectError( function( err ) {
+
+                    expect( err.message ).to.equal( 'bang' );
+                });
+        });
 	});
 
     describe( '.jwt', function() {
