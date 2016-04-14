@@ -1,3 +1,9 @@
+## 2.0.3 (TBD)
+
+Improved:
+
+* Only uncaught exceptions are logged and not those that are raised because of input validation or JWT verification
+
 ## 2.0.2 (2016-04-14)
 
 Updated:
