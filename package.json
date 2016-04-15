@@ -1,6 +1,6 @@
 {
   "name": "vandium",
-  "version": "2.0.3",
+  "version": "2.1.0-alpha",
   "description": "Vandium AWS Lambda wrapper for Node.js",
   "main": "index.js",
   "keywords": [
