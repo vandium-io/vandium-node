@@ -283,6 +283,193 @@ describe( 'index', function() {
                     expect( err.message ).to.equal( 'bang' );
                 });
         });
+
+        it( 'with after() async with handler calling callback( null, result )', function() {
+
+            vandium = require( '../index' );
+
+            let afterCalled = false;
+
+            vandium.after( function( done ) {
+
+                afterCalled = true;
+                done();
+            })
+
+            let handler = vandium( function( event, context, callback ) {
+
+                callback( null, 'ok' );
+            });
+
+            return LambdaTester( handler )
+                .expectResult( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                    expect( afterCalled ).to.be.true;
+                });
+        });
+
+        it( 'with after() async [calling done(err) ] with handler calling callback( null, result )', function() {
+
+            vandium = require( '../index' );
+
+            let afterCalled = false;
+
+            vandium.after( function( done ) {
+
+                afterCalled = true;
+                done( new Error( 'bang' ) );
+            })
+
+            let handler = vandium( function( event, context, callback ) {
+
+                callback( null, 'ok' );
+            });
+
+            return LambdaTester( handler )
+                .expectResult( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                    expect( afterCalled ).to.be.true;
+                });
+        });
+
+        it( 'with after() async with handler calling callback( err )', function() {
+
+            vandium = require( '../index' );
+
+            let afterCalled = false;
+
+            vandium.after( function( done ) {
+
+                afterCalled = true;
+                done();
+            })
+
+            let handler = vandium( function( event, context, callback ) {
+
+                callback( new Error( 'bang' ) );
+            });
+
+            return LambdaTester( handler )
+                .expectError( function( err ) {
+
+                    expect( err.message ).to.equal( 'bang' );
+                    expect( afterCalled ).to.be.true;
+                });
+        });
+
+        it( 'with after() sync with handler calling callback( result )', function() {
+
+            vandium = require( '../index' );
+
+            let afterCalled = false;
+
+            vandium.after( function() {
+
+                afterCalled = true;
+            })
+
+            let handler = vandium( function( event, context, callback ) {
+
+                callback( null, 'ok' );
+            });
+
+            return LambdaTester( handler )
+                .expectResult( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                    expect( afterCalled ).to.be.true;
+                });
+        });
+
+        it( 'with after() promise and handler returning promise - result', function() {
+
+            vandium = require( '../index' );
+
+            let afterCalled = false;
+
+            vandium.after( function() {
+
+                afterCalled = true;
+
+                return Promise.resolve();
+            })
+
+            let handler = vandium( function() {
+
+                return Promise.resolve( 'ok' );
+            });
+
+            return LambdaTester( handler )
+                .expectResult( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                    expect( afterCalled ).to.be.true;
+                });
+        });
+
+        it( 'with after() promise and handler returning promise - error', function() {
+
+            vandium = require( '../index' );
+
+            let afterCalled = false;
+
+            vandium.after( function() {
+
+                afterCalled = true;
+                return Promise.reject( new Error( 'bang' ) )
+            })
+
+            let handler = vandium( function() {
+
+                return Promise.resolve( 'ok' );
+            });
+
+            return LambdaTester( handler )
+                .expectResult( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                    expect( afterCalled ).to.be.true;
+                });
+        });
+
+        it( 'with non-function after() call', function() {
+
+            vandium = require( '../index' );
+
+            vandium.after( 'not-a-function!' );
+
+            let handler = vandium( function() {
+
+                return Promise.resolve( 'ok' );
+            });
+
+            return LambdaTester( handler )
+                .expectResult( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                });
+        });
+
+        it( 'with no-value after() call', function() {
+
+            vandium = require( '../index' );
+
+            vandium.after();
+
+            let handler = vandium( function() {
+
+                return Promise.resolve( 'ok' );
+            });
+
+            return LambdaTester( handler )
+                .expectResult( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                });
+        });
+
 	});
 
     describe( '.jwt', function() {
