@@ -1,3 +1,10 @@
+## 2.1.0 (TBD)
+
+New:
+
+* Added vandium.after() to provide a mechanism to free resources after the handler calls callback or returns a promise.
+
+
 ## 2.0.3 (2016-04-15)
 
 Improved:
