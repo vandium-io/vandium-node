@@ -470,6 +470,23 @@ describe( 'index', function() {
                 });
         });
 
+        it( 'Exception thrown in after() call', function() {
+
+            vandium = require( '../index' );
+
+            vandium.after( function() { throw new Error( 'bang' ); } );
+
+            let handler = vandium( function() {
+
+                return Promise.resolve( 'ok' );
+            });
+
+            return LambdaTester( handler )
+                .expectResult( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                });
+        });
 	});
 
     describe( '.jwt', function() {
