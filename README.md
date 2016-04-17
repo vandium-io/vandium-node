@@ -10,6 +10,7 @@ Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions
 * JWT verfication and validation
 * SQL Injection (SQLi) detection and protection
 * Environment variable mapping
+* Free resources post handler execution
 * Forces values into correct types
 * Handles uncaught exceptions
 * Promise support
@@ -307,7 +308,7 @@ Using promises can simplify asynchronous operations and reduce/eliminate the nee
 The following example demonstrates how one would handle promises manually:
 
 ```js
-var busLogicModule = require( 'my-bl-module' );
+const busLogicModule = require( 'my-bl-module' );
 
 exports.handler = function( event, context, callback ) {
 
@@ -330,9 +331,9 @@ exports.handler = function( event, context, callback ) {
 The same example using vandium would look like:
 
 ```js
-var vandium = require( 'vandium' );
+const vandium = require( 'vandium' );
 
-var busLogicModule = require( 'my-bl-module' );
+const busLogicModule = require( 'my-bl-module' );
 
 exports.handler = vandium( function( event /* no need for context or callback */ ) {
 
@@ -345,6 +346,81 @@ exports.handler = vandium( function( event /* no need for context or callback */
 ```
 
 Vandium will handle successful and failure conditions and route them appropriately to the callback function.
+
+## Post Handler Cleanup
+
+Leaving resources open at the end of a handler's execution can lead to timeouts and longer execution times. For example, one might use a caching server but freeing the resource during the handler's execution might add unwanted complexity. Vandium's `after` function gets called before the callback gets invoked, thus freeing your resources without extra code bloat.
+
+Usage: `vandium.after( funct )` where `funct` is a function that returns synchronously, asynchronously using a callback, or returns a `Promise`.
+
+### Synchronous call to `vandium.after()`:
+
+When calling synchronously, when the function returns the vandium will invoke the callback handler.
+
+```js
+const vandium = require( 'vandium' );
+
+const busLogicModule = require( 'my-bl-module' );
+
+vandium.after( function() {
+
+        busLogcModule.closeCache();
+    });
+
+exports.handler = vandium( function( event ) {
+
+	return busLogicModule.getUser( event.user_id )
+		.then( function( user ) {
+
+			return busLogicModule.requestFollowUp( user );
+		});
+```
+
+### Asynchronous call to `vandium.after()`:
+
+When calling asynchronously with a function that takes a callback `done` that gets invoked when the operation inside `after()` is complete.
+
+```js
+const vandium = require( 'vandium' );
+
+const busLogicModule = require( 'my-bl-module' );
+
+vandium.after( function( done ) {
+
+        busLogcModule.closeCache( done );
+    });
+
+exports.handler = vandium( function( event ) {
+
+	return busLogicModule.getUser( event.user_id )
+		.then( function( user ) {
+
+			return busLogicModule.requestFollowUp( user );
+		});
+```
+
+### Asynchronous call with Promises in `vandium.after()`:
+
+A `Promise` can be returned and once it has been resolved, the handler will complete.
+
+```js
+const vandium = require( 'vandium' );
+
+const busLogicModule = require( 'my-bl-module' );
+
+vandium.after( function() {
+
+        return busLogcModule.closeCacheAsync();
+    });
+
+exports.handler = vandium( function( event ) {
+
+	return busLogicModule.getUser( event.user_id )
+		.then( function( user ) {
+
+			return busLogicModule.requestFollowUp( user );
+		});
+```
 
 
 ## JSON Web Token (JWT)
