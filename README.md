@@ -255,7 +255,7 @@ would be converted to a `Buffer` instance with the data parsed and loaded:
 
 ## SQL Injection Attack Detection and Protection
 
-The default settings inside Vandium will delect and report SQL injection (SQLi) attacks into `console.log`.
+The default settings inside Vandium will detect and report SQL injection (SQLi) attacks into `console.log`.
 
 The following report would be written to `console.log` if the event contains a string with a potential attack.
 
