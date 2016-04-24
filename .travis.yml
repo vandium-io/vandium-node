@@ -1,8 +1,9 @@
 language: node_js
 node_js:
   - "4.3.2"
+python:
+  - 2.7
 before_install:
-  - pip install --upgrade pip
   - pip install codecov
 install:
   - npm install
