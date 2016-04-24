@@ -4,6 +4,8 @@
 Improved:
 
 * JWT can now be auto configured by having jwt configuration element in vandium.json or by setting environment variables
+* Optimized load process to reduce billing costs for cold runs.
+* Warm runs are quicker than previous releases
 
 
 ## 2.1.0 (2016-04-17)

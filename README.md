@@ -476,6 +476,7 @@ To configure JWT validation from a configuration file, place a `jwt` configurati
 For example, the following `vandium.json` file would contain the following to validate using the `HS256` algorithm with a shared secret:
 
 #####Figure A: vandium.json located at root of your project
+
 ```json
 {
 	"jwt": {
@@ -495,9 +496,7 @@ AWS API Gateway supports the use of stage variables to provide configuration inf
 
 ```json
 {
-	"jwt": {
-		"use_stage_vars": true
-	}
+	"jwt": { }
 }
 ```
 
@@ -635,30 +634,35 @@ To configure your settings (currently only jwt is supported), add the following 
 
 ## AWS Lambda Load Time and Execution Times
 
-Load times are conservative 95 ms with ~1 ms impact to execution. Please keep in mind that Lambda functions can be loaded once and executed multiple times and thus low on impact and [billing](https://aws.amazon.com/lambda/pricing) is rounded to the nearest 100 ms.
+Load times are conservative 50 ms with ~0.5 ms impact to execution. Please keep in mind that Lambda functions can be loaded once and executed multiple times and thus low on impact and [billing](https://aws.amazon.com/lambda/pricing) is rounded to the nearest 100 ms.
 
 A sample using the [vandium-node-test](https://github.com/vandium-io/vandium-node-test) project yielded the following output (128 MB configuration) in the first run (load cycle):
 
 ```
-START RequestId: 4e1074b0-fe78-11e5-a558-abb47d1106fb Version: $LATEST
-END RequestId: 4e1074b0-fe78-11e5-a558-abb47d1106fb
-REPORT RequestId: 4e1074b0-fe78-11e5-a558-abb47d1106fb	Duration: 93.82 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 45 MB
+START RequestId: 9e3e89e1-0a62-11e6-872e-6b241dd8dd27 Version: $LATEST
+END RequestId: 9e3e89e1-0a62-11e6-872e-6b241dd8dd27
+REPORT RequestId: 9e3e89e1-0a62-11e6-872e-6b241dd8dd27	Duration: 29.19 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 31 MB		
 ```
+
 
 With subsequent runs of:
 
 ```
-START RequestId: 6beefb86-fe79-11e5-9169-11bdb702cc89 Version: $LATEST
-END RequestId: 6beefb86-fe79-11e5-9169-11bdb702cc89
-REPORT RequestId: 6beefb86-fe79-11e5-9169-11bdb702cc89	Duration: 1.68 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 45 MB
+START RequestId: a976646a-0a62-11e6-a3b7-efa984d3b3e4 Version: $LATEST
+END RequestId: a976646a-0a62-11e6-a3b7-efa984d3b3e4
+REPORT RequestId: a976646a-0a62-11e6-a3b7-efa984d3b3e4	Duration: 1.17 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 31 MB
 
-START RequestId: 7237de86-fe79-11e5-af41-6fd2163d3d4d Version: $LATEST
-END RequestId: 7237de86-fe79-11e5-af41-6fd2163d3d4d
-REPORT RequestId: 7237de86-fe79-11e5-af41-6fd2163d3d4d	Duration: 1.33 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 45 MB
+START RequestId: b4281fd5-0a62-11e6-a234-f50509128ba5 Version: $LATEST
+END RequestId: b4281fd5-0a62-11e6-a234-f50509128ba5
+REPORT RequestId: b4281fd5-0a62-11e6-a234-f50509128ba5	Duration: 0.75 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 31 MB
 
-START RequestId: 79031093-fe79-11e5-b2c4-437071716f77 Version: $LATEST
-END RequestId: 79031093-fe79-11e5-b2c4-437071716f77
-REPORT RequestId: 79031093-fe79-11e5-b2c4-437071716f77	Duration: 0.70 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 45 MB
+START RequestId: babba075-0a62-11e6-b091-57dec612ee2b Version: $LATEST
+END RequestId: babba075-0a62-11e6-b091-57dec612ee2b
+REPORT RequestId: babba075-0a62-11e6-b091-57dec612ee2b	Duration: 1.24 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 31 MB
+
+START RequestId: c7d3d4d1-0a62-11e6-9cab-19ffa2158aff Version: $LATEST
+END RequestId: c7d3d4d1-0a62-11e6-9cab-19ffa2158aff
+REPORT RequestId: c7d3d4d1-0a62-11e6-9cab-19ffa2158aff	Duration: 0.74 ms	Billed Duration: 100 ms 	Memory Size: 128 MB	Max Memory Used: 31 MB
 ```
 
 We have also included a set of load benchmarks that can be found in the `benchmark` folder.
