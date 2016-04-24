@@ -43,6 +43,7 @@
     "dotenv": "^2.0.0",
     "freshy": "^1.0.2",
     "istanbul": "^0.4.2",
+    "jwt-builder": "^1.0.0",
     "lambda-tester": "^2.2.1",
     "mocha": "^2.3.4",
     "node-rsa": "^0.3.2",
