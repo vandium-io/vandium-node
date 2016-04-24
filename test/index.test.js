@@ -8,8 +8,6 @@ const freshy = require( 'freshy' );
 
 const LambdaTester = require( 'lambda-tester' );
 
-const jwtSimple = require( 'jwt-simple' );
-
 const jwtBuilder = require( 'jwt-builder' );
 
 const sinon = require( 'sinon' );
@@ -45,7 +43,7 @@ describe( 'index', function() {
 
             vandium = require( '../index' );
 
-            var handler = vandium( function( event, context ) {
+            const handler = vandium( function( event, context ) {
 
                 context.succeed( 'ok' );
             });
@@ -61,7 +59,7 @@ describe( 'index', function() {
 
             vandium = require( '../index' );
 
-            var handler = vandium( function( event, context, callback ) {
+            const handler = vandium( function( event, context, callback ) {
 
                 callback( null, 'ok' );
             });
@@ -77,7 +75,7 @@ describe( 'index', function() {
 
             vandium = require( '../index' );
 
-            var handler = vandium( function( event, context, callback ) {
+            const handler = vandium( function( event, context, callback ) {
 
                 callback( new Error( 'bang' ) );
             });
@@ -93,7 +91,7 @@ describe( 'index', function() {
 
             vandium = require( '../index' );
 
-            var handler = vandium( function( event, context ) {
+            const handler = vandium( function( event, context ) {
 
                 context.succeed( 'ok' );
 
@@ -132,12 +130,12 @@ describe( 'index', function() {
                 secret: 'super-secret'
             });
 
-            var handler = vandium( function( event, context ) {
+            const handler = vandium( function( event, context ) {
 
                 context.succeed( 'ok' );
             });
 
-            var token = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred' } );
+            const token = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred' } );
 
             return LambdaTester( handler )
                 .event( { name: 'fred', age: 16, jwt: token } )
@@ -166,12 +164,12 @@ describe( 'index', function() {
                 secret: 'super-secret'
             });
 
-            var handler = vandium( function( event, context ) {
+            const handler = vandium( function( event, context ) {
 
                 context.succeed( 'ok' );
             });
 
-            var token = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred' } );
+            const token = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred' } );
 
             return LambdaTester( handler )
                 .event( { name: 'fred', age: 16, jwt: token } )
@@ -202,12 +200,12 @@ describe( 'index', function() {
                 secret: 'super-secret'
             });
 
-            var handler = vandium( function( event, context ) {
+            const handler = vandium( function( event, context ) {
 
                 context.succeed( 'ok' );
             });
 
-            var token = jwtSimple.encode( { user: 'fred' }, 'super-secret', 'HS256' );
+            const token = jwtBuilder( { user: 'fred', secret: 'super-secret', algorithm: 'HS256' } );
 
             return LambdaTester( handler )
                 .event( { name: 'fred', age: 16, jwt: token } )
@@ -245,7 +243,7 @@ describe( 'index', function() {
 
             vandium = require( '../index' );
 
-            var handler = vandium( function( /*event, context, callback*/ ) {
+            const handler = vandium( function( /*event, context, callback*/ ) {
 
                 return new Promise( function( resolve, reject ) {
 
@@ -268,7 +266,7 @@ describe( 'index', function() {
 
             vandium = require( '../index' );
 
-            var handler = vandium( function( /*event, context, callback*/ ) {
+            const handler = vandium( function( /*event, context, callback*/ ) {
 
                 return new Promise( function( resolve, reject ) {
 
@@ -291,7 +289,7 @@ describe( 'index', function() {
 
             vandium = require( '../index' );
 
-            let handler = vandium( function( /*event, context, callback*/ ) {
+            const handler = vandium( function( /*event, context, callback*/ ) {
 
                 throw new Error( 'bang' );
             });
@@ -308,7 +306,7 @@ describe( 'index', function() {
             vandium = require( '../index' );
             vandium.logUncaughtExceptions( false );
 
-            let handler = vandium( function( /*event, context, callback*/ ) {
+            const handler = vandium( function( /*event, context, callback*/ ) {
 
                 throw new Error( 'bang' );
             });
@@ -332,7 +330,7 @@ describe( 'index', function() {
                 done();
             })
 
-            let handler = vandium( function( event, context, callback ) {
+            const handler = vandium( function( event, context, callback ) {
 
                 callback( null, 'ok' );
             });
@@ -357,7 +355,7 @@ describe( 'index', function() {
                 done( new Error( 'bang' ) );
             })
 
-            let handler = vandium( function( event, context, callback ) {
+            const handler = vandium( function( event, context, callback ) {
 
                 callback( null, 'ok' );
             });
@@ -382,7 +380,7 @@ describe( 'index', function() {
                 done();
             })
 
-            let handler = vandium( function( event, context, callback ) {
+            const handler = vandium( function( event, context, callback ) {
 
                 callback( new Error( 'bang' ) );
             });
@@ -406,7 +404,7 @@ describe( 'index', function() {
                 afterCalled = true;
             })
 
-            let handler = vandium( function( event, context, callback ) {
+            const handler = vandium( function( event, context, callback ) {
 
                 callback( null, 'ok' );
             });
@@ -432,7 +430,7 @@ describe( 'index', function() {
                 return Promise.resolve();
             })
 
-            let handler = vandium( function() {
+            const handler = vandium( function() {
 
                 return Promise.resolve( 'ok' );
             });
@@ -457,7 +455,7 @@ describe( 'index', function() {
                 return Promise.reject( new Error( 'bang' ) )
             })
 
-            let handler = vandium( function() {
+            const handler = vandium( function() {
 
                 return Promise.resolve( 'ok' );
             });
@@ -476,7 +474,7 @@ describe( 'index', function() {
 
             vandium.after( 'not-a-function!' );
 
-            let handler = vandium( function() {
+            const handler = vandium( function() {
 
                 return Promise.resolve( 'ok' );
             });
@@ -494,7 +492,7 @@ describe( 'index', function() {
 
             vandium.after();
 
-            let handler = vandium( function() {
+            const handler = vandium( function() {
 
                 return Promise.resolve( 'ok' );
             });
@@ -512,7 +510,7 @@ describe( 'index', function() {
 
             vandium.after( function() { throw new Error( 'bang' ); } );
 
-            let handler = vandium( function() {
+            const handler = vandium( function() {
 
                 return Promise.resolve( 'ok' );
             });
@@ -531,12 +529,12 @@ describe( 'index', function() {
 
             vandium = require( '../index' );
 
-            var jwt = vandium.jwt();
+            let jwt = vandium.jwt();
 
             // stage vars should be enabled by default
             expect( jwt.configuration() ).to.eql( { key: undefined, algorithm: undefined, tokenName: 'jwt' } );
 
-            var jwtConfig = vandium.jwt().configure( { algorithm: 'HS256', secret: 'my-secret' } );
+            const jwtConfig = vandium.jwt().configure( { algorithm: 'HS256', secret: 'my-secret' } );
             expect( jwtConfig ).to.eql( { key: 'my-secret', algorithm: 'HS256', tokenName: 'jwt' } );
             expect( vandium.jwt().isEnabled() ).to.be.true;
 
@@ -586,14 +584,14 @@ describe( 'index', function() {
 
                 vandium = require( '../index' );
 
-                var config = require( '../lib/config' );
+                const config = require( '../lib/config' );
 
                 // wait for config to load
                 config.wait( function() {
 
-                    var token = jwtSimple.encode( { user: 'fred' }, 'my-secret', 'HS256' );
+                    let token = jwtBuilder( { user: 'fred', secret: 'my-secret', algorithm: 'HS256' } );
 
-                    var handler = vandium( function( event, context ) {
+                    const handler = vandium( function( event, context ) {
 
                         context.succeed( event.jwt.claims.user );
                     });
