@@ -40,6 +40,7 @@
     "aws-sdk": "^2.2.39",
     "bluebird": "^3.3.4",
     "chai": "^3.4.1",
+    "codecov": "^1.0.1",
     "dotenv": "^2.0.0",
     "freshy": "^1.0.2",
     "istanbul": "^0.4.2",
