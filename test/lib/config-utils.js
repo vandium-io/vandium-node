@@ -6,6 +6,8 @@ const appRoot = require( 'app-root-path' );
 
 const path = appRoot + '/vandium.json';
 
+const freshy = require( 'freshy' );
+
 function readConfig( callback ) {
 
     fs.readFile( path, function( err, content ) {
@@ -33,6 +35,8 @@ function writeConfig( data, callback ) {
 
 
 function removeConfig( callback ) {
+
+    freshy.unload( '../../lib/config' );
 
     fs.unlink( path, function() {
 

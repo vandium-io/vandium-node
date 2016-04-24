@@ -22,19 +22,18 @@ describe( 'index', function() {
 
     before( function( done ) {
 
-        configUtils.removeConfig( done );
-    });
-
-    after( function( done ) {
+        freshy.unload( '../lib/config' );
 
         configUtils.removeConfig( done );
     });
 
-    beforeEach( function() {
+    beforeEach( function( done ) {
 
         freshy.unload( '../index' );
         freshy.unload( '../lib/config' );
         freshy.unload( '../lib/jwt' );
+
+        configUtils.removeConfig( done );
     });
 
 	describe( '.vandium', function() {

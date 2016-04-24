@@ -40,10 +40,14 @@ describe( 'lib/jwt', function() {
         privKey = keyPair.exportKey( 'private' );
         pubKey = keyPair.exportKey( 'public' );
 
+        //freshy.unload( '../../lib/config' );
+
         configUtils.removeConfig( done );
     });
 
     after( function( done ) {
+
+        freshy.unload( '../../lib/config' );
 
         configUtils.removeConfig( done );
     });
@@ -52,6 +56,7 @@ describe( 'lib/jwt', function() {
 
         freshy.unload( '../../lib/jwt' );
         freshy.unload( '../../lib/config' );
+
 
         require( '../../lib/config' ).wait( function( err ) {
 

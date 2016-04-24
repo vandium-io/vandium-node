@@ -17,7 +17,16 @@ const configUtils = require( '../config-utils' );
 
 describe( 'lib/config/index', function() {
 
-    before( function( done ) {
+    before( function() {
+
+        freshy.unload( '../../../lib/config' );
+    });
+
+    after( function( done ) {
+
+        freshy.unload( 'aws-sdk' );
+        freshy.unload( '../../../lib/config' );
+        freshy.unload( '../../../lib/config/s3' );
 
         configUtils.removeConfig( done );
     });
@@ -26,10 +35,11 @@ describe( 'lib/config/index', function() {
 
         var config;
 
-        beforeEach( function() {
+        beforeEach( function( done ) {
 
             freshy.unload( '../../../lib/config' );
 
+            configUtils.removeConfig( done );
         });
 
         it( 'no configuration file', function( done ) {
@@ -325,13 +335,5 @@ describe( 'lib/config/index', function() {
                 });
             });
         });
-    });
-
-    after( function( done ) {
-
-        freshy.unload( 'aws-sdk' );
-        freshy.unload( '../../../lib/config/s3' );
-
-        configUtils.removeConfig( done );
     });
 });
