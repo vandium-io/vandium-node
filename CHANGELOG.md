@@ -1,3 +1,11 @@
+
+## 2.2.0 (TBD)
+
+Improved:
+
+* JWT can now be auto configured by having jwt configuration element in vandium.json or by setting environment variables
+
+
 ## 2.1.0 (2016-04-17)
 
 New:
