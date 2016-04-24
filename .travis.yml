@@ -1,7 +1,10 @@
 language: node_js
 node_js:
-  - "4.3"
+  - "4.3.2"
+before_install:
+  - pip install codecov
 install:
-  - nvm use 4.3.2
   - npm install
 script: npm run coverage
+after_success:
+  - codecov
