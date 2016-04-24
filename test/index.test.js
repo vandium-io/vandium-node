@@ -10,6 +10,8 @@ const LambdaTester = require( 'lambda-tester' );
 
 const jwtSimple = require( 'jwt-simple' );
 
+const jwtBuilder = require( 'jwt-builder' );
+
 const sinon = require( 'sinon' );
 
 const configUtils = require( './lib/config-utils' );
@@ -111,7 +113,7 @@ describe( 'index', function() {
             expect( context.succeed.withArgs( 'ok').calledOnce ).to.be.true;
         });
 
-        it( 'simple validation', function() {
+        it( 'simple validation using vandium.jwt().configure', function() {
 
             vandium = require( '../index' );
 
@@ -135,7 +137,41 @@ describe( 'index', function() {
                 context.succeed( 'ok' );
             });
 
-            var token = jwtSimple.encode( { user: 'fred' }, 'super-secret', 'HS256' );
+            var token = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred' } );
+
+            return LambdaTester( handler )
+                .event( { name: 'fred', age: 16, jwt: token } )
+                .expectSucceed( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                });
+        });
+
+        it( 'simple validation using vandium.jwt.configure()', function() {
+
+            vandium = require( '../index' );
+
+            vandium.validation( {
+
+                name: vandium.types.string().required(),
+
+                age: vandium.types.number().min( 0 ).max( 120 ).required(),
+
+                jwt: vandium.types.any()
+            });
+
+            vandium.jwt.configure( {
+
+                algorithm: 'HS256',
+                secret: 'super-secret'
+            });
+
+            var handler = vandium( function( event, context ) {
+
+                context.succeed( 'ok' );
+            });
+
+            var token = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred' } );
 
             return LambdaTester( handler )
                 .event( { name: 'fred', age: 16, jwt: token } )
@@ -498,14 +534,15 @@ describe( 'index', function() {
             var jwt = vandium.jwt();
 
             // stage vars should be enabled by default
-            expect( jwt.configuration() ).to.eql( { key: undefined, algorithm: undefined, tokenName: 'jwt', stageVars: true } );
+            expect( jwt.configuration() ).to.eql( { key: undefined, algorithm: undefined, tokenName: 'jwt' } );
 
             var jwtConfig = vandium.jwt().configure( { algorithm: 'HS256', secret: 'my-secret' } );
-            expect( jwtConfig ).to.eql( { key: 'my-secret', algorithm: 'HS256', tokenName: 'jwt', stageVars: false } );
+            expect( jwtConfig ).to.eql( { key: 'my-secret', algorithm: 'HS256', tokenName: 'jwt' } );
+            expect( vandium.jwt().isEnabled() ).to.be.true;
 
             // should still be set
             jwt = vandium.jwt();
-            expect( jwt.configuration() ).to.eql( { key: 'my-secret', algorithm: 'HS256', tokenName: 'jwt', stageVars: false } );
+            expect( jwt.configuration() ).to.eql( { key: 'my-secret', algorithm: 'HS256', tokenName: 'jwt' } );
         });
     });
 
