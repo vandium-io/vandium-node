@@ -1,4 +1,11 @@
 
+## 2.2.1 (2016-04-27)
+
+Improved:
+
+* Reduced load process even further by not requiring s3 resources unless they are needed
+* Removed dependency on lodash to reduce load times
+
 ## 2.2.0 (2016-04-25)
 
 Improved:
