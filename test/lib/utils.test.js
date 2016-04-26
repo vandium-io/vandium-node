@@ -4,8 +4,6 @@
 
 var expect = require( 'chai' ).expect;
 
-var _ = require( 'lodash' );
-
 var utils = require( '../../lib/utils' );
 
 describe( 'lib/utils', function() {
@@ -45,17 +43,6 @@ describe( 'lib/utils', function() {
         it( 'without callback with exception', function() {
 
             expect( utils.parseJSON.bind( null, '===' + JSON.stringify( json ) ) ).to.throw();
-        });
-    });
-
-    [ 'clone', 'isArray', 'isObject' ].forEach( function( funcName ) {
-
-        describe( '.' + funcName, function() {
-
-            it( 'ensure stubbed correctly', function() {
-
-                expect( utils[ funcName ] ).to.equal( _[ funcName ] );
-            });
         });
     });
 });
