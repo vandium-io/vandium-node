@@ -32,7 +32,6 @@
   "dependencies": {
     "joi": "8.0.x",
     "jwt-simple": "0.5.x",
-    "lodash": "4.9.x",
     "loglevel": "1.4.x"
   },
   "devDependencies": {
