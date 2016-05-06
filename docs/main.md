@@ -31,7 +31,7 @@ Install via npm.
 
 * [Using Promises with Lambda](promises.md)
 
-* [JSON Web Token (JWT)](jwt.md)
+* [JSON Web Token (JWT) Support](jwt.md)
 
 * [Attack Detection and Protection](protection.md)
 
