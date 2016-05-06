@@ -1,6 +1,4 @@
-# [vandium-node](main.md)
-
-## Getting Started
+# Getting Started
 
 Vandium can be used with minimal change to your existing code.
 

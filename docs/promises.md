@@ -1,6 +1,5 @@
-# [vandium-node](main.md)
+# Using Promises
 
-## Using Promises
 Using promises can simplify asynchronous operations and reduce/eliminate the need for nested callbacks.
 
 The following example demonstrates how one would handle promises manually:

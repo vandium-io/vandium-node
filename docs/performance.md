@@ -1,6 +1,4 @@
-# [vandium-node](main.md)
-
-## AWS Lambda Load and Execution Times
+# Vandium Load and Execution Times
 
 Load times are conservative 50 ms with ~0.5 ms impact to execution. Please keep in mind that Lambda functions can be loaded once and executed multiple times and thus low on impact and [billing](https://aws.amazon.com/lambda/pricing) is rounded to the nearest 100 ms.
 

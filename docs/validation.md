@@ -1,10 +1,8 @@
-# [vandium-node](main.md)
-
-## Validation
+# Event Validation
 
 Vandium allows validations on basic types, objects and arrays. Additionally validation can be performed on nested values inside objects and arrays. Vandium's validation system uses [joi (version 8.0.x)](https://github.com/hapijs/joi/tree/v8.0.5) internally and thus most of its functionality may be used.
 
-### Types
+## Types
 
 Type		   | Description
 ------------|------------
@@ -19,9 +17,9 @@ any		   | Any type of value
 object      | Object
 array       | Arrays of values
 
-### Common Scenarios
+## Common Scenarios
 
-#### Strings
+### Strings
 
 For a string that is between 1 and 250 characters long and required, the following would be used:
 
@@ -49,7 +47,7 @@ Note: Strings are automatically trimmed. To disable this functionality, add an o
 
 For more information on how to configure strings, see the [joi string reference](https://github.com/hapijs/joi/tree/v8.0.5#string).
 
-#### Numbers
+### Numbers
 
 Numbers can be validated against ranges and forced to be integers:
 
@@ -69,11 +67,11 @@ To specify the number of decimal places allowed:
 
 For more information on how to configure numbers, see the [joi numbers reference](https://github.com/hapijs/joi/tree/v8.0.5#number).
 
-#### Boolean
+### Boolean
 
 The `boolean` validator can accept the following values: `true`, `false`, `"true"`, `"false"`, `"yes"` and `"no"`.
 
-#### Date
+### Date
 
 The `date` validator can match values against standard Javascript date format as well as the number of milliseconds since the epoch.
 
@@ -88,15 +86,15 @@ Ranges can be specified using min and max:
 
 For more information on how to configure dates, see the [joi date reference](https://github.com/hapijs/joi/tree/v8.0.5#date).
 
-#### Email
+### Email
 
 The `email` validator matches values that conform to valid email address format. Since this validator uses strings, it additional string operations can be used with it.
 
-#### UUID
+### UUID
 
 The `uuid` validator matches values that conform to the UUID specification. This validator is based on the string validator and thus other string operations can be used.
 
-#### Binary
+### Binary
 
 Binary values can be limited by length:
 
@@ -108,12 +106,12 @@ Binary values can be limited by length:
 
 Once binary values are processed, they are converted into `Buffer` instances.
 
-#### Any
+### Any
 
 The `any` validator will match any value. For more information about using this validator, see the [joi any reference](https://github.com/hapijs/joi/tree/v8.0.5#any).
 
 
-#### Object
+### Object
 
 The `object` validator allows validation of an object and potentially the values within it. For example, if an object contains information about an job position the following validator could be used:
 
@@ -132,7 +130,7 @@ The `object` validator allows validation of an object and potentially the values
 
 For more information on how to configure objects, see the [joi object reference](https://github.com/hapijs/joi/tree/v8.0.5#object).
 
-#### Array
+### Array
 
 The `array` can match values the are part of a selection, specific types and/or pattern.
 
@@ -147,7 +145,7 @@ The following example demonstrates matching seven numbers between 1 and 49:
 For more information on how to configure arrays, see the [joi array reference](https://github.com/hapijs/joi/tree/v8.0.5#array).
 
 
-### Value Conversion
+## Value Conversion
 
 Values will be converted, if required, to reduce the amount of code required in the user portion of the lambda function. For example, the validation configuration of:
 
@@ -198,5 +196,4 @@ would be converted to a `Buffer` instance with the data parsed and loaded:
 ```
 
 ---
-
 [Back to Documentation Home](main.md)
