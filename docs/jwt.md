@@ -1,6 +1,4 @@
-# [vandium-node](main.md)
-
-## JSON Web Token (JWT)
+# JSON Web Token (JWT)
 
 Vandium can handle validation and processing of JWT tokens. For more information about JWT, see [RFC 7519](https://tools.ietf.org/html/rfc7519). The following JWT signature algorithms are supported:
 
@@ -13,7 +11,7 @@ RS256		 | RSA SHA256 (public-private key)
 
 In addition, token validation supports the `iat` and `exp` values to prevent tokens being used before or after a specified time. No configuration is required to enable this functionality and it cannot be disabled.
 
-### Configuring JWT from inside handler module
+## Configuring JWT from inside handler module
 
 To configure JWT validation, you must enable it by calling `vandium.jwt().configure()`. The following configuration values are available:
 
@@ -46,7 +44,7 @@ exports.handler = vandium( function( event, context, callback ) {
 });
 ```
 
-### Configuring JWT from a configuration file
+## Configuring JWT from a configuration file
 
 To configure JWT validation from a configuration file, place a `jwt` configuration block inside `vandium.json` located in your projects root path. The options for this jwt block are exactly the same as the ones used previously when configuring inside the handler module.
 
@@ -63,11 +61,11 @@ For example, the following `vandium.json` file would contain the following to va
 }
 ```
 
-### Configuring JWT using API Gateway Stage Variables
+## Configuring JWT using API Gateway Stage Variables
 
 AWS API Gateway supports the use of stage variables to provide configuration information when the lambda function is invoked. Note that Vandium JWT configuration using stage variables only works when invoking your lambda function within API gateway.
 
-#### Configuration instructions:
+### Configuration instructions:
 
 **Step 1:** In the root directory of your project, create a file called `vandium.json` with the following contents:
 
@@ -148,7 +146,7 @@ For more information about AWS API Gateway mapping templates, check out the offi
 **Step 4:** Setting up the stage variables. Deploy your API then go to the stage editor for the stage you just deployed. In the Stage Variables tab, set up the stage variables as specified in the following chart.
 
 
-### Stage Variable Setup
+## Stage Variable Setup
 
 The following stage variables can be used to provide the correct values to the JWT validation handler:
 

@@ -1,6 +1,4 @@
-# [vandium-node](main.md)
-
-## SQL Injection Attack Detection and Protection
+# SQL Injection Attack Detection and Protection
 
 The default settings inside Vandium will detect and report SQL injection (SQLi) attacks into `console.log`.
 
@@ -22,7 +20,7 @@ key = user
 value =  admin'--
 ```
 
-### Stop Execution when Attack is Detected
+## Stop Execution when Attack is Detected
 
 The protection setting will cause Lambda's `callback( error )` to be called when a potential attack is encountered in addition to a `console.log` report being generated.
 
@@ -39,7 +37,7 @@ exports.handler = vandium( function( event, context, callback ) {
 });
 ```
 
-### Disabling Attack Protection
+## Disabling Attack Protection
 
 Attack protection can be disabled completely. To disable:
 
