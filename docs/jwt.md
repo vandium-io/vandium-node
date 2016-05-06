@@ -1,30 +1,85 @@
-# JSON Web Token (JWT)
+# JSON Web Token (JWT) Support
 
-Vandium can handle validation and processing of JWT tokens. For more information about JWT, see [RFC 7519](https://tools.ietf.org/html/rfc7519). The following JWT signature algorithms are supported:
+Vandium can handle validation, enforcement and processing of JSON Web Token (JWT) values and can be easily performed using environment variables, configuration files, via code or using [AWS API Gateway](https://aws.amazon.com/api-gateway/) [Stage Variables](http://docs.aws.amazon.com/apigateway/latest/developerguide/stage-variables.html).
+
+
+For more information about JWT, see [RFC 7519](https://tools.ietf.org/html/rfc7519) and [RFC 7797](https://tools.ietf.org/html/rfc7797).
+
+## Supported algorithms
+
+The following JWT signature algorithms are supported:
 
 Algorithm | Type
------------|------------
-HS256		 | HMAC SHA256 (shared secret)
-HS384		 | HMAC SHA384 (shared secret)
-HS512		 | HMAC SHA512 (shared secret)
-RS256		 | RSA SHA256 (public-private key)
+----------|------------
+HS256     | HMAC SHA256 (shared secret)
+HS384     | HMAC SHA384 (shared secret)
+HS512     | HMAC SHA512 (shared secret)
+RS256     | RSA SHA256 (public-private key)
 
-In addition, token validation supports the `iat` and `exp` values to prevent tokens being used before or after a specified time. No configuration is required to enable this functionality and it cannot be disabled.
+## Validation and Enforcement
 
-## Configuring JWT from inside handler module
+Tokens will be validated and must conform to the specification, and the following token claims (not required) will be enforced:
+
+Claim      | Description
+-----------|----------------
+`iat`      | Issued At (iat) time, in seconds, that the token was created and should only be used **after** this time.
+`nbf`      | Not Before (nbf) time, in seconds, that prevents the token from being used **before** the indicated time.
+`exp`      | Expiry (exp) time, in seconds, the prevents the token from being used **after** the indicated time.
+
+Any validation or enforcement issues, including poorly formed or missing tokens, will cause an exception to be thrown and routed to the function's `callback` handler. Exception thrown will contain a message that is prefixed with "authentication error".
+
+JWT validation and enforcement is automatically enabled once the algorithm has been configured. JWT enforcement cannot be disabled.
+
+## Accessing the JWT Value Once Validated
+
+When a JWT value is passed through the event object it will be validated and then replaced with a new object that will contain the original token and its decoded claims.
+The following properties exist after the token is validated:
+
+Property     | Type    | Description
+-------------|---------|--------------------------------------------------------
+`claims`     | Object  | Claims supplied by the signer of the token
+`token`      | String  | Original token before being decoded and validated.
+
+
+To access the JWT object one would use the same name as it appears in the event. For example, it the event contains the JWT in the `jwt` (default) variable of the `event` object, we could access the contents of the token as follows:
+
+```js
+var vandium = require( 'vandium' );
+
+exports.handler = vandium( function( event, context, callback ) {
+
+    console.log( 'jwt original token:', event.jwt.token );
+
+    console.log( 'jwt decoded claims', event.jwt.claims );
+
+	callback( null, 'ok' );
+});
+```
+
+## Configuring Using Environment Variables
+
+Environment variables can be used to configure support for JWT processing. The following environment variables can be used:
+
+Name                    | Description
+------------------------|-------------------------------------------------------
+VANDIUM_JWT_ALGORITHM   | Specifies the algorithm for JWT verification. Can be `HS256`, `HS384`, `HS512` or `RS256`
+VANDIUM_JWT_SECRET      | Secret key value for use with HMAC SHA algorithms: `HS256`, `HS384` and `HS512`
+VANDIUM_JWT_PUBKEY      | Public key used used with `RS256` algorithm
+VANDIUM_JWT_TOKEN_NAME  | Name of the token variable in the `event` object. Defaults to `jwt`
+
+## Configuring From the Handler Code
 
 To configure JWT validation, you must enable it by calling `vandium.jwt().configure()`. The following configuration values are available:
 
 Option      |Description                   | Required
--------------|------------------------------|----------
+------------|------------------------------|-----------------------------------------------------
 algorithm   |Algorithm Type                | yes
 secret      |Shared secret value           | Only for algorithm types: `HS256`, `HS384` or `HS512`
 public_key  |Public key value              | Only for `RS256` algorithm type
 token_name  |Event property name for token | No. Default is `jwt`.
 
 
-
-The following example validates a jwt token (passed in the event using the `jwt` property name) using the `HS256` algorithm with a shared secret:
+The following example validates a JWT (passed in the event using the `jwt` property name) using the `HS256` algorithm with a shared secret:
 
 ```js
 var vandium = require( 'vandium' );
@@ -138,9 +193,7 @@ This example uses an `HS256`, `HS384`, or `HS512` JWT validation algorithm with 
 
 
 
-For more information about AWS API Gateway mapping templates, check out the official documentation:
-
-[API Gateway Mapping Template Reference](http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html)
+For more information about AWS API Gateway mapping templates, see the official documation: [API Gateway Mapping Template Reference](http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html)
 
 <br>
 **Step 4:** Setting up the stage variables. Deploy your API then go to the stage editor for the stage you just deployed. In the Stage Variables tab, set up the stage variables as specified in the following chart.
@@ -164,9 +217,7 @@ Here is an example stage variable setup on the AWS browser console using the `HS
 
 If you're not using a custom token name, then you can omit the `VANDIUM_JWT_TOKEN_NAME` stage variable.
 
-For more information on how API Gateway stage variables work, check out the official documentation:
-
-[Deploy an API with Stage Variables in Amazon API Gateway](http://docs.aws.amazon.com/apigateway/latest/developerguide/stage-variables.html)
+For more information on how API Gateway stage variables work, see the  documentation: [Deploy an API with Stage Variables in Amazon API Gateway](http://docs.aws.amazon.com/apigateway/latest/developerguide/stage-variables.html)
 
 
 The object located inside S3 must be a valid JSON file that contains configuration parameters as described in this document (*see Figure A*).
