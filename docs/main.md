@@ -1,6 +1,3 @@
-[![Build Status](https://travis-ci.org/vandium-io/vandium-node.svg?branch=master)](https://travis-ci.org/vandium-io/vandium-node)
-[![npm version](https://badge.fury.io/js/vandium.svg)](https://badge.fury.io/js/vandium)
-
 # vandium-node
 
 Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions using [Node.js](https://nodejs.org) for [API Gateway](https://aws.amazon.com/api-gateway), IoT applications, and other serverless event cases.
@@ -23,44 +20,24 @@ Install via npm.
 
 	npm install vandium --save
 
-## Getting Started
 
-Vandium can be used with minimal change to your existing code.
+## Contents
 
-```js
-var vandium = require( 'vandium' );
+* [Getting Started](getting_started.md)
 
-exports.handler = vandium( function( event, context, callback ) {
+* [Configuration](configuration.md)
 
-	callback( null, 'ok' );
-});
-```
+* [Event Validation](validation.md)
 
-To enable validation on the values in the `event` object, configure it using a validation schema object.
+* [Using Promises with Lambda](promises.md)
 
-```js
-var vandium = require( 'vandium' );
+* [JSON Web Token (JWT)](jwt.md)
 
-vandium.validation( {
+* [Attack Detection and Protection](protection.md)
 
-	name: vandium.types.string().required()
-});
+* [Cleaning Up after Handler Execution](cleanup.md)
 
-exports.handler = vandium( function( event, context, callback ) {
-
-	console.log( 'hello: ' + event.name );
-
-	callback( null, 'ok' );
-});
-```
-
-When the lambda function is invoked, the event object will be checked for a presence of `event.name`. If the value does not exist, then the lambda will fail and an error message will be returned to the caller. Vandium will take care of calling `callback()` to route the error.
-
-
-## Documentation
-
-For documentation on how to use vandium in your project, please see our [documentation](docs/main.md) page.
-
+* [Load Times and Execution Times](performance.md)
 
 
 ## AWS Lambda Compatibility
