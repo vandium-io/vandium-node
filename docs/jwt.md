@@ -203,12 +203,12 @@ For more information about AWS API Gateway mapping templates, see the official d
 
 The following stage variables can be used to provide the correct values to the JWT validation handler:
 
-Name                        | Description                                      |  Required when using algorithms
-------------------------------|--------------------------------------------------|----------------------------
-VANDIUM\_JWT\_ALGORITHM     | Algorithm type                     | `HS256`, `HS384`, `HS512`, or `RS256`
-VANDIUM\_JWT\_SECRET        | Shared secret value                              | `HS256`, `HS384`, or `HS512`
-VANDIUM\_JWT\_PUBKEY        | Public key                                       | `RS256`
-VANDIUM\_JWT\_TOKEN\_NAME   | Name of the token variable in the event. Default value is `jwt` | Optional
+Name                      | Description                                      |  Required when using algorithms
+--------------------------|--------------------------------------------------|----------------------------
+`VANDIUM_JWT_ALGORITHM`   | Algorithm type                                   | `HS256`, `HS384`, `HS512`, or `RS256`
+`VANDIUM_JWT_SECRET`      | Shared secret value                              | `HS256`, `HS384`, or `HS512`
+`VANDIUM_JWT_PUBKEY`      | Public key                                       | `RS256`
+`VANDIUM_JWT_TOKEN_NAME`  | Name of the token variable in the event. Default value is `jwt` | Optional
 
 
 Here is an example stage variable setup on the AWS browser console using the `HS256` algorithm and a token with a custom name myTokenName:
