@@ -2,11 +2,15 @@
 
 /*jshint expr: true*/
 
+const freshy = require( 'freshy' );
+
 const expect = require( 'chai' ).expect;
 
-const protect = require( '../../../lib/protect' );
+const PROTECT_MODULE_PATH = '../../../lib/protect';
 
 describe( 'lib/protect/index', function() {
+
+    let protect = require( PROTECT_MODULE_PATH );
 
     afterEach( function() {
 
@@ -83,6 +87,75 @@ describe( 'lib/protect/index', function() {
             protect.disable();
 
             protect.scan( event );
+        });
+    });
+
+    describe( 'configure via environment variables', function() {
+
+        beforeEach( function() {
+
+            freshy.unload( PROTECT_MODULE_PATH );
+        });
+
+        it( 'not set', function() {
+
+            delete process.env.VANDIUM_PROTECT;
+
+            protect = require( PROTECT_MODULE_PATH );
+
+            expect( protect.sql.enabled ).to.be.true;
+            expect( protect.sql.mode ).to.equal( 'report' );
+        });
+
+        // on/true/yes
+        [ 'on', 'On', 'yes', 'Yes', 'true', 'True' ].forEach( function( value ) {
+
+            it( value, function() {
+
+                process.env.VANDIUM_PROTECT = value;
+
+                protect = require( PROTECT_MODULE_PATH );
+
+                expect( protect.sql.enabled ).to.be.true;
+                expect( protect.sql.mode ).to.equal( 'fail' );
+            });
+        });
+
+        // off/no/false
+        [ 'off', 'Off', 'no', 'No', 'false', 'False' ].forEach( function( value ) {
+
+            it( value, function() {
+
+                process.env.VANDIUM_PROTECT = value;
+
+                protect = require( PROTECT_MODULE_PATH );
+
+                expect( protect.sql.enabled ).to.be.false;
+            });
+        });
+
+        // off/no/false
+        [ 'report', 'Report' ].forEach( function( value ) {
+
+            it( value, function() {
+
+                process.env.VANDIUM_PROTECT = value;
+
+                protect = require( PROTECT_MODULE_PATH );
+
+                expect( protect.sql.enabled ).to.be.true;
+                expect( protect.sql.mode ).to.equal( 'report' );
+            });
+        });
+
+        it( 'unknown value', function() {
+
+            process.env.VANDIUM_PROTECT = 'special'
+
+            protect = require( PROTECT_MODULE_PATH );
+
+            expect( protect.sql.enabled ).to.be.true;
+            expect( protect.sql.mode ).to.equal( 'report' );
         });
     });
 });
