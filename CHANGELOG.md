@@ -1,3 +1,17 @@
+# Change Log
+
+## 2.3.0 (2016-05-07)
+
+New:
+
+* Environment variable support to enable/disable injection attack protection
+
+Improved:
+
+* Documentation split into several markdown files inside the `docs` folder
+* Reworked injection attack scanning for future updates
+* Update unit tests for full coverage
+
 
 ## 2.2.1 (2016-04-27)
 
