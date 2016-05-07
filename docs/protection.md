@@ -47,5 +47,15 @@ var vandium = require( 'vandium' );
 vandium.protect.disable();
 ```
 
+## Configuring Attack Protection Using the `VANDIUM_PROTECT` Environment Variable
+
+Attack protection can be enabled, disabled or put into a report only state via the `VANDIUM_PROTECT` environment variable.
+
+Value                   |  Result
+------------------------|-------------------
+`yes`, `on` or `true`   | Enable protection and reporting
+`no`, `off` or `false`  | Disable protection and reporting
+`report`                | Report only (default setting)
+
 ---
 [Back to Documentation Home](main.md)
