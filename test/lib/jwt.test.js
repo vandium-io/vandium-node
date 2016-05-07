@@ -19,6 +19,11 @@ var ALGORITHMS = [ 'HS256', 'HS384', 'HS512', 'RS256' ];
 
 var configUtils = require( './config-utils' );
 
+const CONFIG_MODULE_PATH = '../../lib/config';
+
+const JWT_MODULE_PATH = '../../lib/jwt';
+
+
 //var logger = require( '../../lib/logger' ).setLevel( 'debug' );
 
 describe( 'lib/jwt', function() {
@@ -126,9 +131,7 @@ describe( 'lib/jwt', function() {
 
                 process.env.VANDIUM_JWT_SECRET = test[1];
 
-                freshy.unload( '../../lib/jwt' );
-
-                jwt = require( '../../lib/jwt' );
+                jwt = freshy.reload( JWT_MODULE_PATH );
 
                 expect( jwt.configuration() ).to.eql( { algorithm: test[0], key: test[1], tokenName: 'jwt' } );
 
@@ -143,9 +146,7 @@ describe( 'lib/jwt', function() {
 
             process.env.VANDIUM_JWT_PUBKEY = 'public-key-here';
 
-            freshy.unload( '../../lib/jwt' );
-
-            jwt = require( '../../lib/jwt' );
+            jwt = freshy.reload( JWT_MODULE_PATH );
 
             expect( jwt.configuration() ).to.eql( { algorithm: 'RS256', key: 'public-key-here', tokenName: 'jwt' } );
 
@@ -157,9 +158,7 @@ describe( 'lib/jwt', function() {
 
             process.env.VANDIUM_JWT_TOKEN_NAME = 'JWT';
 
-            freshy.unload( '../../lib/jwt' );
-
-            jwt = require( '../../lib/jwt' );
+            jwt = freshy.reload( JWT_MODULE_PATH );
 
             expect( jwt.configuration() ).to.eql( { algorithm: undefined, key: undefined, tokenName: 'JWT' } );
 
@@ -168,24 +167,21 @@ describe( 'lib/jwt', function() {
 
         it( 'stage vars only set', function() {
 
-            freshy.unload( '../../lib/jwt' );
-            jwt = require( '../../lib/jwt' );
+            jwt = freshy.reload( JWT_MODULE_PATH );
 
             expect( jwt.configure() ).to.eql( { algorithm: undefined, key: undefined, tokenName: 'jwt' } );
         });
 
         it( 'no options object', function() {
 
-            freshy.unload( '../../lib/jwt' );
-            jwt = require( '../../lib/jwt' );
+            jwt = freshy.reload( JWT_MODULE_PATH );
 
             expect( jwt.configure() ).to.eql( { algorithm: undefined, key: undefined, tokenName: 'jwt' } );
         });
 
         it( 'default without configure', function() {
 
-            freshy.unload( '../../lib/jwt' );
-            jwt = require( '../../lib/jwt' );
+            jwt = freshy.reload( JWT_MODULE_PATH );
 
             expect( jwt.configuration() ).to.eql( { algorithm: undefined, key: undefined, tokenName: 'jwt' } );
         });
@@ -201,6 +197,39 @@ describe( 'lib/jwt', function() {
 
             // restore config to empty
             writeConfigData( "{}", done );
+        });
+    });
+
+    describe( '.isEnabled', function() {
+
+        before( function() {
+
+            delete process.env.VANDIUM_JWT_SECRET;
+            delete process.env.VANDIUM_JWT_TOKEN_NAME;
+            delete process.env.VANDIUM_JWT_ALGORITHM;
+            delete process.env.VANDIUM_JWT_PUBKEY;
+        });
+
+        beforeEach( function() {
+
+            freshy.unload( JWT_MODULE_PATH );
+            freshy.unload( CONFIG_MODULE_PATH );
+        });
+
+        it( 'default', function() {
+
+            jwt = require( JWT_MODULE_PATH );
+
+            expect( jwt.isEnabled() ).to.be.false;
+        });
+
+        it( 'via .enabled()', function() {
+
+            jwt = require( JWT_MODULE_PATH );
+
+            jwt.enable();
+
+            expect( jwt.isEnabled() ).to.be.true;
         });
     });
 
@@ -242,14 +271,14 @@ describe( 'lib/jwt', function() {
                     return done( err );
                 }
 
-                require( '../../lib/config' ).wait( function() {
+                require( '../../lib/config' );
 
-                    jwt = require( '../../lib/jwt' );
+                jwt = require( '../../lib/jwt' );
 
-                    expect( jwt.configuration() ).to.eql( { algorithm: 'HS512', key: 'super-secret', tokenName: 'Bearer' } );
+                expect( jwt.configuration() ).to.eql( { algorithm: 'HS512', key: 'super-secret', tokenName: 'Bearer' } );
+                expect( jwt.isEnabled() ).to.be.true;
 
-                    done();
-                });
+                done();
             });
         });
 
@@ -274,14 +303,14 @@ describe( 'lib/jwt', function() {
                     return done( err );
                 }
 
-                require( '../../lib/config' ).wait( function() {
+                require( '../../lib/config' );
 
-                    jwt = require( '../../lib/jwt' );
+                jwt = require( '../../lib/jwt' );
 
-                    expect( jwt.configuration() ).to.eql( { algorithm: 'RS256', key: pubKey, tokenName: 'Bearer' } );
+                expect( jwt.configuration() ).to.eql( { algorithm: 'RS256', key: pubKey, tokenName: 'Bearer' } );
+                expect( jwt.isEnabled() ).to.be.true;
 
-                    done();
-                });
+                done();
             });
         });
 
@@ -299,14 +328,14 @@ describe( 'lib/jwt', function() {
                     return done( err );
                 }
 
-                require( '../../lib/config' ).wait( function() {
+                require( '../../lib/config' );
 
-                    jwt = require( '../../lib/jwt' );
+                jwt = require( '../../lib/jwt' );
 
-                    expect( jwt.configuration() ).to.eql( { algorithm: undefined, key: undefined, tokenName: 'jwt' } );
+                expect( jwt.configuration() ).to.eql( { algorithm: undefined, key: undefined, tokenName: 'jwt' } );
+                expect( jwt.isEnabled() ).to.be.true;
 
-                    done();
-                });
+                done();
             });
         });
     });
