@@ -2,7 +2,7 @@
   "name": "vandium",
   "version": "2.3.0",
   "description": "Vandium AWS Lambda wrapper for Node.js",
-  "main": "index.js",
+  "main": "lib/index.js",
   "keywords": [
     "JWT",
     "AWS",
