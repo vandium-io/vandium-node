@@ -2,6 +2,8 @@
 
 /*jshint expr: true*/
 
+const preventRestorer = require( './prevent/restorer' );
+
 const expect = require( 'chai' ).expect;
 
 const freshy = require( 'freshy' );
@@ -12,35 +14,47 @@ const jwtBuilder = require( 'jwt-builder' );
 
 const sinon = require( 'sinon' );
 
-const configUtils = require( './lib/config-utils' );
+const configUtils = require( './config-utils' );
+
+const VANDIUM_MODULE_PATH = '../../lib/index';
+
 
 //require( '../lib/logger' ).setLevel( 'debug' );
 
 describe( 'index', function() {
 
-    var vandium;
-
     before( function( done ) {
 
-        freshy.unload( '../lib/config' );
+        freshy.unload( '../../lib/config' );
 
         configUtils.removeConfig( done );
     });
 
     beforeEach( function( done ) {
 
-        freshy.unload( '../index' );
-        freshy.unload( '../lib/config' );
-        freshy.unload( '../lib/jwt' );
+        preventRestorer.restore();
+
+        freshy.unload( VANDIUM_MODULE_PATH );
+        freshy.unload( '../../lib/config' );
+        freshy.unload( '../../lib/jwt' );
 
         configUtils.removeConfig( done );
+    });
+
+    after( function() {
+
+        freshy.unload( VANDIUM_MODULE_PATH );
+        freshy.unload( '../../lib/config' );
+        freshy.unload( '../../lib/jwt' );
+
+        preventRestorer.restore();
     });
 
 	describe( '.vandium', function() {
 
 		it( 'simple wrap with no jwt or validation', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             const handler = vandium( function( event, context ) {
 
@@ -56,7 +70,7 @@ describe( 'index', function() {
 
         it( 'simple wrap with no jwt or validation using callback( null, result )', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             const handler = vandium( function( event, context, callback ) {
 
@@ -72,7 +86,7 @@ describe( 'index', function() {
 
         it( 'simple wrap with no jwt or validation using callback( err )', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             const handler = vandium( function( event, context, callback ) {
 
@@ -88,7 +102,7 @@ describe( 'index', function() {
 
         it( 'simple wrap, return value', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             const handler = vandium( function( event, context ) {
 
@@ -112,7 +126,7 @@ describe( 'index', function() {
 
         it( 'simple validation using vandium.jwt().configure', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             vandium.validation( {
 
@@ -146,7 +160,7 @@ describe( 'index', function() {
 
         it( 'simple validation using vandium.jwt.configure()', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             vandium.validation( {
 
@@ -180,7 +194,7 @@ describe( 'index', function() {
 
         it( 'simple validation with sql injection protection', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             vandium.validation( {
 
@@ -216,7 +230,7 @@ describe( 'index', function() {
 
         it( 'validation where value is missing', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             vandium.validation( {
 
@@ -240,7 +254,7 @@ describe( 'index', function() {
 
         it( 'handle resolve from a promise', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             const handler = vandium( function( /*event, context, callback*/ ) {
 
@@ -263,7 +277,7 @@ describe( 'index', function() {
 
         it( 'handle reject from a promise', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             const handler = vandium( function( /*event, context, callback*/ ) {
 
@@ -286,7 +300,7 @@ describe( 'index', function() {
 
         it( 'uncaught exceptions', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             const handler = vandium( function( /*event, context, callback*/ ) {
 
@@ -302,7 +316,7 @@ describe( 'index', function() {
 
         it( 'uncaught exceptions - disable logging', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
             vandium.logUncaughtExceptions( false );
 
             const handler = vandium( function( /*event, context, callback*/ ) {
@@ -319,7 +333,7 @@ describe( 'index', function() {
 
         it( 'with after() async with handler calling callback( null, result )', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             let afterCalled = false;
 
@@ -344,7 +358,7 @@ describe( 'index', function() {
 
         it( 'with after() async [calling done(err) ] with handler calling callback( null, result )', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             let afterCalled = false;
 
@@ -367,9 +381,54 @@ describe( 'index', function() {
                 });
         });
 
+        it( 'simple wrap with no jwt or validation, eval disabled', function() {
+
+            preventRestorer.restore();
+
+            process.env.VANDIUM_PREVENT_EVAL = 'true';
+
+            let vandium = require( VANDIUM_MODULE_PATH );
+
+            const handler = vandium( function( event, context ) {
+
+                eval( 'let x = 5;' );
+
+                context.succeed( 'ok' );
+            });
+
+            return LambdaTester( handler )
+                .expectSucceed( function( result ) {
+
+                    expect( result ).to.equal( 'ok' );
+
+                    delete process.env.VANDIUM_PREVENT_EVAL;
+                });
+        });
+
+        it( 'fail: simple wrap with no jwt or validation, eval prevented', function() {
+
+            preventRestorer.restore();
+
+            let vandium = require( VANDIUM_MODULE_PATH );
+
+            const handler = vandium( function( event, context, callback ) {
+
+                eval( 'let x = 5;' );
+
+                // never gets here
+                callback( null, 'ok' );
+            });
+
+            return LambdaTester( handler )
+                .expectError( function( err ) {
+
+                    expect( err.message ).to.contain( 'security violation' );
+                });
+        });
+
         it( 'with after() async with handler calling callback( err )', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             let afterCalled = false;
 
@@ -394,7 +453,7 @@ describe( 'index', function() {
 
         it( 'with after() sync with handler calling callback( result )', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             let afterCalled = false;
 
@@ -418,7 +477,7 @@ describe( 'index', function() {
 
         it( 'with after() promise and handler returning promise - result', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             let afterCalled = false;
 
@@ -444,7 +503,7 @@ describe( 'index', function() {
 
         it( 'with after() promise and handler returning promise - error', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             let afterCalled = false;
 
@@ -469,7 +528,7 @@ describe( 'index', function() {
 
         it( 'with non-function after() call', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             vandium.after( 'not-a-function!' );
 
@@ -487,7 +546,7 @@ describe( 'index', function() {
 
         it( 'with no-value after() call', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             vandium.after();
 
@@ -505,7 +564,7 @@ describe( 'index', function() {
 
         it( 'Exception thrown in after() call', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             vandium.after( function() { throw new Error( 'bang' ); } );
 
@@ -526,7 +585,7 @@ describe( 'index', function() {
 
         it( 'normal operation', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             let jwt = vandium.jwt();
 
@@ -547,7 +606,7 @@ describe( 'index', function() {
 
         it( 'normal operation', function() {
 
-            vandium = require( '../index' );
+            let vandium = require( VANDIUM_MODULE_PATH );
 
             // no params should be ok
             vandium.validation();
@@ -581,9 +640,9 @@ describe( 'index', function() {
                     return done( err );
                 }
 
-                vandium = require( '../index' );
+                let vandium = require( VANDIUM_MODULE_PATH );
 
-                const config = require( '../lib/config' );
+                const config = require( '../../lib/config' );
 
                 // wait for config to load
                 config.wait( function() {

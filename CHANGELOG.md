@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.4.0 (TBD)
+
+New:
+
+* calling `eval()` from the Lambda handler will cause a security violation exception to be thrown
+
+
 ## 2.3.0 (2016-05-07)
 
 New:
