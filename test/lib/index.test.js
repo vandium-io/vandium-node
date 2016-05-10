@@ -619,6 +619,16 @@ describe( 'index', function() {
         });
     });
 
+    describe( '.validator', function() {
+
+        it( 'normal operation', function() {
+
+            let vandium = require( VANDIUM_MODULE_PATH );
+
+            expect( vandium.validator ).to.equal( require( 'joi' ) );
+        });
+    });
+
     describe( 'auto-configure', function() {
 
         before( function( done ) {

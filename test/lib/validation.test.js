@@ -273,4 +273,12 @@ describe( 'lib/validation', function() {
             expect( validation.verify.bind( validation, event ) ).to.throw( '"other" is not allowed' );
         });
     });
+
+    describe( '.validator', function() {
+
+        it( 'normal operation', function() {
+
+            expect( validation.validator ).to.equal( require( 'joi' ) );
+        });
+    });
 });
