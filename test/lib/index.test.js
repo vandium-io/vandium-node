@@ -625,7 +625,7 @@ describe( 'index', function() {
 
             let vandium = require( VANDIUM_MODULE_PATH );
 
-            expect( vandium.validator ).to.equal( require( 'joi' ) );
+            expect( vandium.validator ).to.exist;
         });
     });
 

@@ -278,7 +278,7 @@ describe( 'lib/validation', function() {
 
         it( 'normal operation', function() {
 
-            expect( validation.validator ).to.equal( require( 'joi' ) );
+            expect( validation.validator ).to.exist;
         });
     });
 });
