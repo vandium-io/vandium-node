@@ -1,6 +1,6 @@
 {
   "name": "vandium",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Vandium AWS Lambda wrapper for Node.js",
   "main": "lib/index.js",
   "keywords": [
@@ -30,10 +30,9 @@
   "author": "Vandium Software Inc.",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "joi": "8.0.x",
     "jwt-simple": "0.5.x",
-    "lambda-tester": "^2.5.0",
-    "loglevel": "1.4.x"
+    "loglevel": "1.4.x",
+    "joi": "8.0.x"
   },
   "devDependencies": {
     "app-root-path": "^1.0.0",
@@ -45,7 +44,8 @@
     "freshy": "^1.0.2",
     "istanbul": "^0.4.2",
     "jwt-builder": "^1.0.0",
-    "lambda-tester": "^2.2.1",
+    "lambda-tester": "^2.5.0",
+    "lov": "^1.0.1",
     "mocha": "^2.3.4",
     "node-rsa": "^0.3.2",
     "node-uuid": "^1.4.7",

@@ -8,18 +8,20 @@ var freshy = require( 'freshy' );
 
 var uuid = require( 'node-uuid' );
 
-describe( 'lib/validation', function() {
+const VALIDATION_MODULE_PATH = '../../../lib/validation';
 
-    var vandium;
+describe( 'lib/validation/index', function() {
 
-    var validation;
+    let vandium;
+
+    let validation;
 
     beforeEach( function() {
 
-        freshy.unload( '../../lib/validation' );
-        freshy.unload( '../../lib/ignored-properties' );
+        freshy.unload( VALIDATION_MODULE_PATH );
+        freshy.unload( '../../../lib/ignored-properties' );
 
-        validation = require( '../../lib/validation' );
+        validation = require( VALIDATION_MODULE_PATH );
 
         vandium = {
 
@@ -278,7 +280,7 @@ describe( 'lib/validation', function() {
 
         it( 'normal operation', function() {
 
-            expect( validation.validator ).to.equal( require( 'joi' ) );
+            expect( validation.validator ).to.exist;
         });
     });
 });

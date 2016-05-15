@@ -101,6 +101,38 @@ describe( 'index', function() {
                 });
         });
 
+        it( 'simple wrap with no jwt or validation using context.fail( err )', function() {
+
+            let vandium = require( VANDIUM_MODULE_PATH );
+
+            const handler = vandium( function( event, context ) {
+
+                context.fail( new Error( 'bang' ) );
+            });
+
+            return LambdaTester( handler )
+                .expectError( function( err ) {
+
+                    expect( err.message ).to.equal( 'bang' );
+                });
+        });
+
+        it( 'simple wrap with no jwt or validation using context.fail()', function() {
+
+            let vandium = require( VANDIUM_MODULE_PATH );
+
+            const handler = vandium( function( event, context ) {
+
+                context.fail();
+            });
+
+            return LambdaTester( handler )
+                .expectError( function( err ) {
+
+                    expect( err ).to.be.instanceof( Error );
+                });
+        });
+
         it( 'simple wrap, return value', function( done ) {
 
             let vandium = require( VANDIUM_MODULE_PATH );
@@ -616,6 +648,9 @@ describe( 'index', function() {
 
             let vandium = require( VANDIUM_MODULE_PATH );
 
+            expect( vandium.validator ).to.exist;
+
+            // future: will need to change to allow other validators to be present
             expect( vandium.validator ).to.equal( require( 'joi' ) );
         });
     });
