@@ -61,12 +61,6 @@ When the lambda function is invoked, the event object will be checked for a pres
 
 For documentation on how to use vandium in your project, please see our [documentation](docs/main.md) page.
 
-
-## AWS Lambda Compatibility
-
-Vandium is compatible with AWS Lambda environments that support Node.js 4.3.2. If you require support for the previous version of Node.js (0.10.x) then use version 1.x.
-
-
 ## Feedback
 
 We'd love to get feedback on how to make this tool better. Feel free to contact us at `feedback@vandium.io`

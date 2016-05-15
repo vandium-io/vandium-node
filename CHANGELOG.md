@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.5.0 (TBD)
+
+Improved:
+
+* calls to `context.succeed()`, `context.fail()` and `context.done()` are now re-routed to the `callback` function
+
 ## 2.4.0 (2016-05-11)
 
 New:

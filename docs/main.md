@@ -39,11 +39,7 @@ Install via npm.
 
 * [Load Times and Execution Times](performance.md)
 
-
-
-## AWS Lambda Compatibility
-
-Vandium is compatible with AWS Lambda environments that support Node.js 4.3.2. If you require support for the previous version of Node.js (0.10.x) then use version 1.x.
+* [AWS Lambda Compatibility](compatability.md)
 
 
 ## Feedback
