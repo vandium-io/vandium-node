@@ -58,11 +58,12 @@ describe( 'index', function() {
 
             const handler = vandium( function( event, context ) {
 
+                // should route to callback( null, 'ok' );
                 context.succeed( 'ok' );
             });
 
             return LambdaTester( handler )
-                .expectSucceed( function( result ) {
+                .expectResult( function( result ) {
 
                     expect( result ).to.equal( 'ok' );
                 });
@@ -100,7 +101,7 @@ describe( 'index', function() {
                 });
         });
 
-        it( 'simple wrap, return value', function() {
+        it( 'simple wrap, return value', function( done ) {
 
             let vandium = require( VANDIUM_MODULE_PATH );
 
@@ -111,51 +112,41 @@ describe( 'index', function() {
                 return 42;
             });
 
-            var context = {
+            let context = {
 
                 succeed: sinon.stub(),
 
-                fail: sinon.stub
+                fail: sinon.stub(),
+
+                done: sinon.stub()
             };
 
             // Can't use lambda-tester here (just yet!)
-            expect( handler( {}, context ) ).to.equal( 42 );
-            expect( context.succeed.calledOnce ).to.be.true;
-            expect( context.succeed.withArgs( 'ok').calledOnce ).to.be.true;
-        });
 
-        it( 'simple validation using vandium.jwt().configure', function() {
+            let returnValue = handler( {}, context, function( err, result ) {
 
-            let vandium = require( VANDIUM_MODULE_PATH );
+                if( err ) {
 
-            vandium.validation( {
+                    return done( err );
+                }
 
-                name: vandium.types.string().required(),
+                try {
 
-                age: vandium.types.number().min( 0 ).max( 120 ).required(),
+                    expect( result ).to.equal( result );
 
-                jwt: vandium.types.any()
+                    expect( context.succeed.called ).to.be.false;
+                    expect( context.fail.called ).to.be.false;
+                    expect( context.done.called ).to.be.false;
+
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
             });
 
-            vandium.jwt().configure( {
-
-                algorithm: 'HS256',
-                secret: 'super-secret'
-            });
-
-            const handler = vandium( function( event, context ) {
-
-                context.succeed( 'ok' );
-            });
-
-            const token = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred' } );
-
-            return LambdaTester( handler )
-                .event( { name: 'fred', age: 16, jwt: token } )
-                .expectSucceed( function( result ) {
-
-                    expect( result ).to.equal( 'ok' );
-                });
+            expect( returnValue ).to.equal( 42 );
         });
 
         it( 'simple validation using vandium.jwt.configure()', function() {
@@ -186,7 +177,7 @@ describe( 'index', function() {
 
             return LambdaTester( handler )
                 .event( { name: 'fred', age: 16, jwt: token } )
-                .expectSucceed( function( result ) {
+                .expectResult( function( result ) {
 
                     expect( result ).to.equal( 'ok' );
                 });
@@ -222,7 +213,7 @@ describe( 'index', function() {
 
             return LambdaTester( handler )
                 .event( { name: 'fred', age: 16, jwt: token } )
-                .expectSucceed( function( result ) {
+                .expectResult( function( result ) {
 
                     expect( result ).to.equal( 'ok' );
                 });
@@ -397,7 +388,7 @@ describe( 'index', function() {
             });
 
             return LambdaTester( handler )
-                .expectSucceed( function( result ) {
+                .expectResult( function( result ) {
 
                     expect( result ).to.equal( 'ok' );
 
@@ -666,7 +657,7 @@ describe( 'index', function() {
 
                     LambdaTester( handler )
                         .event( { jwt: token } )
-                        .expectSucceed( function( result ) {
+                        .expectResult( function( result ) {
 
                             expect( result ).to.equal( 'fred' );
                             done();
