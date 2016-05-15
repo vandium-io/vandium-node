@@ -32,6 +32,7 @@
   "dependencies": {
     "joi": "8.0.x",
     "jwt-simple": "0.5.x",
+    "lambda-tester": "^2.5.0",
     "loglevel": "1.4.x"
   },
   "devDependencies": {
