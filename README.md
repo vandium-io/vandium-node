@@ -16,6 +16,7 @@ Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions
 * Promise support
 * Automatically trimmed strings for input event data
 * Low startup overhead
+* Works with [Serverless](https://github.com/vandium-io/vandium-serverless)
 * AWS Lambda Node.js 4.3.2 compatible
 
 ## Installation
