@@ -612,16 +612,18 @@ describe( 'index', function() {
 
             let jwt = vandium.jwt();
 
-            // stage vars should be enabled by default
-            expect( jwt.configuration() ).to.eql( { key: undefined, algorithm: undefined, tokenName: 'jwt' } );
+            let state = require( '../../lib/state' );
 
-            const jwtConfig = vandium.jwt().configure( { algorithm: 'HS256', secret: 'my-secret' } );
-            expect( jwtConfig ).to.eql( { key: 'my-secret', algorithm: 'HS256', tokenName: 'jwt' } );
+            // stage vars should be enabled by default
+            expect( state.current.jwt ).to.eql( { enabled: false, key: undefined, algorithm: undefined, tokenName: 'jwt' } );
+
+            vandium.jwt().configure( { algorithm: 'HS256', secret: 'my-secret' } );
+            expect( state.current.jwt ).to.eql( { enabled: true, key: 'my-secret', algorithm: 'HS256', tokenName: 'jwt' } );
             expect( vandium.jwt().isEnabled() ).to.be.true;
 
             // should still be set
             jwt = vandium.jwt();
-            expect( jwt.configuration() ).to.eql( { key: 'my-secret', algorithm: 'HS256', tokenName: 'jwt' } );
+            expect( state.current.jwt ).to.eql( { enabled: true, key: 'my-secret', algorithm: 'HS256', tokenName: 'jwt' } );
         });
     });
 

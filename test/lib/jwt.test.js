@@ -23,6 +23,7 @@ const CONFIG_MODULE_PATH = '../../lib/config';
 
 const JWT_MODULE_PATH = '../../lib/jwt';
 
+const STATE_MODULE_PATH = '../../lib/state';
 
 //var logger = require( '../../lib/logger' ).setLevel( 'debug' );
 
@@ -33,8 +34,10 @@ describe( 'lib/jwt', function() {
         configUtils.writeConfig( configData, callback );
     }
 
-    var pubKey;
-    var privKey;
+    let pubKey;
+    let privKey;
+
+    let state;
 
     before( function( done ) {
 
@@ -62,7 +65,6 @@ describe( 'lib/jwt', function() {
         freshy.unload( '../../lib/jwt' );
         freshy.unload( '../../lib/config' );
 
-
         require( '../../lib/config' ).wait( function( err ) {
 
             if( err ) {
@@ -70,23 +72,26 @@ describe( 'lib/jwt', function() {
                 return done( err );
             }
 
-            jwt = require( '../../lib/jwt' );
+            jwt = require( JWT_MODULE_PATH );
+            state = require( STATE_MODULE_PATH );
 
             done();
         });
     });
 
+    function reloadJWT() {
+
+        jwt = freshy.reload( JWT_MODULE_PATH );
+        state = require( STATE_MODULE_PATH );
+    }
+
     describe( '.configure', function() {
-
-        var jwtSimple;
-
-        var jwtResult;
 
         it( 'default secret passphrase', function() {
 
-            var settings = jwt.configure( { secret: 'my-secret' } );
+            jwt.configure( { secret: 'my-secret' } );
 
-            expect( settings ).to.eql( { algorithm: undefined, key: undefined, tokenName: 'jwt' } );
+            expect( state.current.jwt ).to.eql( { enabled: true, algorithm: undefined, key: undefined, tokenName: 'jwt' } );
         });
 
         ALGORITHMS.forEach( function( algorithm ) {
@@ -95,27 +100,29 @@ describe( 'lib/jwt', function() {
 
                 if( algorithm === 'RS256' ) {
 
-                    var settings = jwt.configure( { algorithm: 'RS256', public_key: 'my-secret' } );
-
-                    expect( settings ).to.eql( { algorithm: 'RS256', key: 'my-secret', tokenName: 'jwt' } );
+                    jwt.configure( { algorithm, public_key: 'my-secret' } );
                 }
                 else {
 
-                    var settings = jwt.configure( { algorithm: algorithm, secret: 'my-secret' } );
-
-                    expect( settings ).to.eql( { algorithm: algorithm, key: 'my-secret', tokenName: 'jwt' } );
+                    jwt.configure( { algorithm, secret: 'my-secret' } );
                 }
+
+                expect( state.current.jwt ).to.eql( { enabled: true, algorithm, key: 'my-secret', tokenName: 'jwt' } );
             });
         });
 
         it( "don't care about missing options", function() {
 
-            expect( jwt.configure() ).to.eql( { algorithm: undefined, key: undefined, tokenName: 'jwt' } );
+            jwt.configure();
+
+            expect( state.current.jwt ).to.eql( { enabled: true, algorithm: undefined, key: undefined, tokenName: 'jwt' } );
         });
 
         it( "change jwt token name", function() {
 
-            expect( jwt.configure( { token_name: 'JWT' } ) ).to.eql( { algorithm: undefined, key: undefined, tokenName: 'JWT' } );
+            jwt.configure( { token_name: 'JWT' } );
+
+            expect( state.current.jwt ).to.eql( { enabled: true, algorithm: undefined, key: undefined, tokenName: 'JWT' } )
         });
 
         [
@@ -131,9 +138,9 @@ describe( 'lib/jwt', function() {
 
                 process.env.VANDIUM_JWT_SECRET = test[1];
 
-                jwt = freshy.reload( JWT_MODULE_PATH );
+                reloadJWT();
 
-                expect( jwt.configuration() ).to.eql( { algorithm: test[0], key: test[1], tokenName: 'jwt' } );
+                expect( state.current.jwt ).to.eql( { enabled: true, algorithm: test[0], key: test[1], tokenName: 'jwt' } );
 
                 delete process.env.VANDIUM_JWT_SECRET;
                 delete process.env.VANDIUM_JWT_ALGORITHM;
@@ -146,9 +153,9 @@ describe( 'lib/jwt', function() {
 
             process.env.VANDIUM_JWT_PUBKEY = 'public-key-here';
 
-            jwt = freshy.reload( JWT_MODULE_PATH );
+            reloadJWT();
 
-            expect( jwt.configuration() ).to.eql( { algorithm: 'RS256', key: 'public-key-here', tokenName: 'jwt' } );
+            expect( state.current.jwt ).to.eql( { enabled: true, algorithm: 'RS256', key: 'public-key-here', tokenName: 'jwt' } );
 
             delete process.env.VANDIUM_JWT_SECRET;
             delete process.env.VANDIUM_JWT_ALGORITHM;
@@ -158,32 +165,36 @@ describe( 'lib/jwt', function() {
 
             process.env.VANDIUM_JWT_TOKEN_NAME = 'JWT';
 
-            jwt = freshy.reload( JWT_MODULE_PATH );
+            reloadJWT();
 
-            expect( jwt.configuration() ).to.eql( { algorithm: undefined, key: undefined, tokenName: 'JWT' } );
+            expect( state.current.jwt ).to.eql( { enabled: true, algorithm: undefined, key: undefined, tokenName: 'JWT' } );
 
             delete process.env.VANDIUM_JWT_TOKEN_NAME;
         });
 
         it( 'stage vars only set', function() {
 
-            jwt = freshy.reload( JWT_MODULE_PATH );
+            reloadJWT();
 
-            expect( jwt.configure() ).to.eql( { algorithm: undefined, key: undefined, tokenName: 'jwt' } );
+            jwt.configure();
+
+            expect( state.current.jwt ).to.eql( { enabled: true, algorithm: undefined, key: undefined, tokenName: 'jwt' } );
         });
 
         it( 'no options object', function() {
 
-            jwt = freshy.reload( JWT_MODULE_PATH );
+            reloadJWT();
 
-            expect( jwt.configure() ).to.eql( { algorithm: undefined, key: undefined, tokenName: 'jwt' } );
+            jwt.configure();
+
+            expect( state.current.jwt ).to.eql( { enabled: true, algorithm: undefined, key: undefined, tokenName: 'jwt' } );
         });
 
         it( 'default without configure', function() {
 
-            jwt = freshy.reload( JWT_MODULE_PATH );
+            reloadJWT();
 
-            expect( jwt.configuration() ).to.eql( { algorithm: undefined, key: undefined, tokenName: 'jwt' } );
+            expect( state.current.jwt ).to.eql( { enabled: false, algorithm: undefined, key: undefined, tokenName: 'jwt' } );
         });
 
         after( function( done ) {
@@ -273,10 +284,11 @@ describe( 'lib/jwt', function() {
 
                 require( '../../lib/config' );
 
-                jwt = require( '../../lib/jwt' );
+                jwt = require( JWT_MODULE_PATH );
 
-                expect( jwt.configuration() ).to.eql( { algorithm: 'HS512', key: 'super-secret', tokenName: 'Bearer' } );
-                expect( jwt.isEnabled() ).to.be.true;
+                state = require( STATE_MODULE_PATH );
+
+                expect( state.current.jwt ).to.eql( { enabled: true, algorithm: 'HS512', key: 'super-secret', tokenName: 'Bearer' } );
 
                 done();
             });
@@ -305,10 +317,11 @@ describe( 'lib/jwt', function() {
 
                 require( '../../lib/config' );
 
-                jwt = require( '../../lib/jwt' );
+                jwt = require( JWT_MODULE_PATH );
 
-                expect( jwt.configuration() ).to.eql( { algorithm: 'RS256', key: pubKey, tokenName: 'Bearer' } );
-                expect( jwt.isEnabled() ).to.be.true;
+                state = require( STATE_MODULE_PATH );
+
+                expect( state.current.jwt ).to.eql( { enabled: true, algorithm: 'RS256', key: pubKey, tokenName: 'Bearer' } );
 
                 done();
             });
@@ -330,10 +343,11 @@ describe( 'lib/jwt', function() {
 
                 require( '../../lib/config' );
 
-                jwt = require( '../../lib/jwt' );
+                jwt = require( JWT_MODULE_PATH );
 
-                expect( jwt.configuration() ).to.eql( { algorithm: undefined, key: undefined, tokenName: 'jwt' } );
-                expect( jwt.isEnabled() ).to.be.true;
+                state = require( STATE_MODULE_PATH );
+
+                expect( state.current.jwt ).to.eql( { enabled: true, algorithm: undefined, key: undefined, tokenName: 'jwt' } );
 
                 done();
             });
