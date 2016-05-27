@@ -8,9 +8,13 @@ const expect = require( 'chai' ).expect;
 
 const PROTECT_MODULE_PATH = '../../../lib/protect';
 
+const STATE_MODULE_PATH = '../../../lib/state';
+
 describe( 'lib/protect/index', function() {
 
     let protect = require( PROTECT_MODULE_PATH );
+
+    let state = require( STATE_MODULE_PATH );
 
     afterEach( function() {
 
@@ -73,6 +77,8 @@ describe( 'lib/protect/index', function() {
             protect.sql.fail();
 
             expect( protect.scan.bind( null, event ) ).to.throw( 'Error: validation error: myField is invalid' );
+
+            expect( state.current.protect ).to.eql( { sql: { enabled: true, mode: 'fail' } } );
         });
 
         it( 'disable all', function() {

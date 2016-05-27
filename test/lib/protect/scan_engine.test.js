@@ -6,9 +6,18 @@ const expect = require( 'chai' ).expect;
 
 const sinon = require( 'sinon' );
 
-const ScanEngine = require( '../../../lib/protect/scan_engine' );
+const SCAN_ENGINE_MODULE_PATH = '../../../lib/protect/scan_engine';
+
+const state = require( '../../../lib/state' );
 
 describe( 'lib/protect/scan_engine', function() {
+
+    let ScanEngine = require( SCAN_ENGINE_MODULE_PATH );
+
+    after( function() {
+
+        state.record( 'protect.test' );
+    });
 
     describe( 'ScanEngine', function() {
 
@@ -16,10 +25,13 @@ describe( 'lib/protect/scan_engine', function() {
 
             it( 'normal operation', function() {
 
-                let engine = new ScanEngine();
+                let engine = new ScanEngine( 'test' );
 
+                expect( engine.name ).to.equal( 'test' );
                 expect( engine.mode ).to.equal( 'report' );
                 expect( engine.enabled ).to.be.true;
+
+                expect( state.current.protect.test ).to.eql( { enabled: true, mode: 'report' } );
             });
         });
 
@@ -27,7 +39,7 @@ describe( 'lib/protect/scan_engine', function() {
 
             it( 'normal operation', function() {
 
-                let engine = new ScanEngine();
+                let engine = new ScanEngine( 'test' );
 
                 expect( engine.enabled ).to.be.true;
 
@@ -35,6 +47,8 @@ describe( 'lib/protect/scan_engine', function() {
 
                 expect( returnValue ).to.equal( engine );
                 expect( engine.enabled ).to.be.false;
+
+                expect( state.current.protect.test ).to.eql( { enabled: false, mode: 'report' } );
             });
         });
 
@@ -42,7 +56,7 @@ describe( 'lib/protect/scan_engine', function() {
 
             it( 'default case', function() {
 
-                let engine = new ScanEngine();
+                let engine = new ScanEngine( 'test' );
 
                 expect( engine.enabled ).to.be.true;
 
@@ -55,7 +69,7 @@ describe( 'lib/protect/scan_engine', function() {
 
             it( 'after disable()', function() {
 
-                let engine = new ScanEngine().disable().report();
+                let engine = new ScanEngine( 'test' ).disable().report();
 
                 expect( engine.mode ).to.equal( 'report' );
                 expect( engine.enabled ).to.be.true;
@@ -63,7 +77,7 @@ describe( 'lib/protect/scan_engine', function() {
 
             it( 'after fail()', function() {
 
-                let engine = new ScanEngine().fail();
+                let engine = new ScanEngine( 'test' ).fail();
 
                 expect( engine.mode ).to.equal( 'fail' );
 
@@ -78,7 +92,7 @@ describe( 'lib/protect/scan_engine', function() {
 
             it( 'default case', function() {
 
-                let engine = new ScanEngine();
+                let engine = new ScanEngine( 'test' );
 
                 expect( engine.enabled ).to.be.true;
 
@@ -91,7 +105,7 @@ describe( 'lib/protect/scan_engine', function() {
 
             it( 'after disable()', function() {
 
-                let engine = new ScanEngine().disable().fail();
+                let engine = new ScanEngine( 'test' ).disable().fail();
 
                 expect( engine.mode ).to.equal( 'fail' );
                 expect( engine.enabled ).to.be.true;
@@ -99,7 +113,7 @@ describe( 'lib/protect/scan_engine', function() {
 
             it( 'after report()', function() {
 
-                let engine = new ScanEngine().report();
+                let engine = new ScanEngine( 'test' ).report();
 
                 expect( engine.mode ).to.equal( 'report' );
 
@@ -114,7 +128,7 @@ describe( 'lib/protect/scan_engine', function() {
 
             it( 'default operaiton', function() {
 
-                let engine = new ScanEngine();
+                let engine = new ScanEngine( 'test' );
 
                 engine._doScan = sinon.stub();
 
@@ -128,7 +142,7 @@ describe( 'lib/protect/scan_engine', function() {
 
             it( 'when disabled', function() {
 
-                let engine = new ScanEngine().disable()
+                let engine = new ScanEngine( 'test' ).disable()
 
                 engine._doScan = sinon.stub();
 
@@ -144,7 +158,7 @@ describe( 'lib/protect/scan_engine', function() {
 
             it( 'abstract implementation', function() {
 
-                let engine = new ScanEngine();
+                let engine = new ScanEngine( 'test' );
 
                 expect( engine._doScan.bind( engine, {} ) ).to.throw( 'not implemented' );
             });
