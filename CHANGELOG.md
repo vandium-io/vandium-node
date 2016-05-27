@@ -1,10 +1,15 @@
 # Change Log
 
-## 2.5.0 (TBD)
+## 2.5.0 (2016-05-27)
 
 Improved:
 
-* calls to `context.succeed()`, `context.fail()` and `context.done()` are now re-routed to the `callback` function
+* Calls to `context.succeed()`, `context.fail()` and `context.done()` are now re-routed to the `callback` function
+
+Internal:
+
+* Updated for future rough in for the [lov](https://github.com/vandium-io/lov) validation engine
+* Simplified and streamline code and tests in several areas
 
 ## 2.4.0 (2016-05-11)
 
