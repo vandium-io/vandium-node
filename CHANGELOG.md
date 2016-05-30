@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.6.0 (TBD)
+
+New:
+
+* XSRF token support for JWT for improved security
+
+Internal:
+
+* Refactored validation pipeline and JWT validation
+
 ## 2.5.0 (2016-05-27)
 
 Improved:
