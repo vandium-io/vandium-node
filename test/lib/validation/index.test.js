@@ -71,12 +71,39 @@ describe( 'lib/validation/index', function() {
                 name: '      John Doe  ',
                 age: '42',
                 email: 'john.doe@vandium.io',
+                other: 'stuff',
+                jwt: 'jwt-goes-here!'
+            };
+
+            validation.ignore( 'other' );
+
+            validation.validate( { event, ignored: [ 'jwt' ] } );
+
+            expect( event ).to.eql( { name: 'John Doe', age: 42, email: 'john.doe@vandium.io', other: 'stuff', jwt: 'jwt-goes-here!' } );
+        });
+
+        it( 'basic schema (ignored not set in pipelineEvent)', function() {
+
+            var schema = {
+
+                name: vandium.types.string().trim(),
+                age: vandium.types.number().required(),
+                email: vandium.types.email().required(),
+            };
+
+            validation.configure( schema );
+
+            var event = {
+
+                name: '      John Doe  ',
+                age: '42',
+                email: 'john.doe@vandium.io',
                 other: 'stuff'
             };
 
             validation.ignore( 'other' );
 
-            validation.validate( { event, ignored: [] } );
+            validation.validate( { event, ignored: null } );
 
             expect( event ).to.eql( { name: 'John Doe', age: 42, email: 'john.doe@vandium.io', other: 'stuff' } );
         });

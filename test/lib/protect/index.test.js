@@ -156,7 +156,7 @@ describe( 'lib/protect/index', function() {
 
         it( 'unknown value', function() {
 
-            process.env.VANDIUM_PROTECT = 'special'
+            process.env.VANDIUM_PROTECT = 'special';
 
             protect = require( PROTECT_MODULE_PATH );
 
