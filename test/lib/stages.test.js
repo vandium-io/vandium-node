@@ -14,6 +14,7 @@ describe( 'lib/stages', function() {
 
                 START: 'start',
                 JWT: 'jwt',
+                PROTECT: 'protect',
                 INPUT: 'input',
                 EXEC: 'exec',
                 POST: 'post'

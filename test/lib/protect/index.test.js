@@ -21,7 +21,7 @@ describe( 'lib/protect/index', function() {
         protect.sql.report();
     });
 
-    describe( '.scan', function() {
+    describe( '.validate', function() {
 
         after( function() {
 
@@ -35,7 +35,7 @@ describe( 'lib/protect/index', function() {
                 myField: "nothin' exciting"
             };
 
-            protect.scan( event );
+            protect.validate( { event } );
 
             expect( event.myField ).to.equal( "nothin' exciting" );
         });
@@ -49,7 +49,7 @@ describe( 'lib/protect/index', function() {
 
             protect.sql.fail();
 
-            expect( protect.scan.bind( null, event ) ).to.throw( 'Error: validation error: myField is invalid' );
+            expect( protect.validate.bind( null, { event } ) ).to.throw( 'Error: validation error: myField is invalid' );
         });
     });
 
@@ -66,7 +66,7 @@ describe( 'lib/protect/index', function() {
 
             protect.disable( 'sql' );
 
-            protect.scan( event );
+            protect.validate( { event } );
 
             // re-enable
             event = {
@@ -76,7 +76,7 @@ describe( 'lib/protect/index', function() {
 
             protect.sql.fail();
 
-            expect( protect.scan.bind( null, event ) ).to.throw( 'Error: validation error: myField is invalid' );
+            expect( protect.validate.bind( null, { event } ) ).to.throw( 'Error: validation error: myField is invalid' );
 
             expect( state.current.protect ).to.eql( { sql: { enabled: true, mode: 'fail' } } );
         });
@@ -92,7 +92,7 @@ describe( 'lib/protect/index', function() {
 
             protect.disable();
 
-            protect.scan( event );
+            protect.validate( { event } );
         });
     });
 

@@ -130,4 +130,38 @@ describe( 'lib/utils', function() {
             expect( v1 ).to.eql( v2 );
         });
     });
+
+    describe( '.parseBoolean', function() {
+
+        [ true, 'yes', 'On', 'True', 'Yes', 'true' ].forEach( function( value ) {
+
+            it( 'value: ' + value, function() {
+
+                expect( utils.parseBoolean( value ) ).to.be.true;
+            })
+        });
+
+        [ false, 'no', 'off', 'False', 'No', 'false' ].forEach( function( value ) {
+
+            it( 'value: ' + value, function() {
+
+                expect( utils.parseBoolean( value ) ).to.be.false;
+            })
+        });
+
+        it( 'unknown value', function() {
+
+            expect( utils.parseBoolean( 'whatever' ) ).to.be.false;
+        });
+
+        it( 'null value', function() {
+
+            expect( utils.parseBoolean( null ) ).to.be.false;
+        });
+
+        it( 'undefined value', function() {
+
+            expect( utils.parseBoolean() ).to.be.false;
+        });
+    });
 });
