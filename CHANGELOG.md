@@ -1,11 +1,20 @@
 # Change Log
 
+## 2.6.0 (2016-06-09)
+
+New:
+
+* XSRF token support for JWT for improved security
+
+Internal:
+
+* Refactored validation pipeline and JWT validation
+
 ## 2.5.1 (2016-05-30)
 
 Internal:
 
 * Changed to use [vandium-utils](https://github.com/vandium-io/vandium-utils) project.
-
 
 ## 2.5.0 (2016-05-27)
 
