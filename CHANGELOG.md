@@ -10,6 +10,12 @@ Internal:
 
 * Refactored validation pipeline and JWT validation
 
+## 2.5.1 (2016-05-30)
+
+Internal:
+
+* Changed to use [vandium-utils](https://github.com/vandium-io/vandium-utils) project.
+
 ## 2.5.0 (2016-05-27)
 
 Improved:

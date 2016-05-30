@@ -30,9 +30,10 @@
   "author": "Vandium Software Inc.",
   "license": "BSD-3-Clause",
   "dependencies": {
+    "joi": "8.0.x",
     "jwt-simple": "0.5.x",
     "loglevel": "1.4.x",
-    "joi": "8.0.x"
+    "vandium-utils": "^1.0.0"
   },
   "devDependencies": {
     "app-root-path": "^1.0.0",
