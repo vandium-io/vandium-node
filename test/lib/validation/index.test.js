@@ -30,7 +30,7 @@ describe( 'lib/validation/index', function() {
     });
 
 
-    describe( '.verify', function() {
+    describe( '.validate', function() {
 
         it( 'basic schema', function() {
 
@@ -50,7 +50,7 @@ describe( 'lib/validation/index', function() {
                 email: 'john.doe@vandium.io'
             };
 
-            validation.verify( event );
+            validation.validate( { event, ignored: [] } );
 
             expect( event ).to.eql( { name: 'John Doe', age: 42, email: 'john.doe@vandium.io' } );
         });
@@ -76,7 +76,7 @@ describe( 'lib/validation/index', function() {
 
             validation.ignore( 'other' );
 
-            validation.verify( event );
+            validation.validate( { event, ignored: [] } );
 
             expect( event ).to.eql( { name: 'John Doe', age: 42, email: 'john.doe@vandium.io', other: 'stuff' } );
         });
@@ -137,7 +137,7 @@ describe( 'lib/validation/index', function() {
                 any: 'anything here'
             };
 
-            validation.verify( event );
+            validation.validate( { event, ignored: [] } );
 
             expect( event.str ).to.equal( 'my string' );
             expect( event.strWithOpts ).to.equal( 'my string with opts' );
@@ -174,7 +174,7 @@ describe( 'lib/validation/index', function() {
 
             var event = { num: '1234' };
 
-            validation.verify( event );
+            validation.validate( { event, ignored: [] } );
 
             expect( event.num ).to.equal( 1234 );
         });
@@ -200,7 +200,7 @@ describe( 'lib/validation/index', function() {
 
             var event = { num: '1234' };
 
-            validation.verify( event );
+            validation.validate( { event, ignored: [] } );
 
             expect( event.num ).to.equal( 1234 );
         });
@@ -220,7 +220,7 @@ describe( 'lib/validation/index', function() {
                 VANDIUM_SPECIAL: 'this is special'
             }
 
-            validation.verify( event );
+            validation.validate( { event, ignored: [] } );
 
             expect( event.name ).to.equal( 'Fred' );
             expect( event.VANDIUM_SPECIAL ).to.equal( 'this is special' );
@@ -245,7 +245,7 @@ describe( 'lib/validation/index', function() {
                 special3: 3
             }
 
-            validation.verify( event );
+            validation.validate( { event, ignored: [] } );
 
             expect( event.name ).to.equal( 'Fred' );
             expect( event.special1 ).to.equal( 1 );
@@ -272,7 +272,9 @@ describe( 'lib/validation/index', function() {
                 other: 'other data that will cause an exception'
             };
 
-            expect( validation.verify.bind( validation, event ) ).to.throw( '"other" is not allowed' );
+            let pipelineEvent = { event, ignored: [] };
+
+            expect( validation.validate.bind( validation, pipelineEvent ) ).to.throw( '"other" is not allowed' );
         });
     });
 
