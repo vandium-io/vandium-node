@@ -4,9 +4,9 @@
 
 const expect = require( 'chai' ).expect;
 
-const ValidationProvider = require( '../../../lib/validation/validation_provider' );
+const ValidationProvider = require( '../../../../lib/plugins/validation/validation_provider' );
 
-const provider = require( '../../../lib/validation/joi_provider' );
+const provider = require( '../../../../lib/plugins/validation/joi_provider' );
 
 
 function validateJoiObject( obj, type ) {
@@ -15,7 +15,7 @@ function validateJoiObject( obj, type ) {
     expect( obj._type ).to.equal( type );
 }
 
-describe( 'lib/validation/joi_provider', function() {
+describe( 'lib/plugins/validation/joi_provider', function() {
 
     describe( 'JoiValidationProvider', function() {
 

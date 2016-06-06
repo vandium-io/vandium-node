@@ -8,9 +8,9 @@ var freshy = require( 'freshy' );
 
 var uuid = require( 'node-uuid' );
 
-const VALIDATION_MODULE_PATH = '../../../lib/validation';
+const VALIDATION_MODULE_PATH = '../../../../lib/plugins/validation';
 
-describe( 'lib/validation/index', function() {
+describe( 'lib/plugins/validation/index', function() {
 
     let vandium;
 
@@ -19,7 +19,7 @@ describe( 'lib/validation/index', function() {
     beforeEach( function() {
 
         freshy.unload( VALIDATION_MODULE_PATH );
-        freshy.unload( '../../../lib/ignored-properties' );
+        freshy.unload( '../../../../lib/ignored-properties' );
 
         validation = require( VALIDATION_MODULE_PATH );
 

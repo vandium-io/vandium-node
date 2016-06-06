@@ -6,11 +6,11 @@ const expect = require( 'chai' ).expect;
 
 const sinon = require( 'sinon' );
 
-const SCAN_ENGINE_MODULE_PATH = '../../../lib/protect/scan_engine';
+const SCAN_ENGINE_MODULE_PATH = '../../../../lib/plugins/protect/scan_engine';
 
-const state = require( '../../../lib/state' );
+const state = require( '../../../../lib/state' );
 
-describe( 'lib/protect/scan_engine', function() {
+describe( 'lib/plugins/protect/scan_engine', function() {
 
     let ScanEngine = require( SCAN_ENGINE_MODULE_PATH );
 

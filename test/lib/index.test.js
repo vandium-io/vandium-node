@@ -36,7 +36,7 @@ describe( 'index', function() {
 
         freshy.unload( VANDIUM_MODULE_PATH );
         freshy.unload( '../../lib/config' );
-        freshy.unload( '../../lib/jwt' );
+        freshy.unload( '../../lib/plugins' );
 
         configUtils.removeConfig( done );
     });
@@ -45,7 +45,7 @@ describe( 'index', function() {
 
         freshy.unload( VANDIUM_MODULE_PATH );
         freshy.unload( '../../lib/config' );
-        freshy.unload( '../../lib/jwt' );
+        freshy.unload( '../../lib/plugins' );
 
         preventRestorer.restore();
     });
