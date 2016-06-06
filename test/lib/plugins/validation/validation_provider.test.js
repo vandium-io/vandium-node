@@ -6,9 +6,9 @@ const expect = require( 'chai' ).expect;
 
 const sinon = require( 'sinon' );
 
-const ValidationProvider = require( '../../../lib/validation/validation_provider' );
+const ValidationProvider = require( '../../../../lib/plugins/validation/validation_provider' );
 
-describe( 'lib/validation/validation_provider', function() {
+describe( 'lib/plugins/validation/validation_provider', function() {
 
     describe( 'ValidationProvider', function() {
 

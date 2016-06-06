@@ -6,11 +6,11 @@ const freshy = require( 'freshy' );
 
 const expect = require( 'chai' ).expect;
 
-const PROTECT_MODULE_PATH = '../../../lib/protect';
+const PROTECT_MODULE_PATH = '../../../../lib/plugins/protect';
 
-const STATE_MODULE_PATH = '../../../lib/state';
+const STATE_MODULE_PATH = '../../../../lib/state';
 
-describe( 'lib/protect/index', function() {
+describe( 'lib/plugins/protect/index', function() {
 
     let protect = require( PROTECT_MODULE_PATH );
 

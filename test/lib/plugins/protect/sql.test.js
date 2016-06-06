@@ -4,11 +4,13 @@
 
 const expect = require( 'chai' ).expect;
 
-const ScanEngine = require( '../../../lib/protect/scan_engine' );
+const sinon = require( 'sinon' );
 
-const sql = require( '../../../lib/protect/sql' );
+const ScanEngine = require( '../../../../lib/plugins/protect/scan_engine' );
 
-describe( 'lib/protect/sql', function() {
+const sql = require( '../../../../lib/plugins/protect/sql' );
+
+describe( 'lib/plugins/protect/sql', function() {
 
     describe( 'SQLScanEngine', function() {
 

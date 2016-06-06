@@ -8,13 +8,13 @@ const sinon = require( 'sinon' );
 
 const jwtBuilder = require( 'jwt-builder' );
 
-const validator = require( '../../../lib/jwt/validator' );
+const validator = require( '../../../../lib/plugins/jwt/validator' );
 
 const uuid = require( 'node-uuid' );
 
 //const token = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred' } );
 
-describe( 'lib/jwt/validator', function() {
+describe( 'lib/plugins/jwt/validator', function() {
 
     let configuration;
 

@@ -10,11 +10,11 @@ const proxyquire = require( 'proxyquire' ).noCallThru();
 
 const envRestorer = require( 'env-restorer' );
 
-const JWT_MODULE_PATH = '../../../lib/jwt/index';
+const JWT_MODULE_PATH = '../../../../lib/plugins/jwt/index';
 
 const DEFAULT_CONFIGURATION_STATE = { enabled: false };
 
-describe( 'lib/jwt/index', function() {
+describe( 'lib/plugins/jwt/index', function() {
 
     let configStub;
 
@@ -79,11 +79,11 @@ describe( 'lib/jwt/index', function() {
 
                 './configuration': configurationStub,
 
-                '../state': stateStub,
+                '../../state': stateStub,
 
                 './validator': validatorStub,
 
-                '../config': configStub
+                '../../config': configStub
             });
 
         return jwt;

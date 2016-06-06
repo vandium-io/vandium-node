@@ -4,9 +4,9 @@
 
 const expect = require( 'chai' ).expect;
 
-const JWTConfiguration = require( '../../../lib/jwt/configuration' );
+const JWTConfiguration = require( '../../../../lib/plugins/jwt/configuration' );
 
-describe( 'lib/jwt/configuration', function() {
+describe( 'lib/plugins/jwt/configuration', function() {
 
     describe( 'JWTConfiguration', function() {
 
