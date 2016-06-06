@@ -19,7 +19,6 @@ describe( 'lib/plugins/validation/index', function() {
     beforeEach( function() {
 
         freshy.unload( VALIDATION_MODULE_PATH );
-        freshy.unload( '../../../../lib/ignored-properties' );
 
         validation = require( VALIDATION_MODULE_PATH );
 

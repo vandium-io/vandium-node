@@ -146,11 +146,7 @@ describe( 'index', function() {
 
             let context = {
 
-                succeed: sinon.stub(),
-
-                fail: sinon.stub(),
-
-                done: sinon.stub()
+                getRemainingTimeInMillis: function() { return 5000 }
             };
 
             // Can't use lambda-tester here (just yet!)
@@ -162,20 +158,7 @@ describe( 'index', function() {
                     return done( err );
                 }
 
-                try {
-
-                    expect( result ).to.equal( result );
-
-                    expect( context.succeed.called ).to.be.false;
-                    expect( context.fail.called ).to.be.false;
-                    expect( context.done.called ).to.be.false;
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
+                done();
             });
 
             expect( returnValue ).to.equal( 42 );
