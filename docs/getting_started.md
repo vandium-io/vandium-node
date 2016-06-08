@@ -1,6 +1,6 @@
 # Getting Started
 
-Vandium can be used with minimal change to your existing code.
+Vandium can be used with minimal changes to your existing code.
 
 ```js
 var vandium = require( 'vandium' );

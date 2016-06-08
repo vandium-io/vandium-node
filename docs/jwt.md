@@ -66,6 +66,9 @@ VANDIUM_JWT_ALGORITHM   | Specifies the algorithm for JWT verification. Can be `
 VANDIUM_JWT_SECRET      | Secret key value for use with HMAC SHA algorithms: `HS256`, `HS384` and `HS512`
 VANDIUM_JWT_PUBKEY      | Public key used used with `RS256` algorithm
 VANDIUM_JWT_TOKEN_NAME  | Name of the token variable in the `event` object. Defaults to `jwt`
+VANDIUM_JWT_USE_XSRF    | Enable or disable Cross Site Request Forgery (XSRF) token. Defaults to `false`
+VANDIUM_JWT_XSRF_TOKEN_NAME | XSRF token name. Defaults to `xsrf`
+VANDIUM_JWT_XSRF_CLAIM_NAME | XSRF claim name inside JWT. Defaults to `xsrf_token`
 
 ## Configuring From the Handler Code
 
@@ -77,6 +80,9 @@ algorithm   |Algorithm Type                | yes
 secret      |Shared secret value           | Only for algorithm types: `HS256`, `HS384` or `HS512`
 public_key  |Public key value              | Only for `RS256` algorithm type
 token_name  |Event property name for token | No. Default is `jwt`.
+xsrf        |Enable/Disable Cross Site Request Forgery (XSRF) | No. Default is `false`
+xsrf_token_name | Event property name for the XSRF token | No. Default is `xsrf`
+xsrf_claim_name | Claim name for XSRF token | No. Default is `xsrf_token`
 
 
 The following example validates a JWT (passed in the event using the `jwt` property name) using the `HS256` algorithm with a shared secret:

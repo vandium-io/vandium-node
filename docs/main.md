@@ -4,7 +4,8 @@ Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions
 
 ## Features
 * Powerful input validation
-* JWT verification and validation
+* JSON Web Token (JWT) verification and validation
+* Cross Site Request Forgery (XSRF) detection when using JWT
 * SQL Injection (SQLi) detection and protection
 * Environment variable mapping
 * Free resources post handler execution
