@@ -21,7 +21,7 @@ Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions
 
 ## How it works
 
-Vandium wraps your Node.js handler and takes responsibility for validating JWT tokens, detecting SQL Injection attacks, validating input values from the incoming event. This allows you to focus on the core functionality of your code while reducing the overall amount of code. In addition to the reduction in code, your Lambda handler will have increased robustness, greater level of security and reduction of future technical debt.
+Vandium wraps your Node.js handler and takes responsibility for validating JWT tokens, detecting SQL Injection attacks, validating input values from the incoming event and assisting your code in cleaning up any open resources. This allows you to focus on the core functionality of your code while reducing the overall amount of code that needs to be written. In addition to reduction the code you need to write, Vandium will add increased robustness, greater level of security and reduction in technical debt.
 
 ![Lambda Execution Handler Flow](docs/img/flow.png?raw=true "")
 
