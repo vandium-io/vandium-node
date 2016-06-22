@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.6.1 (2016-06-22)
+
+Updated:
+
+* Joi from 8.0.x to 8.4.x
+
+Internal:
+
+* Changed resolution method for validation engine (Joi)
+
 ## 2.6.0 (2016-06-09)
 
 New:
