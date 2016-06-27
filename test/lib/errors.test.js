@@ -104,7 +104,22 @@ describe( 'lib/errors', function() {
 
             errors.strip( err );
 
-            expect(  Object.getOwnPropertyNames( err ) ).to.eql( [ 'message' ] );
+            expect(  Object.getOwnPropertyNames( err ) ).to.eql( [ 'message', 'stack' ] );
+        });
+
+
+        it( 'error with name', function() {
+
+            let err = new Error( 'test' );
+
+            err.name = 'MyError'
+            err.other = 'hello';
+
+            expect(  Object.getOwnPropertyNames( err ) ).to.eql( [ 'stack', 'message', 'name', 'other' ] );
+
+            errors.strip( err );
+
+            expect(  Object.getOwnPropertyNames( err ) ).to.eql( [ 'name', 'message', 'stack' ] );
         });
 
         it( 'non error (string) case', function() {

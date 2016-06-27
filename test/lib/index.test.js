@@ -96,7 +96,7 @@ describe( 'index', function() {
                 .expectError( function( err ) {
 
                     expect( err.message ).to.equal( 'bang' );
-                    expect( err.stack ).to.not.exist;
+                    expect( err.stack ).to.equal( '' );
                 });
         });
 
