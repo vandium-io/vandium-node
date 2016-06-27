@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.7.0 (2016-06-27)
+
+New:
+
+* Exceptions that get routed to `callback()` or `context.fail()` will get all properties, other than `err.message`, stripped
+to hide details of underlying code. This can be disabled by calling `vandium.stripErrors( false )`.
+
 ## 2.6.1 (2016-06-22)
 
 Updated:
