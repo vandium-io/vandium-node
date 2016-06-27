@@ -101,6 +101,23 @@ describe( 'index', function() {
                 });
         });
 
+        it( 'simple wrap with no jwt or validation using callback( string )', function() {
+
+            let vandium = require( VANDIUM_MODULE_PATH );
+
+            const handler = vandium( function( event, context, callback ) {
+
+                callback( 'bang' );
+            });
+
+            return LambdaTester( handler )
+                .expectError( function( err ) {
+
+                    expect( err ).to.equal( 'bang' );
+                });
+        });
+
+
         it( 'simple wrap with no jwt or validation using context.fail( err )', function() {
 
             let vandium = require( VANDIUM_MODULE_PATH );

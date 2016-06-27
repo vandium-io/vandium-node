@@ -92,6 +92,36 @@ describe( 'lib/plugins/exec/runner', function() {
             });
         });
 
+        it( 'running the handler with callback( string )', function() {
+
+            let func = function( event, context, callback ) {
+
+                callback( 'bang' );
+            };
+
+            runner.install( pipeline, func );
+
+            let pipelineCall = pipeline.add.firstCall.args[1];
+
+            let event = {};
+            let context = {};
+
+            let pipelineEvent = { event, context, session: { updateStage: sinon.stub() } };
+
+            // synchronous
+            pipelineCall( pipelineEvent, function( err, result ) {
+
+                expect( pipelineEvent.session.updateStage.calledOnce ).to.be.true;
+                expect( pipelineEvent.session.updateStage.withArgs( 'exec' ).calledOnce ).to.be.true;
+
+                expect( err ).to.exist;
+                expect( err ).to.equal( 'bang' );
+
+                expect( result ).to.be.undefined;
+            });
+        });
+
+
         it( 'running the handler returning Promise.resolve()', function( done ) {
 
             let func = function() {
