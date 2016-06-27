@@ -131,7 +131,7 @@ describe( 'index', function() {
             return LambdaTester( handler )
                 .expectError( function( err ) {
 
-                    expect( err ).to.equal( 'bang' );
+                    expect( err.message ).to.equal( 'bang' );
                 });
         });
 
