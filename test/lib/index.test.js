@@ -12,8 +12,6 @@ const LambdaTester = require( 'lambda-tester' );
 
 const jwtBuilder = require( 'jwt-builder' );
 
-const sinon = require( 'sinon' );
-
 const configUtils = require( './config-utils' );
 
 const VANDIUM_MODULE_PATH = '../../lib/index';
@@ -98,6 +96,26 @@ describe( 'index', function() {
                 .expectError( function( err ) {
 
                     expect( err.message ).to.equal( 'bang' );
+                    expect( err.stack ).to.not.exist;
+                });
+        });
+
+        it( 'simple wrap with no jwt or validation using callback( err ), vandium.stripErrors( false )', function() {
+
+            let vandium = require( VANDIUM_MODULE_PATH );
+
+            vandium.stripErrors( false );
+
+            const handler = vandium( function( event, context, callback ) {
+
+                callback( new Error( 'bang' ) );
+            });
+
+            return LambdaTester( handler )
+                .expectError( function( err ) {
+
+                    expect( err.message ).to.equal( 'bang' );
+                    expect( err.stack ).to.exist;
                 });
         });
 

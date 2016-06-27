@@ -1,5 +1,7 @@
 'use strict';
 
+/*jshint expr: true*/
+
 const expect = require( 'chai' ).expect;
 
 const errors = require( '../../lib/errors' );
@@ -88,5 +90,36 @@ describe( 'lib/errors', function() {
                 expect( err.cause ).to.equal( cause );
             }
         })
+    });
+
+    describe( '.strip', function() {
+
+        it( 'normal operation', function() {
+
+            let err = new Error( 'test' );
+
+            err.other = 'hello';
+
+            expect(  Object.getOwnPropertyNames( err ) ).to.eql( [ 'stack', 'message', 'other' ] );
+
+            errors.strip( err );
+
+            expect(  Object.getOwnPropertyNames( err ) ).to.eql( [ 'message' ] );
+        });
+
+        it( 'non error (string) case', function() {
+
+            let str = 'hello';
+
+            errors.strip( str );
+
+            expect( str ).to.equal( 'hello' );
+
+            let obj = { one: 1 };
+
+            errors.strip( obj );
+
+            expect( obj ).to.eql( { one: 1 } );
+        });
     });
 });
