@@ -446,6 +446,29 @@ describe( 'index', function() {
                 });
         });
 
+        it( 'multiple wrap case', function() {
+
+            let vandium = require( VANDIUM_MODULE_PATH );
+
+            vandium( function( event, context ) {
+
+                // should route to callback( null, 'ok' );
+                context.succeed( 'ok' );
+            });
+
+            const handler2 = vandium( function( event, context ) {
+
+                // should route to callback( null, 'ok' );
+                context.succeed( 'ok!' );
+            });
+
+            return LambdaTester( handler2 )
+                .expectResult( function( result ) {
+
+                    expect( result ).to.equal( 'ok!' );
+                });
+        });
+
         it( 'fail: simple wrap with no jwt or validation, eval prevented', function() {
 
             preventRestorer.restore();

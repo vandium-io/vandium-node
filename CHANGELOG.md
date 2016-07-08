@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.7.2 (2016-07-08)
+
+Updated:
+
+* Changed how internal pipeline is created and thus preventing exceptions where `vandium()` is called more than once.
+
 ## 2.7.1 (2016-06-27)
 
 New:
