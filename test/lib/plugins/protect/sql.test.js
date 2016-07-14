@@ -45,7 +45,18 @@ describe( 'lib/plugins/protect/sql', function() {
                 sql.scan( event );
             });
 
+            it( 'regression false positive tests', function() {
+
+                var event = {
+
+                    escapeComment1: "/details?seoName=smith---whatever-main-office"
+                };
+
+                sql.scan( event );
+            });
+
             [
+                [ "admin' --", 'ESCAPED_COMMENT' ],
                 [ "admin'--", 'ESCAPED_COMMENT' ],
                 [ "1' or 1=1;drop table user;", 'ESCAPED_OR' ],
                 [ "1' and 1=1;drop table user;", 'ESCAPED_AND' ],

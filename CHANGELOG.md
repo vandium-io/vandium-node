@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.7.3 (2016-07-14)
+
+Fixed:
+
+* SQL injection attack detection for escape sequence with comments reporting false positive (issue #8)
+
 ## 2.7.2 (2016-07-08)
 
 Updated:
