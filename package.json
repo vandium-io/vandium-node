@@ -1,6 +1,6 @@
 {
   "name": "vandium",
-  "version": "2.7.3",
+  "version": "2.8.0",
   "description": "Vandium AWS Lambda wrapper for Node.js",
   "main": "lib/index.js",
   "keywords": [
@@ -31,6 +31,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "joi": "^8.4.x",
+    "joi-json": "^1.0.1",
     "jwt-simple": "0.5.x",
     "loglevel": "1.4.x",
     "vandium-utils": "^1.0.0"
