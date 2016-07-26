@@ -2,166 +2,272 @@
 
 /*jshint expr: true*/
 
+const envRestorer = require( 'env-restorer' );
+
 const freshy = require( 'freshy' );
 
 const expect = require( 'chai' ).expect;
 
-const PROTECT_MODULE_PATH = '../../../../lib/plugins/protect';
+const MODULE_PATH = 'lib/plugins/protect/index';
 
-const STATE_MODULE_PATH = '../../../../lib/state';
+const ProtectPlugin = require( '../../../../' + MODULE_PATH );
 
-xdescribe( 'lib/plugins/protect/index', function() {
+describe( MODULE_PATH, function() {
 
-    let protect = require( PROTECT_MODULE_PATH );
+    describe( 'ProtectPlugin', function() {
 
-    let state = require( STATE_MODULE_PATH );
+        describe( 'constructor', function() {
 
-    afterEach( function() {
+            beforeEach( function() {
 
-        protect.sql.report();
-    });
+                delete process.env.VANDIUM_PROTECT;
+            });
 
-    describe( '.validate', function() {
+            afterEach( function() {
 
-        after( function() {
+                envRestorer.restore();
+            });
 
-            protect.sql.report();
-        });
+            it( 'process.env.VANDIUM_PROTECT not set', function() {
 
-        it( 'no attack', function() {
+                let protect = new ProtectPlugin();
 
-            let event = {
+                expect( protect.name ).to.equal( 'protect' );
 
-                myField: "nothin' exciting"
-            };
+                expect( protect.engines ).to.exist;
+                expect( protect.engines.sql ).to.exist;
 
-            protect.validate( { event } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+            });
 
-            expect( event.myField ).to.equal( "nothin' exciting" );
-        });
+            [
+                [ 'yes', { sql: { enabled: true, mode: 'fail' } } ],
+                [ 'on', { sql: { enabled: true, mode: 'fail' } } ],
+                [ 'true', { sql: { enabled: true, mode: 'fail' } } ],
+                [ 'no', { sql: { enabled: false } } ],
+                [ 'off', { sql: { enabled: false } } ],
+                [ 'false', { sql: { enabled: false } } ],
+                [ 'report', { sql: { enabled: true, mode: 'report' } } ],
+                [ 'unknown-value', { sql: { enabled: true, mode: 'report' } } ]
+            ].forEach( function( testCase ) {
 
-        it( 'potential attack', function() {
+                it( 'process.env.VANDIUM_PROTECT = ' + testCase[0], function() {
 
-            let event = {
+                    process.env.VANDIUM_PROTECT = testCase[0];
 
-                myField: "''--"
-            };
+                    let protect = new ProtectPlugin();
 
-            protect.sql.fail();
+                    expect( protect.name ).to.equal( 'protect' );
 
-            expect( protect.validate.bind( null, { event } ) ).to.throw( 'Error: validation error: myField is invalid' );
-        });
-    });
+                    expect( protect.engines ).to.exist;
+                    expect( protect.engines.sql ).to.exist;
 
-    describe( '.disable()', function() {
+                    expect( protect.state ).to.eql( testCase[1] );
+                });
 
-        it( 'disable sql', function() {
+                it( 'process.env.VANDIUM_PROTECT = ' + testCase[0].toUpperCase(), function() {
 
-            let event = {
+                    process.env.VANDIUM_PROTECT = testCase[0].toUpperCase();
 
-                myField: "''--"
-            };
+                    let protect = new ProtectPlugin();
 
-            protect.sql.fail();
+                    expect( protect.name ).to.equal( 'protect' );
 
-            protect.disable( 'sql' );
+                    expect( protect.engines ).to.exist;
+                    expect( protect.engines.sql ).to.exist;
 
-            protect.validate( { event } );
-
-            // re-enable
-            event = {
-
-                myField: "''--"
-            };
-
-            protect.sql.fail();
-
-            expect( protect.validate.bind( null, { event } ) ).to.throw( 'Error: validation error: myField is invalid' );
-
-            expect( state.current.protect ).to.eql( { sql: { enabled: true, mode: 'fail' } } );
-        });
-
-        it( 'disable all', function() {
-
-            let event = {
-
-                myField: "''--"
-            };
-
-            protect.sql.fail();
-
-            protect.disable();
-
-            protect.validate( { event } );
-        });
-    });
-
-    describe( 'configure via environment variables', function() {
-
-        beforeEach( function() {
-
-            freshy.unload( PROTECT_MODULE_PATH );
-        });
-
-        it( 'not set', function() {
-
-            delete process.env.VANDIUM_PROTECT;
-
-            protect = require( PROTECT_MODULE_PATH );
-
-            expect( protect.sql.enabled ).to.be.true;
-            expect( protect.sql.mode ).to.equal( 'report' );
-        });
-
-        // on/true/yes
-        [ 'on', 'On', 'yes', 'Yes', 'true', 'True' ].forEach( function( value ) {
-
-            it( value, function() {
-
-                process.env.VANDIUM_PROTECT = value;
-
-                protect = require( PROTECT_MODULE_PATH );
-
-                expect( protect.sql.enabled ).to.be.true;
-                expect( protect.sql.mode ).to.equal( 'fail' );
+                    expect( protect.state ).to.eql( testCase[1] );
+                });
             });
         });
 
-        // off/no/false
-        [ 'off', 'Off', 'no', 'No', 'false', 'False' ].forEach( function( value ) {
+        describe( '.disable', function() {
 
-            it( value, function() {
+            it( 'disable sql', function() {
 
-                process.env.VANDIUM_PROTECT = value;
+                let protect = new ProtectPlugin();
 
-                protect = require( PROTECT_MODULE_PATH );
+                expect( protect.sql.state.enabled ).to.be.true;
 
-                expect( protect.sql.enabled ).to.be.false;
+                protect.disable( 'sql' );
+
+                expect( protect.sql.state ).to.eql( { enabled: false } );
+                expect( protect.state ).to.eql( { sql: { enabled: false } } );
+            });
+
+            it( 'disable unknown engine', function() {
+
+                let protect = new ProtectPlugin();
+
+                expect( protect.sql.state.enabled ).to.be.true;
+
+                protect.disable( 'special' );
+
+                expect( protect.sql.state.enabled ).to.be.true;
+            });
+
+            it( 'disable all', function() {
+
+                let protect = new ProtectPlugin();
+
+                expect( protect.sql.state.enabled ).to.be.true;
+
+                protect.disable();
+
+                expect( protect.sql.state ).to.eql( { enabled: false } );
+                expect( protect.state ).to.eql( { sql: { enabled: false } } );
             });
         });
 
-        // off/no/false
-        [ 'report', 'Report' ].forEach( function( value ) {
+        describe( '.configure', function() {
 
-            it( value, function() {
+            it( 'empty configuration, newly created instance', function() {
 
-                process.env.VANDIUM_PROTECT = value;
+                let protect = new ProtectPlugin();
 
-                protect = require( PROTECT_MODULE_PATH );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
 
-                expect( protect.sql.enabled ).to.be.true;
-                expect( protect.sql.mode ).to.equal( 'report' );
+                protect.configure( {} );
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+            });
+
+            it( 'empty configuration, disabled instance', function() {
+
+                let protect = new ProtectPlugin();
+
+                protect.disable();
+
+                expect( protect.state ).to.eql( { sql: { enabled: false} } );
+
+                protect.configure( {} );
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+            });
+
+            it( 'missing configuration, newly created instance', function() {
+
+                let protect = new ProtectPlugin();
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+
+                protect.configure();
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+            });
+
+            it( 'missing configuration, disabled instance', function() {
+
+                let protect = new ProtectPlugin();
+
+                protect.disable();
+
+                expect( protect.state ).to.eql( { sql: { enabled: false} } );
+
+                protect.configure();
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+            });
+
+            it( 'configuration = { mode: "fail" }', function() {
+
+                let protect = new ProtectPlugin();
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+
+                protect.configure( { mode: 'fail' } );
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'fail' } } );
+            });
+
+            it( 'configuration = { mode: "disabled" }', function() {
+
+                let protect = new ProtectPlugin();
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+
+                protect.configure( { mode: 'disabled' } );
+
+                expect( protect.state ).to.eql( { sql: { enabled: false } } );
+            });
+
+            it( 'configuration = { mode: "report" }', function() {
+
+                let protect = new ProtectPlugin();
+
+                protect.disable();
+
+                expect( protect.state ).to.eql( { sql: { enabled: false } } );
+
+                protect.configure( { mode: 'report' } );
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+            });
+
+            it( 'configuration = { mode: "unknown-value" }', function() {
+
+                let protect = new ProtectPlugin();
+
+                protect.disable();
+
+                expect( protect.state ).to.eql( { sql: { enabled: false } } );
+
+                protect.configure( { mode: 'unknown-value' } );
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+            });
+
+            it( 'configuration = { sql: { mode: "fail" } }', function() {
+
+                let protect = new ProtectPlugin();
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+
+                protect.configure( { sql: { mode: "fail" } } );
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'fail' } } );
             });
         });
 
-        it( 'unknown value', function() {
+        describe( '.execute', function() {
 
-            process.env.VANDIUM_PROTECT = 'special';
+            it( 'no attack', function( done ) {
 
-            protect = require( PROTECT_MODULE_PATH );
+                let event = {
 
-            expect( protect.sql.enabled ).to.be.true;
-            expect( protect.sql.mode ).to.equal( 'report' );
+                    myField: "nothin' exciting"
+                };
+
+                let protect = new ProtectPlugin();
+
+                protect.sql.fail();
+
+                protect.execute( { event }, function( err ) {
+
+                    done( err );
+                });
+            });
+
+            it( 'potential attack', function( done ) {
+
+                let event = {
+
+                    myField: "1';drop table user;"
+                };
+
+                let protect = new ProtectPlugin();
+
+                protect.sql.fail();
+
+                console.log( protect.state );
+
+                protect.execute( { event }, function( err ) {
+
+                    expect( err.message ).to.equal( 'validation error: myField is invalid' );
+
+                    done();
+                });
+            });
         });
     });
 });
