@@ -42,7 +42,7 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
                     configuration.update( options );
 
-                    expect( configuration ).to.eql( { algorithm, key: 'my-secret', enabled: true, useXsrf: false } );
+                    expect( configuration.state ).to.eql( { algorithm, key: 'my-secret', enabled: true, xsrf: false, tokenName: 'jwt' } );
                 });
             });
 
@@ -58,7 +58,7 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
                     configuration.update( options );
 
-                    expect( configuration ).to.eql( { algorithm, key: 'my-pub-key', enabled: true, useXsrf: false } );
+                    expect( configuration.state ).to.eql( { algorithm, key: 'my-pub-key', enabled: true, xsrf: false, tokenName: 'jwt' } );
                 });
             });
 
@@ -71,7 +71,7 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
                 configuration.update( options );
 
-                expect( configuration ).to.eql( { tokenName: 'JWT', enabled: true, useXsrf: false } );
+                expect( configuration.state ).to.eql( { tokenName: 'JWT', enabled: true, xsrf: false } );
             });
 
             it( 'xsrf = true, xsrf_token_name and xsrf_claim_name', function() {
@@ -85,8 +85,8 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
                 configuration.update( options );
 
-                expect( configuration ).to.eql( { useXsrf: true, xsrfTokenName: 'XSRF-TOKEN',
-                                                  xsrfClaimName: 'xsrf', enabled: true } );
+                expect( configuration.state ).to.eql( { xsrf: true, xsrfToken: 'XSRF-TOKEN',
+                                                  xsrfClaimName: 'xsrf', enabled: true, tokenName: 'jwt' } );
             });
 
             it( 'xsrf = true, xsrf_token_name and xsrf_claim_name', function() {
@@ -100,42 +100,64 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
                 configuration.update( options );
 
-                expect( configuration ).to.eql( { useXsrf: false, xsrfTokenName: 'XSRF-TOKEN',
-                                                  xsrfClaimName: 'xsrf', enabled: true } );
+                expect( configuration.state ).to.eql( { xsrf: false, tokenName: 'jwt', enabled: true } );
             });
 
             it( 'unknown algorithm', function() {
 
                 configuration.update( { algorithm: 'special' } );
 
-                expect( configuration ).to.eql( { enabled: true, useXsrf: false } );
+                expect( configuration.state ).to.eql( { enabled: false } );
             });
 
             it( 'options not supplied', function() {
 
                 configuration.update();
 
-                expect( configuration ).to.eql( { enabled: false, useXsrf: false } );
+                expect( configuration.state ).to.eql( { enabled: false } );
             });
 
             it( 'options = null', function() {
 
                 configuration.update( null );
 
-                expect( configuration ).to.eql( { enabled: false, useXsrf: false } );
+                expect( configuration.state ).to.eql( { enabled: false} );
             });
         });
 
         describe( '.isEnabled', function() {
 
-            it( 'enabled = true', function() {
+            it( 'default case via configuration.update( {} )', function() {
 
                 configuration.update( {} );
+
+                expect( configuration.isEnabled() ).to.be.false;
+            });
+
+            it( 'default case via configuration.update()', function() {
+
+                configuration.update();
+
+                expect( configuration.isEnabled() ).to.be.false;
+            });
+
+            it( 'enabled = true via configuration( { enable: true } )', function() {
+
+                configuration.update( { enable: true } );
 
                 expect( configuration.isEnabled() ).to.be.true;
             });
 
-            it( 'enabled = false (default case)', function() {
+            it( 'enabled = true via configuration( { algorithm: "HS256" } )', function() {
+
+                configuration.update( { algorithm: "HS256" } );
+
+                expect( configuration.isEnabled() ).to.be.true;
+            });
+
+            it( 'enabled = false via configuration( { algorithm: "unknown" } )', function() {
+
+                configuration.update( { algorithm: "unknown" } );
 
                 expect( configuration.isEnabled() ).to.be.false;
             });
@@ -277,7 +299,7 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
             it( 'enabled, no stage vars, no xsrf', function() {
 
-                configuration.update( { algorithm: 'HS2456' } );
+                configuration.update( { algorithm: 'HS256' } );
 
                 // default token
                 expect( configuration.getIgnoredProperties( {} ) ).to.eql( [ 'jwt' ] );
@@ -285,7 +307,7 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
             it( 'enabled, no stage vars, xsrf enabled', function() {
 
-                configuration.update( { algorithm: 'HS2456', xsrf: true } );
+                configuration.update( { algorithm: 'HS256', xsrf: true } );
 
                 // default token
                 expect( configuration.getIgnoredProperties( {} ) ).to.eql( [ 'jwt', 'xsrfToken' ] );
@@ -293,7 +315,7 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
             it( 'enabled, stage vars, no xsrf', function() {
 
-                configuration.update( { algorithm: 'HS2456' } );
+                configuration.update( { algorithm: 'HS256' } );
 
                 // default token
                 expect( configuration.getIgnoredProperties( { VANDIUM_JWT_TOKEN_NAME: 'JWT' } ) ).to.eql( [ 'JWT' ] );
@@ -301,7 +323,7 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
             it( 'enabled, stage vars, xsrf enabled', function() {
 
-                configuration.update( { algorithm: 'HS2456', xsrf: true } );
+                configuration.update( { algorithm: 'HS256', xsrf: true } );
 
                 // default token
                 expect( configuration.getIgnoredProperties( { VANDIUM_JWT_TOKEN_NAME: 'JWT', VANDIUM_JWT_XSRF_TOKEN_NAME: 'xsrf' } ) )
