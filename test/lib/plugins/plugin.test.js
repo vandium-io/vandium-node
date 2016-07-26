@@ -19,5 +19,41 @@ describe( 'lib/plugins/plugin', function() {
                 expect( plugin.name ).to.equal( 'test' );
             });
         });
+
+        describe( '.configure', function() {
+
+            it( 'normal operation', function() {
+
+                let plugin = new Plugin( 'test' );
+
+                plugin.configure( {} );
+
+                expect( plugin ).to.eql( { name: 'test' } );
+
+                plugin.configure();
+
+                expect( plugin ).to.eql( { name: 'test' } );
+
+                plugin.configure( { whatever: true } );
+
+                expect( plugin ).to.eql( { name: 'test' } );
+            });
+        });
+
+        describe( '.execute', function() {
+
+            it( 'normal operation', function( done ) {
+
+                let plugin = new Plugin( 'test' );
+
+                plugin.execute( {}, function( err, result ) {
+
+                    expect( err ).to.not.exist;
+                    expect( result ).to.not.exist;
+                    
+                    done( err );
+                });
+            });
+        });
     });
 });
