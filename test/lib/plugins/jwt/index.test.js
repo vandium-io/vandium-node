@@ -6,13 +6,11 @@ const expect = require( 'chai' ).expect;
 
 const sinon = require( 'sinon' );
 
-const proxyquire = require( 'proxyquire' ).noCallThru();
+const jwtBuilder = require( 'jwt-builder' );
 
 const envRestorer = require( 'env-restorer' );
 
 const JWTPlugin = require( '../../../../lib/plugins/jwt/index' );
-
-const DEFAULT_CONFIGURATION_STATE = { enabled: false };
 
 describe( 'lib/plugins/jwt/index', function() {
 
@@ -132,131 +130,72 @@ describe( 'lib/plugins/jwt/index', function() {
             });
         });
 
-        xdescribe( 'config.on( "update" )', function() {
-
-            [
-                [ 'valid config', { algorithm: 'HS256' } ],
-                [ 'empty config', {} ]
-            ].forEach( function( testCase ) {
-
-                it( testCase[0], function() {
-
-                    loadModule();
-
-                    expect( configStub.on.calledOnce ).to.be.true;
-                    expect( configStub.on.withArgs( 'update' ).calledOnce ).to.be.true;
-
-                    let updateFunction = configStub.on.firstCall.args[1];
-
-                    expect( updateFunction ).to.be.instanceof( Function );
-
-                    configuration.update.reset();
-
-                    configStub.jwt = testCase[1];
-
-                    // invoke
-                    updateFunction();
-
-                    expect( configuration.update.calledOnce ).to.be.true;
-                    expect( configuration.update.withArgs( configStub.jwt ).calledOnce ).to.be.true;
-
-                    // empty
-                    configuration.update.reset();
-
-                    configStub.jwt = {};
-
-                    updateFunction();
-
-                    expect( configuration.update.calledOnce ).to.be.true;
-                    expect( configuration.update.withArgs( configStub.jwt ).calledOnce ).to.be.true;
-                });
-            });
-
-            it( 'no config', function() {
-
-                loadModule();
-
-                expect( configStub.on.calledOnce ).to.be.true;
-                expect( configStub.on.withArgs( 'update' ).calledOnce ).to.be.true;
-
-                let updateFunction = configStub.on.firstCall.args[1];
-
-                expect( updateFunction ).to.be.instanceof( Function );
-
-                configuration.update.reset();
-
-                delete configStub.jwt;
-
-                // invoke
-                updateFunction();
-
-                expect( configuration.update.calledOnce ).to.be.false;
-            });
-        });
-    });
-
-    xdescribe( 'module.exports', function() {
-
-        let jwt;
-
-        beforeEach( function() {
-
-            jwt = loadModule();
-        });
-
         describe( '.configure', function() {
-
-            it( 'with options', function() {
-
-                let options = { algorithm: 'RS256' };
-                let state = { enabled: true, algorithm: 'RS256' };
-
-                configuration.state.returns( state );
-
-                jwt.configure( options );
-
-                expect( configuration.update.withArgs( options ).calledOnce ).to.be.true;
-                expect( stateRecorder.record.withArgs( state ).calledOnce ).to.be.true;
-            });
-
-            it( 'with empty options', function() {
-
-                let options = {};
-                let state = { enabled: true };
-
-                configuration.state.returns( state );
-
-                jwt.configure( options );
-
-                expect( configuration.update.withArgs( options ).calledOnce ).to.be.true;
-                expect( stateRecorder.record.withArgs( state ).calledOnce ).to.be.true;
-            });
-
-            it( 'no options', function() {
-
-                let state = { enabled: true };
-
-                configuration.state.returns( state );
-
-                jwt.configure();
-
-                expect( configuration.update.withArgs( {} ).calledOnce ).to.be.true;
-                expect( stateRecorder.record.withArgs( state ).calledOnce ).to.be.true;
-            });
-        });
-
-        describe( '.enable', function() {
 
             it( 'normal operation', function() {
 
-                let state = { enabled: true };
+                let plugin = new JWTPlugin();
 
-                configuration.state.returns( state );
+                expect( plugin.state.enabled ).to.be.false;
 
-                jwt.enable();
+                expect( plugin.configuration ).to.exist;
 
-                expect( configuration.update.withArgs( {} ).calledOnce ).to.be.true;
-                expect( stateRecorder.record.withArgs( state ).calledOnce ).to.be.true;
+                let configurationUpdateSpy = sinon.spy( plugin.configuration, 'update' );
+
+                let config = {
+
+                    algorithm: 'HS256',
+                    secret: 'my-secret'
+                };
+
+                plugin.configure( config );
+
+                expect( configurationUpdateSpy.calledOnce ).to.be.true;
+                expect( configurationUpdateSpy.withArgs( config ).calledOnce ).to.be.true;
+
+                expect( plugin.state ).to.eql( {
+
+                    enabled: true,
+                    key: 'my-secret',
+                    algorithm: 'HS256',
+                    tokenName: 'jwt',
+                    xsrf: false
+                });
+            });
+        });
+
+        describe( '.state', function() {
+
+            it( 'normal operation', function() {
+
+                let plugin = new JWTPlugin();
+
+                expect( plugin.state ).to.eql( { enabled: false } );
+                expect( plugin.state ).to.eql( plugin.configuration.state );
+
+                let config = {
+
+                    algorithm: 'HS256',
+                    secret: 'my-secret'
+                };
+
+                plugin.configure( config );
+
+                expect( plugin.state ).to.eql( {
+
+                    enabled: true,
+                    key: 'my-secret',
+                    algorithm: 'HS256',
+                    tokenName: 'jwt',
+                    xsrf: false
+                });
+
+                expect( plugin.state ).to.eql( plugin.configuration.state );
+
+                plugin.configure( {} );
+
+                expect( plugin.state ).to.eql( { enabled: false } );
+                expect( plugin.state ).to.eql( plugin.configuration.state );
             });
         });
 
@@ -264,59 +203,123 @@ describe( 'lib/plugins/jwt/index', function() {
 
             it( 'normal operation', function() {
 
-                expect( configuration.isEnabled.called ).to.be.false;
+                let plugin = new JWTPlugin();
 
-                configuration.isEnabled.returns( true );
+                expect( plugin.isEnabled() ).to.be.false;
+                expect( plugin.state.enabled ).to.be.false;
 
-                expect( jwt.isEnabled() ).to.be.true;
+                let config = {
 
-                expect( configuration.isEnabled.calledOnce ).to.be.true;
-                expect( configuration.isEnabled.withArgs().calledOnce ).to.be.true;
+                    algorithm: 'HS256',
+                    secret: 'my-secret'
+                };
+
+                plugin.configure( config );
+
+                expect( plugin.isEnabled() ).to.be.true;
+                expect( plugin.state.enabled ).to.be.true;
+
+                plugin.configure( {} );
+
+                expect( plugin.isEnabled() ).to.be.false;
+                expect( plugin.state.enabled ).to.be.false;
             });
         });
 
-        describe( '.validate', function() {
+        describe( '.execute', function() {
 
-            it( 'normal operation', function() {
+            it( 'normal operation, jwt processing disabled', function( done ) {
 
-                let event = { one: 1, jwt: 'my-jwt' };
+                const token = 'token-goes-here!!!';
 
-                expect( validatorStub.validate.called ).to.be.false;
-
-                configuration.getIgnoredProperties.returns( [ 'jwt' ] );
+                let event = { one: 1, jwt: token };
 
                 let pipelineEvent = { event, ignored: [] };
 
-                jwt.validate( pipelineEvent );
+                let plugin = new JWTPlugin();
 
-                expect( validatorStub.validate.calledOnce ).to.be.true;
-                expect( validatorStub.validate.withArgs( event, configuration ).calledOnce ).to.be.true;
+                plugin.execute( pipelineEvent, function( err ) {
 
-                expect( configuration.getIgnoredProperties.calledOnce ).to.be.true;
-                expect( configuration.getIgnoredProperties.withArgs( event ).calledOnce ).to.be.true;
+                    expect( pipelineEvent.event.jwt ).to.equal( token );
 
-                expect( pipelineEvent.ignored ).to.eql( [ 'jwt' ] );
+                    expect( pipelineEvent.ignored ).to.eql( [] );
+
+                    done( err );
+                });
             });
 
-            it( 'normal operation, no ignore keys', function() {
+            it( 'normal operation, jwt processing enabled', function( done ) {
 
-                let event = { one: 1, jwt: 'my-jwt' };
+                const token = jwtBuilder( { user: 'fred', secret: 'super-secret', algorithm: 'HS256' } );
 
-                expect( validatorStub.validate.called ).to.be.false;
-
-                configuration.getIgnoredProperties.returns();
+                let event = { one: 1, jwt: token };
 
                 let pipelineEvent = { event, ignored: [] };
 
-                jwt.validate( pipelineEvent );
+                let plugin = new JWTPlugin();
 
-                expect( validatorStub.validate.calledOnce ).to.be.true;
-                expect( validatorStub.validate.withArgs( event, configuration ).calledOnce ).to.be.true;
+                plugin.configure( { algorithm: 'HS256', secret: 'super-secret' } );
 
-                expect( configuration.getIgnoredProperties.calledOnce ).to.be.true;
-                expect( configuration.getIgnoredProperties.withArgs( event ).calledOnce ).to.be.true;
+                plugin.execute( pipelineEvent, function( err ) {
 
-                expect( pipelineEvent.ignored ).to.eql( [] );
+                    expect( pipelineEvent.event.jwt ).to.be.an( 'Object' );
+                    expect( pipelineEvent.event.jwt.token ).to.equal( token );
+                    expect( pipelineEvent.event.jwt.claims ).to.eql( { user: 'fred' } );
+
+                    expect( pipelineEvent.ignored ).to.eql( [ 'jwt' ] );
+
+                    done( err );
+                });
+            });
+
+            it( 'normal operation, jwt processing enabled with xsrf', function( done ) {
+
+                const token = jwtBuilder( { user: 'fred', secret: 'super-secret', algorithm: 'HS256', xsrfToken: '1234' } );
+
+                let event = { one: 1, jwt: token, xsrfToken: '1234' };
+
+                let pipelineEvent = { event, ignored: [] };
+
+                let plugin = new JWTPlugin();
+
+                plugin.configure( { algorithm: 'HS256', secret: 'super-secret', xsrf: true } );
+
+                plugin.execute( pipelineEvent, function( err ) {
+
+                    if( err ) {
+
+                        return done( err );
+                    }
+
+                    expect( pipelineEvent.event.jwt ).to.be.an( 'Object' );
+                    expect( pipelineEvent.event.jwt.token ).to.equal( token );
+                    expect( pipelineEvent.event.jwt.claims ).to.eql( { user: 'fred', xsrfToken: '1234' } );
+
+                    expect( pipelineEvent.ignored ).to.eql( [ 'jwt', 'xsrfToken' ] );
+
+                    done( err );
+                });
+            });
+
+            it( 'fail: jwt processing failed', function( done ) {
+
+                const token = jwtBuilder( { user: 'fred', secret: 'super-secret', algorithm: 'HS256', xsrfToken: '123456' } );
+
+                let event = { one: 1, jwt: token, xsrfToken: '1234' };
+
+                let pipelineEvent = { event, ignored: [] };
+
+                let plugin = new JWTPlugin();
+
+                plugin.configure( { algorithm: 'HS256', secret: 'super-secret', xsrf: true } );
+
+                plugin.execute( pipelineEvent, function( err ) {
+
+                    expect( err ).to.exist;
+                    expect( err.message.startsWith( 'authentication error:' ) ).to.be.true;
+
+                    done();
+                });
             });
         });
     });
