@@ -6,18 +6,11 @@ const expect = require( 'chai' ).expect;
 
 const sinon = require( 'sinon' );
 
-const SCAN_ENGINE_MODULE_PATH = '../../../../lib/plugins/protect/scan_engine';
+const MODULE_PATH = 'lib/plugins/protect/scan_engine';
 
-const state = require( '../../../../lib/state' );
+const ScanEngine = require( '../../../../' + MODULE_PATH );
 
-xdescribe( 'lib/plugins/protect/scan_engine', function() {
-
-    let ScanEngine = require( SCAN_ENGINE_MODULE_PATH );
-
-    after( function() {
-
-        state.record( 'protect.test' );
-    });
+describe( MODULE_PATH, function() {
 
     describe( 'ScanEngine', function() {
 
@@ -27,11 +20,11 @@ xdescribe( 'lib/plugins/protect/scan_engine', function() {
 
                 let engine = new ScanEngine( 'test' );
 
-                expect( engine.name ).to.equal( 'test' );
+                expect( engine.name ).to.equal( 'protect_test' );
                 expect( engine.mode ).to.equal( 'report' );
                 expect( engine.enabled ).to.be.true;
 
-                expect( state.current.protect.test ).to.eql( { enabled: true, mode: 'report' } );
+                expect( engine.state ).to.eql( { enabled: true, mode: 'report' } );
             });
         });
 
@@ -48,7 +41,7 @@ xdescribe( 'lib/plugins/protect/scan_engine', function() {
                 expect( returnValue ).to.equal( engine );
                 expect( engine.enabled ).to.be.false;
 
-                expect( state.current.protect.test ).to.eql( { enabled: false, mode: 'report' } );
+                expect( engine.state ).to.eql( { enabled: false } );
             });
         });
 
@@ -65,6 +58,8 @@ xdescribe( 'lib/plugins/protect/scan_engine', function() {
                 expect( returnValue ).to.equal( engine );
                 expect( engine.mode ).to.equal( 'report' );
                 expect( engine.enabled ).to.be.true;
+
+                expect( engine.state ).to.eql( { enabled: true, mode: 'report' } );
             });
 
             it( 'after disable()', function() {
@@ -73,6 +68,8 @@ xdescribe( 'lib/plugins/protect/scan_engine', function() {
 
                 expect( engine.mode ).to.equal( 'report' );
                 expect( engine.enabled ).to.be.true;
+
+                expect( engine.state ).to.eql( { enabled: true, mode: 'report' } );
             });
 
             it( 'after fail()', function() {
@@ -85,6 +82,8 @@ xdescribe( 'lib/plugins/protect/scan_engine', function() {
 
                 expect( engine.mode ).to.equal( 'report' );
                 expect( engine.enabled ).to.be.true;
+
+                expect( engine.state ).to.eql( { enabled: true, mode: 'report' } );
             });
         });
 
@@ -101,6 +100,8 @@ xdescribe( 'lib/plugins/protect/scan_engine', function() {
                 expect( returnValue ).to.equal( engine );
                 expect( engine.mode ).to.equal( 'fail' );
                 expect( engine.enabled ).to.be.true;
+
+                expect( engine.state ).to.eql( { enabled: true, mode: 'fail' } );
             });
 
             it( 'after disable()', function() {
@@ -109,6 +110,8 @@ xdescribe( 'lib/plugins/protect/scan_engine', function() {
 
                 expect( engine.mode ).to.equal( 'fail' );
                 expect( engine.enabled ).to.be.true;
+
+                expect( engine.state ).to.eql( { enabled: true, mode: 'fail' } );
             });
 
             it( 'after report()', function() {
@@ -121,26 +124,31 @@ xdescribe( 'lib/plugins/protect/scan_engine', function() {
 
                 expect( engine.mode ).to.equal( 'fail' );
                 expect( engine.enabled ).to.be.true;
+
+                expect( engine.state ).to.eql( { enabled: true, mode: 'fail' } );
             });
         });
 
-        describe( '.scan', function() {
+        describe( '.execute', function() {
 
-            it( 'default operaiton', function() {
+            it( 'default operaiton', function( done ) {
 
                 let engine = new ScanEngine( 'test' );
 
                 engine._doScan = sinon.stub();
 
-                let event = {};
+                let event = { one: 1 };
 
-                engine.scan( event );
+                engine.execute( { event }, function( err ) {
 
-                expect( engine._doScan.calledOnce ).to.be.true;
-                expect( engine._doScan.withArgs( event ).calledOnce ).to.be.true;
+                    expect( engine._doScan.calledOnce ).to.be.true;
+                    expect( engine._doScan.withArgs( event ).calledOnce ).to.be.true;
+
+                    done( err );
+                });
             });
 
-            it( 'when disabled', function() {
+            it( 'when disabled', function( done ) {
 
                 let engine = new ScanEngine( 'test' ).disable()
 
@@ -148,9 +156,96 @@ xdescribe( 'lib/plugins/protect/scan_engine', function() {
 
                 let event = {};
 
-                engine.scan( event );
+                engine.execute( event, function( err ) {
 
-                expect( engine._doScan.called ).to.be.false;
+                    expect( engine._doScan.called ).to.be.false;
+
+                    done( err );
+                });
+            });
+
+            it( 'fail: when _doScan throws an error', function( done ) {
+
+                let engine = new ScanEngine( 'test' );
+
+                engine._doScan = sinon.stub().throws( new Error( 'bang' ) );
+
+                let event = {};
+
+                engine.execute( event, function( err ) {
+
+                    expect( err ).to.exist;
+                    expect( err.message ).to.equal( 'bang' );
+
+                    done();
+                });
+            });
+        });
+
+        describe( '.configure', function() {
+
+            it( 'empty configuration - default state', function() {
+
+                let engine = new ScanEngine( 'test' );
+
+                engine.configure( { } );
+
+                expect( engine.state.mode ).to.equal( 'report' );
+            });
+
+            it( 'empty configuration - from state other than report', function() {
+
+                let engine = new ScanEngine( 'test' ).fail();
+
+                expect( engine.state.mode ).to.equal( 'fail' );
+
+                engine.configure( { } );
+
+                expect( engine.state.mode ).to.equal( 'report' );
+            });
+
+            it( 'config.mode = report', function() {
+
+                let engine = new ScanEngine( 'test' ).fail();
+
+                expect( engine.state.mode ).to.equal( 'fail' );
+
+                engine.configure( { mode: 'report' } );
+
+                expect( engine.state.mode ).to.equal( 'report' );
+            });
+
+            it( 'config.mode = fail', function() {
+
+                let engine = new ScanEngine( 'test' );
+
+                expect( engine.state.mode ).to.equal( 'report' );
+
+                engine.configure( { mode: 'fail' } );
+
+                expect( engine.state.mode ).to.equal( 'fail' );
+            });
+
+            it( 'config.mode = unknown', function() {
+
+                let engine = new ScanEngine( 'test' ).fail();
+
+                expect( engine.state.mode ).to.equal( 'fail' );
+
+                engine.configure( { mode: 'unknown' } );
+
+                expect( engine.state.mode ).to.equal( 'fail' );
+            });
+
+            it( 'config.mode = disabled', function() {
+
+                let engine = new ScanEngine( 'test' ).fail();
+
+                expect( engine.state.mode ).to.equal( 'fail' );
+
+                engine.configure( { mode: 'disabled' } );
+
+                expect( engine.state.enabled ).to.be.false;
             });
         });
 
