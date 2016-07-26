@@ -4,32 +4,34 @@
 
 const expect = require( 'chai' ).expect;
 
-const sinon = require( 'sinon' );
+const MODULE_PATH = 'lib/plugins/protect/sql';
 
-const ScanEngine = require( '../../../../lib/plugins/protect/scan_engine' );
+const SQLScanEngine = require( '../../../../' + MODULE_PATH );
 
-const sql = require( '../../../../lib/plugins/protect/sql' );
-
-xdescribe( 'lib/plugins/protect/sql', function() {
+describe( MODULE_PATH, function() {
 
     describe( 'SQLScanEngine', function() {
 
         describe( 'constructor', function() {
 
-            it( 'singleton', function() {
+            it( 'normal operation', function() {
 
-                expect( sql ).to.be.instanceof( ScanEngine );
+                let engine = new SQLScanEngine();
+
+                expect( engine.name ).to.equal( 'protect_sql' );
             });
         });
 
-        describe( '.scan', function() {
+        describe( '.execute', function() {
+
+            let engine;
 
             beforeEach( function() {
 
-                sql.fail();
+                engine = new SQLScanEngine().fail();
             });
 
-            it( 'test normal values', function() {
+            it( 'test normal values', function( done ) {
 
                 var event = {
 
@@ -42,17 +44,17 @@ xdescribe( 'lib/plugins/protect/sql', function() {
                     bool: true
                 };
 
-                sql.scan( event );
+                engine.execute( { event }, done );
             });
 
-            it( 'regression false positive tests', function() {
+            it( 'regression false positive tests', function( done ) {
 
                 var event = {
 
                     escapeComment1: "/details?seoName=smith---whatever-main-office"
                 };
 
-                sql.scan( event );
+                engine.execute( { event }, done );
             });
 
             [
@@ -67,9 +69,7 @@ xdescribe( 'lib/plugins/protect/sql', function() {
                 [ "' union all select name from users where name is not null", 'ESCAPED_UNION' ],
             ].forEach( function( test ) {
 
-                it( 'fail: ' + test[1], function() {
-
-                    sql.fail();
+                it( 'fail: ' + test[1], function( done ) {
 
                     var event = {
 
@@ -77,22 +77,16 @@ xdescribe( 'lib/plugins/protect/sql', function() {
                         other: 'my other field'
                     };
 
-                    try {
-
-                        sql.scan( event );
-
-                        throw new Error( 'should never get here' );
-                    }
-                    catch( err ) {
+                    engine.execute( { event }, function( err ) {
 
                         expect( err.message ).to.equal( 'myField is invalid' );
                         expect( err.attackType ).to.equal( test[1] );
-                    }
+
+                        done();
+                    });
                 });
 
-                it( 'fail: nested case - ' + test[1], function() {
-
-                    sql.fail();
+                it( 'fail: nested case - ' + test[1], function( done ) {
 
                     var event = {
 
@@ -102,22 +96,18 @@ xdescribe( 'lib/plugins/protect/sql', function() {
                         other: 'my other field'
                     };
 
-                    try {
-
-                        sql.scan( event );
-
-                        throw new Error( 'should never get here' );
-                    }
-                    catch( err ) {
+                    engine.execute( { event }, function( err ) {
 
                         expect( err.message ).to.equal( 'myField is invalid' );
                         expect( err.attackType ).to.equal( test[1] );
-                    }
+
+                        done();
+                    });
                 });
 
-                it( 'fail: ' + test[1] + ' - report only', function() {
+                it( 'fail: ' + test[1] + ' - report only', function( done ) {
 
-                    sql.report();
+                    engine.report();
 
                     var event = {
 
@@ -125,7 +115,7 @@ xdescribe( 'lib/plugins/protect/sql', function() {
                         other: 'my other field'
                     };
 
-                    sql.scan( event );
+                    engine.execute( { event }, done );
                 });
             });
         });
