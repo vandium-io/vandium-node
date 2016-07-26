@@ -10,7 +10,7 @@ const PROTECT_MODULE_PATH = '../../../../lib/plugins/protect';
 
 const STATE_MODULE_PATH = '../../../../lib/state';
 
-describe( 'lib/plugins/protect/index', function() {
+xdescribe( 'lib/plugins/protect/index', function() {
 
     let protect = require( PROTECT_MODULE_PATH );
 

@@ -10,7 +10,7 @@ const SCAN_ENGINE_MODULE_PATH = '../../../../lib/plugins/protect/scan_engine';
 
 const state = require( '../../../../lib/state' );
 
-describe( 'lib/plugins/protect/scan_engine', function() {
+xdescribe( 'lib/plugins/protect/scan_engine', function() {
 
     let ScanEngine = require( SCAN_ENGINE_MODULE_PATH );
 
