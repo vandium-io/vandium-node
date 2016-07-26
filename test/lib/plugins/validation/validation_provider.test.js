@@ -6,9 +6,11 @@ const expect = require( 'chai' ).expect;
 
 const sinon = require( 'sinon' );
 
-const ValidationProvider = require( '../../../../lib/plugins/validation/validation_provider' );
+const MODULE_PATH = 'lib/plugins/validation/validation_provider';
 
-describe( 'lib/plugins/validation/validation_provider', function() {
+const ValidationProvider = require( '../../../../' + MODULE_PATH );
+
+describe( MODULE_PATH, function() {
 
     describe( 'ValidationProvider', function() {
 
@@ -37,13 +39,13 @@ describe( 'lib/plugins/validation/validation_provider', function() {
             });
         });
 
-        describe( '.getTypes', function() {
+        describe( '.types', function() {
 
             it( 'normal operation', function() {
 
                 let provider = new ValidationProvider( engine, types );
 
-                expect( provider.getTypes() ).to.equal( types );
+                expect( provider.types ).to.equal( types );
             });
         });
 
