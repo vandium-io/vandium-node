@@ -4,34 +4,25 @@
 
 const expect = require( 'chai' ).expect;
 
-const freshy = require( 'freshy' );
+const MODULE_PATH =  'lib/prevent/eval';
 
-const EVAL_MODULE_PATH =  '../../../lib/prevent/eval';
+const evalModule = require( '../../../' + MODULE_PATH );
 
-const restorer = require( './restorer' );
+describe( MODULE_PATH, function() {
 
-describe( 'lib/prevent/index', function() {
+    describe( '.name', function() {
 
-    describe( 'eval', function() {
+        it( 'normal operation', function() {
 
-        before( function() {
-
-            freshy.unload( EVAL_MODULE_PATH );
+            expect( evalModule.name ).to.equal( 'eval' );
         });
+    });
 
-        after( function() {
+    describe( '.block', function() {
 
-            freshy.unload( EVAL_MODULE_PATH );
+        it( 'block eval', function() {
 
-            restorer.restore();
-        });
-
-        it( 'eval intercepted', function() {
-
-            // should work
-            eval( '{ var x = 5 }' );
-
-            require( EVAL_MODULE_PATH );
+            evalModule.block( true );
 
             try {
 
@@ -46,6 +37,44 @@ describe( 'lib/prevent/index', function() {
                 expect( err.input.length ).to.equal( 1 );
                 expect( err.input[0] ).to.equal( '{ var x = 5 }' );
             }
+        });
+
+
+        it( 'allow eval', function() {
+
+            evalModule.block( false );
+
+            // should work
+            eval( '{ var x = 5 }' );
+        });
+
+        it( 'toggle between modes', function() {
+
+            evalModule.block( false );
+
+            // should work
+            eval( '{ var x = 5 }' );
+
+            evalModule.block( true );
+
+            try {
+
+                eval( '{ var x = 5 }' );
+
+                throw new Error( 'eval not blocked' );
+            }
+            catch( err ) {
+
+                expect( err.message ).to.equal( 'security violation: eval() blocked' );
+                expect( err.input ).to.be.instanceof( Array );
+                expect( err.input.length ).to.equal( 1 );
+                expect( err.input[0] ).to.equal( '{ var x = 5 }' );
+            }
+
+            evalModule.block( false );
+
+            // should work
+            eval( '{ var x = 5 }' );
         });
     });
 });

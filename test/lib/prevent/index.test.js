@@ -4,55 +4,114 @@
 
 const expect = require( 'chai' ).expect;
 
-const freshy = require( 'freshy' );
+const MODULE_PATH = 'lib/prevent/index';
 
-const PREVENT_MODULE_PATH =  '../../../lib/prevent/index';
-
-const restorer = require( './restorer' );
+const prevent = require( '../../../' + MODULE_PATH );
 
 describe( 'lib/prevent/index', function() {
 
-    beforeEach( function() {
+    describe( 'PreventManager (singleton)', function() {
 
-        delete process.env.VANDIUM_PREVENT_EVAL;
+        beforeEach( function() {
 
-        freshy.unload( PREVENT_MODULE_PATH );
-    });
-
-    afterEach( function() {
-
-        freshy.unload( PREVENT_MODULE_PATH );
-
-        restorer.restore();
-    });
-
-    let prevent;
-
-    function loadModules() {
-
-        prevent = require( PREVENT_MODULE_PATH );
-    }
-
-    describe( 'load', function() {
-
-        it( 'EVAL not set', function() {
-
-            loadModules();
-
-            expect( eval.bind( null, 'var x = 5;' ) ).to.throw( 'security violation:' );
-
-            expect( prevent.state ).to.eql( { eval: true } );
+            delete process.env.VANDIUM_PREVENT_EVAL;
         });
 
-        it( 'EVAL set', function() {
+        after( function() {
 
-            process.env.VANDIUM_PREVENT_EVAL = false;
+            delete process.env.VANDIUM_PREVENT_EVAL;
+        });
 
-            loadModules();
+        describe( '.configure', function() {
 
-            expect( eval.bind( null, 'var x = 5;' ) ).to.not.throw( 'security violation:' );
+            it( 'default state', function() {
 
-            expect( prevent.state ).to.eql( { eval: false } );
+                prevent.configure();
+
+                expect( eval.bind( null, 'var x = 5;' ) ).to.throw( 'security violation:' );
+            });
+
+            it( 'VANDIUM_PREVENT_EVAL = "true"', function() {
+
+                process.env.VANDIUM_PREVENT_EVAL = 'true';
+
+                prevent.configure();
+
+                expect( eval.bind( null, 'var x = 5;' ) ).to.throw( 'security violation:' );
+            });
+
+            it( 'VANDIUM_PREVENT_EVAL = "TRUE"', function() {
+
+                process.env.VANDIUM_PREVENT_EVAL = 'TRUE';
+
+                prevent.configure();
+
+                expect( eval.bind( null, 'var x = 5;' ) ).to.throw( 'security violation:' );
+            });
+
+            it( 'VANDIUM_PREVENT_EVAL = "false"', function() {
+
+                process.env.VANDIUM_PREVENT_EVAL = 'false';
+
+                prevent.configure();
+
+                expect( eval.bind( null, 'var x = 5;' ) ).to.not.throw( 'security violation:' );
+            });
+
+            it( 'VANDIUM_PREVENT_EVAL = "FALSE"', function() {
+
+                process.env.VANDIUM_PREVENT_EVAL = 'FALSE';
+
+                prevent.configure();
+
+                expect( eval.bind( null, 'var x = 5;' ) ).to.not.throw( 'security violation:' );
+            });
+        });
+
+        describe( '.state', function() {
+
+            it( 'default', function() {
+
+                prevent.configure();
+
+                expect( prevent.state ).to.eql( { 'eval': true } );
+            });
+
+            it( 'VANDIUM_PREVENT_EVAL = "true"', function() {
+
+                process.env.VANDIUM_PREVENT_EVAL = 'true';
+
+                prevent.configure();
+
+                expect( prevent.state ).to.eql( { 'eval': true } );
+            });
+
+            it( 'VANDIUM_PREVENT_EVAL = "TRUE"', function() {
+
+                process.env.VANDIUM_PREVENT_EVAL = 'TRUE';
+
+                prevent.configure();
+
+                expect( prevent.state ).to.eql( { 'eval': true } );
+            });
+
+            it( 'VANDIUM_PREVENT_EVAL = "false"', function() {
+
+                process.env.VANDIUM_PREVENT_EVAL = 'false';
+
+                prevent.configure();
+
+                expect( prevent.state ).to.eql( { 'eval': false } );
+            });
+
+            it( 'VANDIUM_PREVENT_EVAL = "FALSE"', function() {
+
+                process.env.VANDIUM_PREVENT_EVAL = 'FALSE';
+
+                prevent.configure();
+
+                expect( prevent.state ).to.eql( { 'eval': false } );
+            });
         });
     });
 });
