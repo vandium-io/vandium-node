@@ -68,7 +68,7 @@ describe( MODULE_PATH, function() {
                 expect( config.get() ).to.eql( {} );
             });
 
-            it( 'simple configuration file, no s3', function() {
+            it( 'simple configuration file, no s3', function( done ) {
 
                 var configData = {
 
@@ -82,11 +82,16 @@ describe( MODULE_PATH, function() {
 
                 let config = configModule.create();
 
+                config.on( 'update', function() {
+
+                    expect( config.get() ).to.eql( configData );
+
+                    process.nextTick( done );
+                });
+
                 config.load();
-
+                
                 expect( config._loaded ).to.be.true;
-
-                expect( config.get() ).to.eql( configData );
             });
 
             it( 'simple configuration file, path provided, no s3', function() {
