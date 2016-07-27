@@ -665,7 +665,23 @@ describe( 'index', function() {
         });
     });
 
-    describe( 'auto-configure', function() {
+    describe( '.createInstance', function() {
+
+        it( 'normal operation', function() {
+
+            let instance1 = vandium.createInstance();
+
+            expect( instance1.constructor.name ).to.equal( 'Vandium' );
+
+            let instance2 = vandium.createInstance();
+
+            expect( instance2.constructor.name ).to.equal( 'Vandium' );
+
+            expect( instance1 ).to.not.equal( instance2 );
+        });
+    });
+
+    describe( 'create singleton instance with configuration file', function() {
 
         it( 'auto update when vandium.json is present', function() {
 
@@ -711,6 +727,8 @@ describe( 'index', function() {
 
         it( 'auto update when vandium.json is present with s3 load', function() {
 
+            const superSpecial = 'specialtime-' + Date.now();
+
             let config = {
 
                 jwt: {
@@ -731,18 +749,22 @@ describe( 'index', function() {
 
                     bucket: 'test',
                     key: 'test-key'
+                },
+
+                env: {
+
+                    SUPER_SPECIAL: superSpecial
                 }
             };
-
-
 
             configUtils.writeConfig( JSON.stringify( config ) );
 
             let token = jwtBuilder( { user: 'fred', secret: 'my-secret', algorithm: 'HS256' } );
 
+
             const handler = vandium( function( event ) {
 
-                if( event.name === 'fred' && event.jwt.claims.user ) {
+                if( event.name === 'fred' && event.jwt.claims.user && process.env.SUPER_SPECIAL === superSpecial ) {
 
                     return Promise.resolve( event.jwt.claims.user );
                 }
