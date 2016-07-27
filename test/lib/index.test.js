@@ -14,15 +14,21 @@ const VANDIUM_MODULE_PATH = '../../lib/index';
 
 const vandium = require( VANDIUM_MODULE_PATH );
 
+const singleton = require( '../../lib/singleton_instance' );
+
+const envRestorer = require( 'env-restorer' );
+
 //require( '../lib/logger' ).setLevel( 'debug' );
 
 describe( 'index', function() {
 
-    beforeEach( function( done ) {
+    beforeEach( function() {
 
-        configUtils.removeConfig( done );
+        configUtils.removeConfig();
 
-        vandium.reset();
+        singleton.reset();
+
+        envRestorer.restore();
     });
 
     after( function() {
@@ -30,7 +36,8 @@ describe( 'index', function() {
         // NEED to disable eval prevention
         process.env.VANDIUM_PREVENT_EVAL = "false"
         require( '../../lib/prevent' ).configure();
-        delete process.env.VANDIUM_PREVENT_EVAL;
+
+        envRestorer.restore();
     });
 
 	describe( '.vandium', function() {
@@ -266,7 +273,7 @@ describe( 'index', function() {
 
                         resolve( 'ok' );
 
-                    }, 200 );
+                    }, 50 );
                 });
             });
 
@@ -287,7 +294,7 @@ describe( 'index', function() {
 
                         reject( new Error( 'bang' ) );
 
-                    }, 200 );
+                    }, 50 );
                 });
             });
 
@@ -389,8 +396,6 @@ describe( 'index', function() {
                 .expectResult( function( result ) {
 
                     expect( result ).to.equal( 'ok' );
-
-                    delete process.env.VANDIUM_PREVENT_EVAL;
                 });
         });
 
@@ -575,22 +580,62 @@ describe( 'index', function() {
 
     describe( '.jwt', function() {
 
-        it( 'normal operation', function() {
+        describe( 'function', function() {
 
-            let jwt = vandium.jwt();
+            it( 'normal operation', function() {
 
-            //let state = require( '../../lib/state' );
+                let jwt = vandium.jwt();
 
-            // stage vars should be enabled by default
-            expect( jwt.state ).to.eql( { enabled: false } );
+                expect( jwt.state.enabled ).to.equal( false );
 
-            vandium.jwt().configure( { algorithm: 'HS256', secret: 'my-secret' } );
-            expect( jwt.state ).to.eql( { enabled: true, key: 'my-secret', algorithm: 'HS256', tokenName: 'jwt', xsrf: false } );
-            expect( vandium.jwt().isEnabled() ).to.be.true;
+                // should be same instance
+                expect( vandium.jwt() ).to.equal( jwt );
+            });
+        });
 
-            // should still be set
-            jwt = vandium.jwt();
-            expect( jwt.state ).to.eql( { enabled: true, key: 'my-secret', algorithm: 'HS256', tokenName: 'jwt', xsrf: false } );
+        describe( '.configure', function() {
+
+            it( 'normal operation', function() {
+
+                let jwt = vandium.jwt();
+
+                // stage vars should be enabled by default
+                expect( jwt.state ).to.eql( { enabled: false } );
+
+                vandium.jwt().configure( { algorithm: 'HS256', secret: 'my-secret' } );
+                expect( jwt.state ).to.eql( { enabled: true, key: 'my-secret', algorithm: 'HS256', tokenName: 'jwt', xsrf: false } );
+                expect( vandium.jwt().isEnabled() ).to.be.true;
+
+                // should still be set
+                jwt = vandium.jwt();
+                expect( jwt.state ).to.eql( { enabled: true, key: 'my-secret', algorithm: 'HS256', tokenName: 'jwt', xsrf: false } );
+            })
+        });
+
+        describe( '.enable', function() {
+
+            it( 'enable( true )', function() {
+
+                let jwt = vandium.jwt();
+
+                expect( jwt.state.enabled ).to.be.false;
+
+                vandium.jwt.enable( true );
+
+                expect( jwt.state.enabled ).to.be.true;
+            });
+
+            it( 'enable( false )', function() {
+
+                let jwt = vandium.jwt();
+
+                expect( jwt.state.enabled ).to.be.false;
+
+                vandium.jwt.enable( true );
+                vandium.jwt.enable( false );
+
+                expect( jwt.state.enabled ).to.be.false;
+            });
         });
     });
 
@@ -622,41 +667,96 @@ describe( 'index', function() {
 
     describe( 'auto-configure', function() {
 
-        before( function( done ) {
+        it( 'auto update when vandium.json is present', function() {
 
-            configUtils.removeConfig( done );
-        });
+            let config = {
 
-        after( function( done ) {
+                jwt: {
 
-            configUtils.removeConfig( done );
-        });
+                    algorithm: 'HS256',
+                    secret: 'my-secret'
+                },
 
-        it( 'auto update when vandium.json is present', function( done ) {
+                validation: {
 
-            configUtils.writeConfig( JSON.stringify( { jwt: { algorithm: 'HS256', secret: 'my-secret' } }), function( err ) {
+                    schema: {
 
-                if( err ) {
+                        name: 'string:min=1,max=60,trim,required'
+                    }
+                }
+            };
 
-                    return done( err );
+            configUtils.writeConfig( JSON.stringify( config ) );
+
+            let token = jwtBuilder( { user: 'fred', secret: 'my-secret', algorithm: 'HS256' } );
+
+            const handler = vandium( function( event ) {
+
+                if( event.name === 'fred' && event.jwt.claims.user ) {
+
+                    return Promise.resolve( event.jwt.claims.user );
                 }
 
-                let token = jwtBuilder( { user: 'fred', secret: 'my-secret', algorithm: 'HS256' } );
+                return Promise.reject( new Error( 'invalid event state' ) );
+            });
 
-                const handler = vandium( function( event, context ) {
+            return LambdaTester( handler )
+                .event( { jwt: token, name: '   fred   ' } )
+                .expectResult( function( result ) {
 
-                    context.succeed( event.jwt.claims.user );
+                    expect( result ).to.equal( 'fred' );
                 });
 
-                LambdaTester( handler )
-                    .event( { jwt: token } )
-                    .expectResult( function( result ) {
+        });
 
-                        expect( result ).to.equal( 'fred' );
-                        done();
-                    })
-                    .catch( done );
+        it( 'auto update when vandium.json is present with s3 load', function() {
+
+            let config = {
+
+                jwt: {
+
+                    algorithm: 'HS256',
+                    secret: 'my-secret'
+                },
+
+                validation: {
+
+                    schema: {
+
+                        name: 'string:min=1,max=60,trim,required'
+                    }
+                },
+
+                s3: {
+
+                    bucket: 'test',
+                    key: 'test-key'
+                }
+            };
+
+
+
+            configUtils.writeConfig( JSON.stringify( config ) );
+
+            let token = jwtBuilder( { user: 'fred', secret: 'my-secret', algorithm: 'HS256' } );
+
+            const handler = vandium( function( event ) {
+
+                if( event.name === 'fred' && event.jwt.claims.user ) {
+
+                    return Promise.resolve( event.jwt.claims.user );
+                }
+
+                return Promise.reject( new Error( 'invalid event state' ) );
             });
+
+            return LambdaTester( handler )
+                .event( { jwt: token, name: '   fred   ' } )
+                .expectResult( function( result ) {
+
+                    expect( result ).to.equal( 'fred' );
+                });
+
         });
     });
 });
