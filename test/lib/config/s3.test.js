@@ -4,8 +4,6 @@
 
 const expect = require( 'chai' ).expect;
 
-const freshy = require( 'freshy' );
-
 const proxyquire = require( 'proxyquire' ).noCallThru();
 
 const sinon = require( 'sinon' );
@@ -38,8 +36,6 @@ describe( MODULE_PATH, function() {
 
             S3: function() { return s3Stub; }
         }
-
-        freshy.unload( 'aws-sdk' );
 
         s3 = proxyquire( '../../../' + MODULE_PATH, {
 
