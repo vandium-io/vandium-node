@@ -4,8 +4,6 @@
 
 const expect = require( 'chai' ).expect;
 
-const freshy = require( 'freshy' );
-
 const LambdaTester = require( 'lambda-tester' );
 
 const jwtBuilder = require( 'jwt-builder' );

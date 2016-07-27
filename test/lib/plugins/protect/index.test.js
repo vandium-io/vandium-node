@@ -4,8 +4,6 @@
 
 const envRestorer = require( 'env-restorer' );
 
-const freshy = require( 'freshy' );
-
 const expect = require( 'chai' ).expect;
 
 const MODULE_PATH = 'lib/plugins/protect/index';
