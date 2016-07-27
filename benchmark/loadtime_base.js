@@ -3,7 +3,7 @@
 const startTime = Date.now();
 
 // vandium
-require( '../index' );
+require( '../lib/index' );
 
 const endTime = Date.now();
 

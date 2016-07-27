@@ -2,7 +2,7 @@
 
 const startTime = Date.now();
 
-const vandium = require( '../index' );
+const vandium = require( '../lib/index' );
 
 vandium.validation( {
 
