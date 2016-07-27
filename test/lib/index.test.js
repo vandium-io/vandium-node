@@ -25,6 +25,14 @@ describe( 'index', function() {
         vandium.reset();
     });
 
+    after( function() {
+
+        // NEED to disable eval prevention
+        process.env.VANDIUM_PREVENT_EVAL = "false"
+        require( '../../lib/prevent' ).configure();
+        delete process.env.VANDIUM_PREVENT_EVAL;
+    });
+
 	describe( '.vandium', function() {
 
 		it( 'simple wrap with no jwt or validation', function() {
