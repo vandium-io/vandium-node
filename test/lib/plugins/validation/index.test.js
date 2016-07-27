@@ -8,307 +8,523 @@ var freshy = require( 'freshy' );
 
 var uuid = require( 'node-uuid' );
 
-const VALIDATION_MODULE_PATH = '../../../../lib/plugins/validation';
+const MODULE_PATH = 'lib/plugins/validation';
 
-xdescribe( 'lib/plugins/validation/index', function() {
+const ValidationPlugin = require( '../../../../' + MODULE_PATH );
 
-    let vandium;
+describe( MODULE_PATH, function() {
 
-    let validation;
+    describe( 'ValidationPlugin', function() {
 
-    beforeEach( function() {
+        describe( 'constructor', function() {
 
-        freshy.unload( VALIDATION_MODULE_PATH );
+            it( 'normal operation', function() {
 
-        validation = require( VALIDATION_MODULE_PATH );
+                let plugin = new ValidationPlugin();
 
-        vandium = {
+                expect( plugin.name ).to.equal( 'validation' );
 
-            types: validation.types()
-        };
-    });
-
-
-    describe( '.validate', function() {
-
-        it( 'basic schema', function() {
-
-            var schema = {
-
-                name: vandium.types.string().trim(),
-                age: vandium.types.number().required(),
-                email: vandium.types.email().required(),
-            };
-
-            validation.configure( schema );
-
-            var event = {
-
-                name: '      John Doe  ',
-                age: '42',
-                email: 'john.doe@vandium.io'
-            };
-
-            validation.validate( { event, ignored: [] } );
-
-            expect( event ).to.eql( { name: 'John Doe', age: 42, email: 'john.doe@vandium.io' } );
+                expect( plugin.ignoredProperties ).to.eql( [] );
+                expect( plugin.configuredSchema ).to.not.exist;
+            });
         });
 
-        it( 'basic schema', function() {
+        describe( '.validator', function() {
 
-            var schema = {
+            it( 'normal operation', function() {
 
-                name: vandium.types.string().trim(),
-                age: vandium.types.number().required(),
-                email: vandium.types.email().required(),
-            };
+                let plugin = new ValidationPlugin();
 
-            validation.configure( schema );
+                expect( plugin.validator ).to.exist;
 
-            var event = {
-
-                name: '      John Doe  ',
-                age: '42',
-                email: 'john.doe@vandium.io',
-                other: 'stuff',
-                jwt: 'jwt-goes-here!'
-            };
-
-            validation.ignore( 'other' );
-
-            validation.validate( { event, ignored: [ 'jwt' ] } );
-
-            expect( event ).to.eql( { name: 'John Doe', age: 42, email: 'john.doe@vandium.io', other: 'stuff', jwt: 'jwt-goes-here!' } );
+                expect( plugin.validator.string ).to.exist;
+                expect( plugin.validator.number ).to.exist;
+                expect( plugin.validator.boolean ).to.exist;
+                expect( plugin.validator.object ).to.exist;
+            });
         });
 
-        it( 'basic schema (ignored not set in pipelineEvent)', function() {
+        describe( '.types', function() {
 
-            var schema = {
+            it( 'normal operation', function() {
 
-                name: vandium.types.string().trim(),
-                age: vandium.types.number().required(),
-                email: vandium.types.email().required(),
-            };
+                let plugin = new ValidationPlugin();
 
-            validation.configure( schema );
+                expect( plugin.types ).to.exist;
 
-            var event = {
-
-                name: '      John Doe  ',
-                age: '42',
-                email: 'john.doe@vandium.io',
-                other: 'stuff'
-            };
-
-            validation.ignore( 'other' );
-
-            validation.validate( { event, ignored: null } );
-
-            expect( event ).to.eql( { name: 'John Doe', age: 42, email: 'john.doe@vandium.io', other: 'stuff' } );
+                expect( plugin.types.string ).to.exist;
+                expect( plugin.types.number ).to.exist;
+                expect( plugin.types.boolean ).to.exist;
+                expect( plugin.types.boolean ).to.exist;
+            });
         });
 
-        it( 'all types', function() {
 
-            var schema = {
+        describe( '.configure', function() {
 
-                str: vandium.types.string().required(),
+            it( 'with object schema', function() {
 
-                strWithOpts: vandium.types.string( {} ).required(),
+                let plugin = new ValidationPlugin();
 
-                strWithOptsTrimFalse: vandium.types.string( { trim: false } ).required(),
+                expect( plugin.configuredSchema ).to.not.exist;
 
-                strWithOptsTrimTrue: vandium.types.string( { trim: true } ).required(),
+                const types = plugin.types;
 
-                num: vandium.types.number().required(),
+                let schema = {
 
-                bool: vandium.types.boolean().required(),
+                    name: types.string().min(1).max( 60 ).required(),
+                    age: types.number().min(0).max( 120 )
+                }
 
-                bin: vandium.types.binary().required(),
+                plugin.configure( { schema } );
 
-                date: vandium.types.date().required(),
+                expect( plugin.configuredSchema ).to.exist;
+                expect( plugin.configuredSchema.name ).to.exist;
+                expect( plugin.configuredSchema.age ).to.exist;
 
-                email: vandium.types.email().required(),
+                expect( plugin.state ).to.eql( { enabled: true, keys: [ 'name', 'age' ], ignored: [] } );
+            });
 
-                uuid: vandium.types.uuid().required(),
+            it( 'with string schema', function() {
 
-                obj: vandium.types.object().required(),
+                let plugin = new ValidationPlugin();
 
-                array: vandium.types.array().required(),
+                expect( plugin.configuredSchema ).to.not.exist;
 
-                any: vandium.types.any().required()
-            };
+                let schema = {
 
-            validation.configure( schema );
+                    name: 'string:min=1,max=60,required',
+                    age: 'number:min=0,max=120'
+                }
 
-            var now = Date.now();
+                plugin.configure( { schema } );
 
-            var uuidValue = uuid.v4();
+                expect( plugin.configuredSchema ).to.exist;
+                expect( plugin.configuredSchema.name ).to.exist;
+                expect( plugin.configuredSchema.age ).to.exist;
 
-            var event = {
+                expect( plugin.state ).to.eql( { enabled: true, keys: [ 'name', 'age' ], ignored: [] } );
+            });
 
-                str: 'my string   ',
-                strWithOpts: 'my string with opts  ',
-                strWithOptsTrimFalse: 'my string with opts trim=false ',
-                strWithOptsTrimTrue: 'my string with opts trim=true    ',
-                num: 12345,
-                bool: 'true',
-                bin: 'aGVsbG8=',
-                date: now,
-                email: 'test@vandium.io',
-                uuid: uuidValue,
-                obj: {
-                        name: 'my object'
-                    },
-                array: [ 'one', 2, { name: 'three' } ],
-                any: 'anything here'
-            };
+            it( 'with object and string schema', function() {
 
-            validation.validate( { event, ignored: [] } );
+                let plugin = new ValidationPlugin();
 
-            expect( event.str ).to.equal( 'my string' );
-            expect( event.strWithOpts ).to.equal( 'my string with opts' );
-            expect( event.strWithOptsTrimFalse ).to.equal( 'my string with opts trim=false ' );
-            expect( event.strWithOptsTrimTrue ).to.equal( 'my string with opts trim=true' );
-            expect( event.num ).to.equal( 12345 );
-            expect( event.bool ).to.equal( true );
+                expect( plugin.configuredSchema ).to.not.exist;
 
-            expect( event.bin ).to.be.an.instanceof( Buffer );
-            expect( event.bin.toString() ).to.equal( 'hello' );
+                const types = plugin.types;
 
-            expect( event.date ).to.be.an.instanceof( Date );
-            expect( event.date.getTime() ).to.equal( now );
+                let schema = {
 
-            expect( event.email ).to.equal( 'test@vandium.io' );
+                    name: types.string().min(1).max( 60 ).required(),
+                    age: 'number:min=0,max=120'
+                }
 
-            expect( event.uuid ).to.equal( uuidValue );
+                plugin.configure( { schema } );
 
-            expect( event.obj ).to.eql( { name: 'my object' } );
-            expect( event.array ).to.eql( [ 'one', 2, { name: 'three' } ] );
-            expect( event.any ).to.equal( 'anything here' );
+                expect( plugin.configuredSchema ).to.exist;
+                expect( plugin.configuredSchema.name ).to.exist;
+                expect( plugin.configuredSchema.age ).to.exist;
+
+                expect( plugin.state ).to.eql( { enabled: true, keys: [ 'name', 'age' ], ignored: [] } );
+            });
+
+            it( 'with schema and other properties', function() {
+
+                let plugin = new ValidationPlugin();
+
+                expect( plugin.configuredSchema ).to.not.exist;
+
+                const types = plugin.types;
+
+                let schema = {
+
+                    name: types.string().min(1).max( 60 ).required(),
+                    age: 'number:min=0,max=120'
+                }
+
+                let ignore = [ 'jwt' ];
+
+                plugin.configure( { schema, ignore } );
+
+                expect( plugin.configuredSchema ).to.exist;
+                expect( plugin.configuredSchema.name ).to.exist;
+                expect( plugin.configuredSchema.age ).to.exist;
+
+                expect( plugin.state ).to.eql( { enabled: true, keys: [ 'name', 'age' ], ignored: [ 'jwt' ] } );
+            });
+
+            it( 'with schema only flag set', function() {
+
+                let plugin = new ValidationPlugin();
+
+                plugin.ignore( 'jwt' );
+
+                expect( plugin.configuredSchema ).to.not.exist;
+
+                const types = plugin.types;
+
+                let schema = {
+
+                    name: types.string().min(1).max( 60 ).required(),
+                    age: 'number:min=0,max=120'
+                }
+
+                plugin.configure( { schema }, true );
+
+                expect( plugin.configuredSchema ).to.exist;
+                expect( plugin.configuredSchema.name ).to.exist;
+                expect( plugin.configuredSchema.age ).to.exist;
+
+                expect( plugin.state ).to.eql( { enabled: true, keys: [ 'name', 'age' ], ignored: [ 'jwt' ] } );
+            });
+
+            it( 'no schema with schema only flag set', function() {
+
+                let plugin = new ValidationPlugin();
+
+                plugin.ignore( 'jwt' );
+
+                expect( plugin.configuredSchema ).to.not.exist;
+
+                plugin.configure( { }, true );
+
+                expect( plugin.state ).to.eql( { enabled: false } );
+            });
+
+            it( 'with empty config', function() {
+
+                let plugin = new ValidationPlugin();
+
+                expect( plugin.state ).to.eql( { enabled: false } );
+
+                plugin.configure( {} );
+
+                expect( plugin.state ).to.eql( { enabled: false } );
+
+                plugin.configure();
+
+                expect( plugin.state ).to.eql( { enabled: false } );
+            });
+
+            it( 'fail: with invalid schema', function() {
+
+                let plugin = new ValidationPlugin();
+
+                expect( plugin.configuredSchema ).to.not.exist;
+
+                let schema = {
+
+                    name: true,
+                    age: 42
+                }
+
+                expect( plugin.configure.bind( plugin, { schema } ) ).to.throw( 'invalid schema element at: name' );
+            });
         });
 
-        it( 'schema should still be in-place', function() {
+        describe( '.state', function() {
 
-            var schema = {
+            it( 'normal operation', function() {
 
-                num: vandium.types.number().required(),
-            };
+                let plugin = new ValidationPlugin();
 
-            validation.configure( schema );
+                expect( plugin.state ).to.eql( { enabled: false } );
 
-            validation.configure();
+                plugin.configure( {
 
-            var event = { num: '1234' };
+                    schema: {
 
-            validation.validate( { event, ignored: [] } );
+                        name: 'string:min=1,max=60,required',
+                        age: 'number:min=0,max=120'
+                    }
+                });
 
-            expect( event.num ).to.equal( 1234 );
+                expect( plugin.state ).to.eql( { enabled: true, keys: [ 'name', 'age' ], ignored: [] } );
+
+                plugin.configure();
+
+                expect( plugin.state ).to.eql( { enabled: false } );
+            });
         });
 
-        it( 'schema can be reset by calling configure again', function() {
+        describe( '.execute', function() {
 
-            // does nothing
-            validation.configure();
+            it( 'basic schema, using object based schema', function( done ) {
 
-            var schema1= {
+                let plugin = new ValidationPlugin();
 
-                name: vandium.types.string().required(),
-            };
+                const types = plugin.types;
 
-            validation.configure( schema1 );
+                var schema = {
 
-            var schema2 = {
+                    name: types.string().trim(),
+                    age: types.number().required(),
+                    email: types.email().required(),
+                };
 
-                num: vandium.types.number().required(),
-            };
+                plugin.configure( { schema } );
 
-            validation.configure( schema2 );
+                var event = {
 
-            var event = { num: '1234' };
+                    name: '      John Doe  ',
+                    age: '42',
+                    email: 'john.doe@io'
+                };
 
-            validation.validate( { event, ignored: [] } );
+                plugin.execute( { event, ignored: [] }, function( err, result ) {
 
-            expect( event.num ).to.equal( 1234 );
-        });
+                    if( err ) {
 
-        it( 'all VANDIUM_* values should be ignored', function() {
+                        return done( err );
+                    }
 
-            var schema = {
+                    expect( result ).to.not.exist;
 
-                name: vandium.types.string().required()
-            };
+                    expect( event ).to.eql( { name: 'John Doe', age: 42, email: 'john.doe@io' } );
 
-            validation.configure( schema );
+                    done();
+                });
+            });
 
-            var event = {
+            it( 'basic schema, using string based schema, ignored not set in event', function( done ) {
 
-                name: 'Fred',
-                VANDIUM_SPECIAL: 'this is special'
-            }
+                let plugin = new ValidationPlugin();
 
-            validation.validate( { event, ignored: [] } );
+                var schema = {
 
-            expect( event.name ).to.equal( 'Fred' );
-            expect( event.VANDIUM_SPECIAL ).to.equal( 'this is special' );
-        });
+                    name: 'string:trim,required',
+                    age: 'number:required',
+                    email: 'string:email,required'
+                };
 
-        it( 'with ignored values', function() {
+                plugin.configure( { schema } );
 
-            var schema = {
+                var event = {
 
-                name: vandium.types.string().required()
-            };
+                    name: '      John Doe  ',
+                    age: '42',
+                    email: 'john.doe@io'
+                };
 
-            validation.configure( schema );
+                plugin.execute( { event }, function( err, result ) {
 
-            validation.ignore( 'special1', [ 'special2', 'special3' ] );
+                    if( err ) {
 
-            var event = {
+                        return done( err );
+                    }
 
-                name: 'Fred',
-                special1: 1,
-                special2: 2,
-                special3: 3
-            }
+                    expect( result ).to.not.exist;
 
-            validation.validate( { event, ignored: [] } );
+                    expect( event ).to.eql( { name: 'John Doe', age: 42, email: 'john.doe@io' } );
 
-            expect( event.name ).to.equal( 'Fred' );
-            expect( event.special1 ).to.equal( 1 );
-            expect( event.special2 ).to.equal( 2 );
-            expect( event.special3 ).to.equal( 3 );
-        });
+                    done();
+                });
+            });
 
-        it( 'fail when extra values are present in the event', function() {
+            it( 'all types', function( done ) {
 
-            var schema = {
+                let plugin = new ValidationPlugin();
 
-                name: vandium.types.string().trim(),
-                age: vandium.types.number().required(),
-                email: vandium.types.email().required(),
-            };
+                const types = plugin.types;
 
-            validation.configure( schema );
+                var schema = {
 
-            var event = {
+                    str: types.string().required(),
 
-                name: 'John Doe',
-                age: '42',
-                email: 'john.doe@vandium.io',
-                other: 'other data that will cause an exception'
-            };
+                    strWithOpts: types.string( {} ).required(),
 
-            let pipelineEvent = { event, ignored: [] };
+                    strWithOptsTrimFalse: types.string( { trim: false } ).required(),
 
-            expect( validation.validate.bind( validation, pipelineEvent ) ).to.throw( '"other" is not allowed' );
-        });
-    });
+                    strWithOptsTrimTrue: types.string( { trim: true } ).required(),
 
-    describe( '.validator', function() {
+                    num: types.number().required(),
 
-        it( 'normal operation', function() {
+                    bool: types.boolean().required(),
 
-            expect( validation.validator ).to.exist;
+                    bin: types.binary().required(),
+
+                    date: types.date().required(),
+
+                    email: types.email().required(),
+
+                    uuid: types.uuid().required(),
+
+                    obj: types.object().required(),
+
+                    array: types.array().required(),
+
+                    any: types.any().required()
+                };
+
+                plugin.configure( { schema } );
+
+                var now = Date.now();
+
+                var uuidValue = uuid.v4();
+
+                var event = {
+
+                    str: 'my string   ',
+                    strWithOpts: 'my string with opts  ',
+                    strWithOptsTrimFalse: 'my string with opts trim=false ',
+                    strWithOptsTrimTrue: 'my string with opts trim=true    ',
+                    num: 12345,
+                    bool: 'true',
+                    bin: 'aGVsbG8=',
+                    date: now,
+                    email: 'test@io',
+                    uuid: uuidValue,
+                    obj: {
+                            name: 'my object'
+                        },
+                    array: [ 'one', 2, { name: 'three' } ],
+                    any: 'anything here'
+                };
+
+                plugin.execute( { event, ignored: [] }, function( err, result ) {
+
+                    if( err ) {
+
+                        return done( err );
+                    }
+
+                    expect( result ).to.not.exist;
+
+                    expect( event.str ).to.equal( 'my string' );
+                    expect( event.strWithOpts ).to.equal( 'my string with opts' );
+                    expect( event.strWithOptsTrimFalse ).to.equal( 'my string with opts trim=false ' );
+                    expect( event.strWithOptsTrimTrue ).to.equal( 'my string with opts trim=true' );
+                    expect( event.num ).to.equal( 12345 );
+                    expect( event.bool ).to.equal( true );
+
+                    expect( event.bin ).to.be.an.instanceof( Buffer );
+                    expect( event.bin.toString() ).to.equal( 'hello' );
+
+                    expect( event.date ).to.be.an.instanceof( Date );
+                    expect( event.date.getTime() ).to.equal( now );
+
+                    expect( event.email ).to.equal( 'test@io' );
+
+                    expect( event.uuid ).to.equal( uuidValue );
+
+                    expect( event.obj ).to.eql( { name: 'my object' } );
+                    expect( event.array ).to.eql( [ 'one', 2, { name: 'three' } ] );
+                    expect( event.any ).to.equal( 'anything here' );
+
+                    done();
+                });
+            });
+
+            it( 'all VANDIUM_***** values should be ignored', function( done ) {
+
+                let plugin = new ValidationPlugin();
+
+                const types = plugin.types;
+
+                var schema = {
+
+                    name: types.string().required()
+                };
+
+                plugin.configure( { schema } );
+
+                var event = {
+
+                    name: 'Fred',
+                    VANDIUM_SPECIAL: 'this is special'
+                }
+
+                plugin.execute( { event, ignored: [] }, function( err, result ) {
+
+                    if( err ) {
+
+                        return done( err );
+                    }
+
+                    expect( result ).to.not.exist;
+
+                    expect( event.name ).to.equal( 'Fred' );
+                    expect( event.VANDIUM_SPECIAL ).to.equal( 'this is special' );
+
+                    done();
+                });
+            });
+
+            it( 'with ignored values', function( done ) {
+
+                let plugin = new ValidationPlugin();
+
+                const types = plugin.types;
+
+                var schema = {
+
+                    name: types.string().required()
+                };
+
+                plugin.configure( { schema } );
+
+                plugin.ignore( 'special1', [ 'special2', 'special3' ] );
+
+                var event = {
+
+                    name: 'Fred',
+                    special1: 1,
+                    special2: 2,
+                    special3: 3
+                }
+
+                plugin.execute( { event, ignored: [] }, function( err, result ) {
+
+                    if( err ) {
+
+                        return done( err );
+                    }
+
+                    expect( result ).to.not.exist;
+
+                    expect( event.name ).to.equal( 'Fred' );
+                    expect( event.special1 ).to.equal( 1 );
+                    expect( event.special2 ).to.equal( 2 );
+                    expect( event.special3 ).to.equal( 3 );
+
+                    done();
+                });
+            });
+
+            it( 'fail when extra values are present in the event', function( done ) {
+
+                let plugin = new ValidationPlugin();
+
+                const types = plugin.types;
+
+                var schema = {
+
+                    name: types.string().trim(),
+                    age: types.number().required(),
+                    email: types.email().required(),
+                };
+
+                plugin.configure( { schema } );
+
+                var event = {
+
+                    name: 'John Doe',
+                    age: '42',
+                    email: 'john.doe@io',
+                    other: 'other data that will cause an exception'
+                };
+
+                plugin.execute( { event, ignored: [] }, function( err, result ) {
+
+                    expect( err ).to.exist;
+                    expect( err.message ).to.equal( 'validation error: "other" is not allowed' );
+
+                    expect( result ).to.not.exist;
+
+                    done();
+                });
+            });
         });
     });
 });
