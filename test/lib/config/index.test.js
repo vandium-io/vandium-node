@@ -4,7 +4,7 @@
 
 const expect = require( 'chai' ).expect;
 
-const freshy = require( 'freshy' );
+const proxyquire = require( 'proxyquire' ).noCallThru();
 
 const sinon = require( 'sinon' );
 
@@ -13,326 +13,175 @@ require( 'lambda-tester' );
 
 const configUtils = require( '../config-utils' );
 
+const MODULE_PATH = 'lib/config/index';
+
 //var logger = require( '../../../lib/logger' ).setLevel( 'debug' );
 
-describe( 'lib/config/index', function() {
+describe( MODULE_PATH, function() {
 
-    before( function() {
+    let s3Stub;
 
-        freshy.unload( '../../../lib/config' );
+    let configModule;
+
+    beforeEach( function() {
+
+        configUtils.removeConfig();
+
+        s3Stub = {
+
+            load: sinon.stub()
+        }
+
+        configModule = proxyquire( '../../../' + MODULE_PATH, {
+
+                './s3': s3Stub
+            });
     });
 
-    after( function( done ) {
+    after( function() {
 
-        freshy.unload( 'aws-sdk' );
-        freshy.unload( '../../../lib/config' );
-        freshy.unload( '../../../lib/config/s3' );
-
-        configUtils.removeConfig( done );
+        configUtils.removeConfig();
     });
 
-    describe( '.config', function() {
+    describe( 'Configuration', function() {
 
-        var config;
+        describe( 'constructor (via .create)', function() {
 
-        beforeEach( function( done ) {
+            it( 'normal operation', function() {
 
-            freshy.unload( '../../../lib/config' );
+                let config = configModule.create();
 
-            configUtils.removeConfig( done );
-        });
-
-        it( 'no configuration file', function( done ) {
-
-            config = require( '../../../lib/config' );
-
-            var updateListener = sinon.stub();
-
-            config.on( 'update', updateListener );
-
-            config.wait( function() {
-
-                expect( Object.keys( config ).length ).to.equal( 2 );
-                expect( config.on ).to.be.a( 'Function' );
-                expect( config.wait ).to.be.a( 'Function' );
-
-                // update will never be called because the config file is loaded during the
-                // require( config )
-                expect( updateListener.called ).to.be.false;
-
-                done();
+                expect( config._loaded ).to.be.false;
             });
         });
 
-        it( 'simple configuration file, no s3', function( done ) {
+        describe( '.load', function() {
 
-            var configData = {
+            it( 'no configuration file', function() {
 
-                jwt: {
+                let config = configModule.create();
 
-                    token_name: 'bearer'
-                }
-            }
+                config.load();
 
-            configUtils.writeConfig( JSON.stringify( configData ), function( err ) {
+                expect( config._loaded ).to.be.true;
 
-                if( err ) {
-
-                    return done( err );
-                }
-
-                config = require( '../../../lib/config' );
-
-                var updateListener = sinon.stub();
-
-                config.on( 'update', updateListener );
-
-                config.wait( function() {
-
-                    expect( config.on ).to.be.a( 'Function' );
-                    expect( config.wait ).to.be.a( 'Function' );
-                    expect( config.jwt ).to.be.an( 'Object' );
-                    expect( config.jwt ).to.eql( configData.jwt );
-
-                    // update will never be called because the config file is loaded during the
-                    // require( config )
-                    expect( updateListener.called ).to.be.false;
-
-                    done();
-                });
+                expect( config.get() ).to.eql( {} );
             });
-        });
 
-        it( 'call config.wait when already loaded', function( done ) {
+            it( 'simple configuration file, no s3', function() {
 
-            config = require( '../../../lib/config' );
+                var configData = {
 
-            config.wait( function() {
+                    jwt: {
 
-                config.wait( function() {
+                        token_name: 'bearer'
+                    }
+                }
 
-                    done();
-                });
+                configUtils.writeConfig( JSON.stringify( configData ) );
+
+                let config = configModule.create();
+
+                config.load();
+
+                expect( config._loaded ).to.be.true;
+
+                expect( config.get() ).to.eql( configData );
             });
-        });
 
-        it( 'configuration file with "wait" and "on" properties', function( done ) {
+            it( 'simple configuration file, path provided, no s3', function() {
 
-            var configData = {
+                var configData = {
 
-                on: 'this is on',
-                wait: 'this is wait'
-            };
+                    jwt: {
 
-            configUtils.writeConfig( JSON.stringify( configData ), function( err ) {
-
-                if( err ) {
-
-                    return done( err );
+                        token_name: 'bearer'
+                    }
                 }
 
-                config = require( '../../../lib/config' );
+                configUtils.writeConfig( JSON.stringify( configData ) );
 
-                var updateListener = sinon.stub();
+                let config = configModule.create();
 
-                config.on( 'update', updateListener );
+                config.load( configUtils.path );
 
-                config.wait( function() {
+                expect( config._loaded ).to.be.true;
 
-                    expect( Object.keys( config ).length ).to.equal( 2 );
-                    expect( config.on ).to.be.a( 'Function' );
-                    expect( config.wait ).to.be.a( 'Function' );
-
-                    // update will never be called because the config file is loaded during the
-                    // require( config )
-                    expect( updateListener.called ).to.be.false;
-
-                    done();
-                });
+                expect( config.get() ).to.eql( configData );
             });
-        });
 
-        it( 'configuration file with environment variables', function( done ) {
+            it( 'simple configuration file with s3 refer', function() {
 
-            const existingKey = 'TEST_EXISTING_' + Date.now();
+                var s3Data = {
 
-            const newEnvKey = 'TEST_NEW_' + Date.now();
+                    jwt: {
 
-            const nullEnvKey = 'TEST_NULL_' + Date.now();
-
-            process.env[ existingKey ] = 'Existing';
-
-            let env = {};
-
-            env[ existingKey ] = 'Updated';
-            env[ newEnvKey ] = 'New';
-            env[ nullEnvKey ] = null;
-
-            let configData = {
-
-                env
-            };
-
-            configUtils.writeConfig( JSON.stringify( configData ), function( err ) {
-
-                if( err ) {
-
-                    return done( err );
+                        token_name: 'bearer'
+                    }
                 }
 
-                config = require( '../../../lib/config' );
+                s3Stub.load.returns( Promise.resolve( s3Data ) );
 
-                // make sure existing value was not updated
-                expect( process.env[ existingKey ] ).to.equal( 'Existing' );
+                var configData = {
 
-                // our key was added
-                expect( process.env[ newEnvKey ] ).to.equal( 'New' );
+                    s3: {
 
-                done();
+                        bucket: 'TheBucket',
+                        key: 'TheKey'
+                    }
+                }
+
+                configUtils.writeConfig( JSON.stringify( configData ) );
+
+                let config = configModule.create();
+
+                let loadPromise = config.load();
+
+                expect( loadPromise ).to.exist;
+                expect( loadPromise.then ).to.exist;
+
+                expect( config.isLoaded() ).to.be.false;
+
+                return loadPromise
+                    .then( function() {
+
+                        expect( config.isLoaded() ).to.be.true;
+
+                        expect( config.get().jwt ).to.eql( s3Data.jwt );
+                    });
             });
-        });
 
-        it( 'simple configuration file with s3 refer', function( done ) {
+            it( 'simple configuration file with s3 refer, s3 errors out', function() {
 
-            freshy.unload( 'aws-sdk' );
-            freshy.unload( '../../../lib/config/s3' );
+                s3Stub.load.returns( Promise.reject( new Error( 'bang' ) ) );
 
-            var AWS = require( 'aws-sdk' );
+                var configData = {
 
-            let getObjectStub = sinon.stub();
+                    s3: {
 
-            AWS.S3.prototype.getObject = sinon.spy( getObjectStub );
-
-            var s3Data = {
-
-                jwt: {
-
-                    token_name: 'bearer'
-                }
-            }
-
-            getObjectStub.yieldsAsync( null, { Body: JSON.stringify( s3Data ) } );
-
-            var configData = {
-
-                s3: {
-
-                    bucket: 'TheBucket',
-                    key: 'TheKey'
-                }
-            }
-
-            configUtils.writeConfig( JSON.stringify( configData ), function( err ) {
-
-                if( err ) {
-
-                    return done( err );
+                        bucket: 'TheBucket',
+                        key: 'TheKey'
+                    }
                 }
 
-                config = require( '../../../lib/config' );
+                configUtils.writeConfig( JSON.stringify( configData ) );
 
-                var updateListener = sinon.stub();
+                let config = configModule.create();
 
-                config.on( 'update', updateListener );
+                let loadPromise = config.load();
 
-                config.wait( function() {
+                expect( loadPromise ).to.exist;
+                expect( loadPromise.then ).to.exist;
 
-                    expect( Object.keys( config ).length ).to.equal( 4 );
-                    expect( config.on ).to.be.a( 'Function' );
-                    expect( config.wait ).to.be.a( 'Function' );
-                    expect( config.jwt ).to.be.an( 'Object' );
-                    expect( config.jwt ).to.eql( s3Data.jwt );
-                    expect( config.s3 ).to.be.an( 'Object' );
+                expect( config.isLoaded() ).to.be.false;
 
-                    // never called for file, but called for s3
-                    expect( updateListener.calledOnce ).to.be.true;
+                return loadPromise
+                    .then( function() {
 
-                    done();
-                });
-            });
-        });
+                        expect( config.isLoaded() ).to.be.true;
 
-        it( 'configuration file with error condition', function( done ) {
-
-            freshy.unload( 'aws-sdk' );
-            freshy.unload( '../../../lib/config/s3' );
-
-            let AWS = require( 'aws-sdk' );
-
-            configUtils.writeConfig( "bad", function( err ) {
-
-                if( err ) {
-
-                    return done( err );
-                }
-
-                config = require( '../../../lib/config' );
-
-                var updateListener = sinon.stub();
-
-                config.on( 'update', updateListener );
-
-                config.wait( function() {
-
-                    expect( Object.keys( config ).length ).to.equal( 2 );
-                    expect( config.on ).to.be.a( 'Function' );
-                    expect( config.wait ).to.be.a( 'Function' );
-
-                    expect( updateListener.called ).to.be.false;
-
-                    done();
-                });
-            });
-        });
-
-        it( 'configuration file with s3 error condition', function( done ) {
-
-            freshy.unload( 'aws-sdk' );
-            freshy.unload( '../../../lib/config/s3' );
-
-            let AWS = require( 'aws-sdk' );
-
-            let getObjectStub = sinon.stub();
-
-            AWS.S3.prototype.getObject = sinon.spy( getObjectStub );
-
-            getObjectStub.yieldsAsync( new Error( 'bang' ) );
-
-            let configData = {
-
-                s3: {
-
-                    bucket: 'TheBucket',
-                    key: 'TheKey'
-                }
-            }
-
-            configUtils.writeConfig( JSON.stringify( configData ), function( err ) {
-
-                if( err ) {
-
-                    return done( err );
-                }
-
-                config = require( '../../../lib/config' );
-
-                var updateListener = sinon.stub();
-
-                config.on( 'update', updateListener );
-
-                config.wait( function() {
-
-                    expect( Object.keys( config ).length ).to.equal( 3 );
-                    // expect( config.on ).to.be.a( 'Function' );
-                    // expect( config.wait ).to.be.a( 'Function' );
-                    // expect( config.jwt ).to.be.an( 'Object' );
-                    // expect( config.jwt ).to.eql( s3Data.jwt );
-                    // expect( config.s3 ).to.be.an( 'Object' );
-
-                    expect( updateListener.called ).to.be.false;
-
-                    done();
-                });
+                        expect( config.get() ).to.eql( configData );
+                    });
             });
         });
     });

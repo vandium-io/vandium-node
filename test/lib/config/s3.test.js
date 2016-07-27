@@ -6,37 +6,52 @@ const expect = require( 'chai' ).expect;
 
 const freshy = require( 'freshy' );
 
+const proxyquire = require( 'proxyquire' ).noCallThru();
+
 const sinon = require( 'sinon' );
 
+const MODULE_PATH =  'lib/config/s3';
 
-describe( 'lib/config/s3', function() {
+describe( MODULE_PATH, function() {
 
-    var getObjectStub;
-    var getObjectSpy;
+    let s3;
 
-    var s3Loader;
+    let getObjectStub;
+
+    let getObjectPromiseStub;
+
+    beforeEach( function() {
+
+        getObjectPromiseStub = sinon.stub();
+
+        getObjectStub = sinon.stub().returns( {
+
+            promise: getObjectPromiseStub
+        });
+
+        let s3Stub = {
+
+            getObject: getObjectStub
+        };
+
+        let awsSDKStub = {
+
+            S3: function() { return s3Stub; }
+        }
+
+        freshy.unload( 'aws-sdk' );
+
+        s3 = proxyquire( '../../../' + MODULE_PATH, {
+
+                'aws-sdk': awsSDKStub
+            });
+    });
 
     describe( '.load', function() {
 
-        beforeEach( function() {
+        it( 'normal operation', function() {
 
-            freshy.unload( 'aws-sdk' );
-            freshy.unload( '../../../lib/config/s3' );
-
-            var AWS = require( 'aws-sdk' );
-
-            getObjectStub = sinon.stub();
-
-            getObjectSpy = sinon.spy( getObjectStub );
-
-            AWS.S3.prototype.getObject = getObjectSpy;
-
-            s3Loader = require( '../../../lib/config/s3' );
-        });
-
-        it( 'normal operation', function( done ) {
-
-            var controlJSON = {
+            const controlJSON = {
 
                 jwt: {
 
@@ -44,41 +59,31 @@ describe( 'lib/config/s3', function() {
                 }
             };
 
-            getObjectStub.yieldsAsync( null, { Body: JSON.stringify( controlJSON ) } );
+            getObjectPromiseStub.returns( Promise.resolve( { Body: JSON.stringify( controlJSON ) } ) );
 
-            s3Loader.load( { bucket: 'My-Bucket', key: 'My-Key' }, function( err, json ) {
+            return s3.load( 'My-Bucket', 'My-Key' )
+                .then( function( config ) {
 
-                expect( err ).to.not.exist;
-                expect( json ).to.eql( controlJSON );
-
-                expect( getObjectSpy.calledWith( { Bucket: 'My-Bucket', Key: 'My-Key' } ) ).to.equal( true );
-
-                done();
-            });
+                    expect( config ).to.eql( controlJSON );
+                });
         });
 
-        it( 's3 error condition', function( done ) {
+        it( 'fail: error from s3', function() {
 
-            var problem = new Error( 'bang' );
+            getObjectPromiseStub.returns( Promise.reject( new Error( 'bang' ) ) );
 
-            getObjectStub.yieldsAsync( problem );
+            return s3.load( 'My-Bucket', 'My-Key' )
+                .then(
 
-            s3Loader.load( { bucket: 'My-Bucket', key: 'My-Key' }, function( err, json ) {
+                    function() {
 
-                expect( err ).to.exist;
-                expect( err ).to.equal( problem );
-                expect( json ).to.not.exist;
+                        throw new Error( 'should not resolve' );
+                    },
+                    function( err ) {
 
-                expect( getObjectSpy.calledWith( { Bucket: 'My-Bucket', Key: 'My-Key' } ) ).to.equal( true );
-
-                done();
-            });
+                        expect( err.message ).to.equal( 'bang' );
+                    }
+                );
         });
     });
-
-    after( function() {
-
-        freshy.unload( 'aws-sdk' );
-    });
-
 });
