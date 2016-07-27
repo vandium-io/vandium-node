@@ -6,42 +6,68 @@ const appRoot = require( 'app-root-path' );
 
 const path = appRoot + '/vandium.json';
 
-const freshy = require( 'freshy' );
-
 function readConfig( callback ) {
 
-    fs.readFile( path, function( err, content ) {
+    try {
 
-        if( err ) {
+        let content = fs.readFileSync( path );
+
+        if( callback ) {
+
+            return callback( null, content );
+        }
+
+        return content;
+    }
+    catch( err ) {
+
+        if( callback ) {
 
             return callback();
         }
-
-        callback( null, content );
-    });
+    }
 }
 
 function writeConfig( data, callback ) {
 
     if( data ) {
 
-        return fs.writeFile( path, data, callback );
+        try {
+
+            fs.writeFileSync( path, data );
+        }
+        catch( err ) {
+
+            if( callback ) {
+
+                return callback( err );
+            }
+
+            throw err;
+        }
     }
-    else {
+
+    if( callback ) {
 
         callback();
     }
 }
 
-
 function removeConfig( callback ) {
 
-    freshy.unload( '../../lib/config' );
+    try {
 
-    fs.unlink( path, function() {
+        fs.unlinkSync( path );
+    }
+    catch( err ) {
 
-        callback();
-    });
+        // do nothing!
+    }
+
+    if( callback ) {
+
+        return callback();
+    }
 }
 
 module.exports = {
@@ -50,5 +76,7 @@ module.exports = {
 
     readConfig: readConfig,
 
-    removeConfig: removeConfig
+    removeConfig: removeConfig,
+
+    path
 };
