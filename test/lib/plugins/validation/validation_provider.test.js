@@ -88,5 +88,25 @@ describe( MODULE_PATH, function() {
                 expect( engine.validate.withArgs( values, schema, options ).calledOnce ).to.be.true;
             });
         });
+
+        describe( '.getInstance', function() {
+
+            it( 'normal operation', function() {
+
+                let provider = ValidationProvider.getInstance();
+
+                expect( provider.constructor.name ).to.equal( 'JoiValidationProvider' );
+            });
+
+            it( 'verify cached', function() {
+
+                let provider = ValidationProvider.getInstance();
+
+                expect( provider ).to.exist;
+                
+                // should be cached
+                expect( ValidationProvider.getInstance() ).to.equal( provider );
+            });
+        });
     });
 });
