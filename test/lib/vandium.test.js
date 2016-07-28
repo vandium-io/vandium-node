@@ -8,8 +8,6 @@ const LambdaTester = require( 'lambda-tester' );
 
 const jwtBuilder = require( 'jwt-builder' );
 
-const configUtils = require( './config-utils' );
-
 const MODULE_PATH = 'lib/vandium';
 
 const Vandium = require( '../../' + MODULE_PATH );
@@ -589,7 +587,7 @@ describe( MODULE_PATH, function() {
                     expect( err.message ).to.equal( 'bang' );
 
                     expect( result ).to.not.exist;
-                    
+
                     done();
                 });
             });
@@ -597,6 +595,115 @@ describe( MODULE_PATH, function() {
             after( function() {
 
                 plugins.ExecPlugin = ExecPlugin;
+            });
+        });
+    });
+
+    describe( 'handler invocations', function() {
+
+        describe( 'basic', function() {
+
+            describe( 'no configuration, success using:', function() {
+
+                [
+                    [
+                         'context.succeed()',
+                         function( event, context ) {
+
+                             // should route to callback( null, 'ok' );
+                             context.succeed( 'ok' )
+                         }
+                    ],
+                    [
+                        'context.done( null, result )',
+                        function( event, context ) {
+
+                            // should route to callback( null, 'ok' );
+                            context.done( null, 'ok' );
+                        }
+                    ],
+                    [
+                        'callback( null, result )',
+                        function( event, context, callback ) {
+
+                            callback( null, 'ok' );
+                        }
+                    ],
+                    [
+                        'Promise.resolve()',
+                        function() {
+
+                            return Promise.resolve( 'ok' );
+                        }
+                    ]
+
+                ].forEach( function( test ) {
+
+                    it( test[0], function() {
+
+                        const vandium = new Vandium();
+
+                        const handler = vandium.handler( test[1] );
+
+                        return LambdaTester( handler )
+                            .expectResult( function( result ) {
+
+                                expect( result ).to.equal( 'ok' );
+                            });
+                    });
+                });
+            });
+
+            describe( 'no configuration, fail using:', function() {
+
+                [
+                    [
+                         'context.fail()',
+                         function( event, context ) {
+
+                             // should route to callback( err );
+                             context.fail( new Error( 'bang' ) );
+                         }
+                    ],
+                    [
+                        'context.done( err )',
+                        function( event, context ) {
+
+                            // should route to callback( err );
+                            context.done( new Error( 'bang' ) );
+                        }
+                    ],
+                    [
+                        'callback( err )',
+                        function( event, context, callback ) {
+
+                            // should route to callback( err );
+                            callback( new Error( 'bang' ) );
+                        }
+                    ],
+                    [
+                        'Promise.reject()',
+                        function() {
+
+                            return Promise.reject( new Error( 'bang' ) );
+                        }
+                    ]
+
+                ].forEach( function( test ) {
+
+                    it( test[0], function() {
+
+                        const vandium = new Vandium();
+
+                        const handler = vandium.handler( test[1] );
+
+                        return LambdaTester( handler )
+                            .expectError( function( err ) {
+
+                                expect( err.message ).to.equal( 'bang' );
+                            });
+                    });
+                });
             });
         });
     });
