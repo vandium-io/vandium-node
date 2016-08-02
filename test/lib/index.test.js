@@ -576,6 +576,58 @@ describe( 'index', function() {
                     expect( result ).to.equal( 'ok' );
                 });
         });
+
+        it( 'two handlers defined without bleed', function() {
+
+            vandium.validation( {
+
+                name: 'string:required'
+            });
+
+            vandium.jwt.configure( {
+
+                algorithm: 'HS256',
+                secret: 'super-secret'
+            });
+
+            const handler1 = vandium( function( event, context ) {
+
+                context.succeed( 'ok' );
+            });
+
+            vandium.validation( {
+
+                age: 'number: required'
+            });
+
+            vandium.jwt.configure( {
+
+                algorithm: 'HS256',
+                secret: 'more-secret'
+            });
+
+            const handler2 = vandium( function( event, context ) {
+
+                context.succeed( 'great' );
+            });
+
+            const token1 = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred' } );
+            const token2 = jwtBuilder( { algorithm: 'HS256', secret: 'more-secret', user: 'joe' } );
+
+            return LambdaTester( handler1 )
+                .event( { name: 'fred', jwt: token1 } )
+                .expectResult( function( result1 ) {
+
+                    expect( result1 ).to.equal( 'ok' );
+
+                    return LambdaTester( handler2 )
+                        .event( { age: 42, jwt: token2 } )
+                        .expectResult( function( result2 ) {
+
+                            expect( result2 ).to.equal( 'great' );
+                        });
+                });
+        });
 	});
 
     describe( '.jwt', function() {
