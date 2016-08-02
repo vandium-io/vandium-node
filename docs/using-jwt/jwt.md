@@ -229,4 +229,4 @@ For more information on how API Gateway stage variables work, see the  documenta
 The object located inside S3 must be a valid JSON file that contains configuration parameters as described in this document (*see Figure A*).
 
 ---
-[Back to Documentation Home](main.md)
+[Back to Documentation Home](README.md)

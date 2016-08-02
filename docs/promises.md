@@ -45,4 +45,4 @@ exports.handler = vandium( function( event /* no need for context or callback */
 Vandium will handle successful and failure conditions and route them appropriately to the callback function.
 
 ---
-[Back to Documentation Home](main.md)
+[Back to Documentation Home](README.md)

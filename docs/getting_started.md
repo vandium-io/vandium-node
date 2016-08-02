@@ -32,4 +32,4 @@ exports.handler = vandium( function( event, context, callback ) {
 When the lambda function is invoked, the event object will be checked for a presence of `event.name`. If the value does not exist, then the lambda will fail and an error message will be returned to the caller. Vandium will take care of calling `callback()` to route the error.
 
 ---
-[Back to Documentation Home](main.md)
+[Back to Documentation Home](README.md)

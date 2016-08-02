@@ -18,4 +18,4 @@ exports.handler = function( event, context, callback ) {
 If you require support for the previous version of Node.js (0.10.x) then use version 1.x.
 
 ---
-[Back to Documentation Home](main.md)
+[Back to Documentation Home](README.md)

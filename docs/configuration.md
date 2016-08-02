@@ -31,4 +31,4 @@ To configure your settings (currently only jwt is supported), add the following 
 ```
 
 ---
-[Back to Documentation Home](main.md)
+[Back to Documentation Home](README.md)
