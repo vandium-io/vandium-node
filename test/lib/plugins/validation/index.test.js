@@ -523,7 +523,7 @@ describe( MODULE_PATH, function() {
                 });
             });
 
-            it( 'fail when extra values are present in the event', function( done ) {
+            it( 'allow unknown values (default setting)', function( done ) {
 
                 let plugin = new ValidationPlugin();
 
@@ -532,8 +532,6 @@ describe( MODULE_PATH, function() {
                 var schema = {
 
                     name: types.string().trim(),
-                    age: types.number().required(),
-                    email: types.email().required(),
                 };
 
                 plugin.configure( { schema } );
@@ -541,17 +539,67 @@ describe( MODULE_PATH, function() {
                 var event = {
 
                     name: 'John Doe',
-                    age: '42',
-                    email: 'john.doe@io',
                     other: 'other data that will cause an exception'
                 };
 
-                plugin.execute( { event, ignored: [] }, function( err, result ) {
+                plugin.execute( { event, ignored: [] }, function( err ) {
+
+                    expect( err ).to.not.exist;
+
+                    done();
+                });
+            });
+
+            it( 'allowUnknown = true', function( done ) {
+
+                let plugin = new ValidationPlugin();
+
+                const types = plugin.types;
+
+                var schema = {
+
+                    name: types.string().trim(),
+                };
+
+                plugin.configure( { schema, allowUnknown: true } );
+
+                var event = {
+
+                    name: 'John Doe',
+                    other: 'other data that will cause an exception'
+                };
+
+                plugin.execute( { event, ignored: [] }, function( err ) {
+
+                    expect( err ).to.not.exist;
+
+                    done();
+                });
+            });
+
+            it( 'fail: when allowUnknown = false', function( done ) {
+
+                let plugin = new ValidationPlugin();
+
+                const types = plugin.types;
+
+                var schema = {
+
+                    name: types.string().trim(),
+                };
+
+                plugin.configure( { schema, allowUnknown: false } );
+
+                var event = {
+
+                    name: 'John Doe',
+                    other: 'other data that will cause an exception'
+                };
+
+                plugin.execute( { event, ignored: [] }, function( err ) {
 
                     expect( err ).to.exist;
                     expect( err.message ).to.equal( 'validation error: "other" is not allowed' );
-
-                    expect( result ).to.not.exist;
 
                     done();
                 });
