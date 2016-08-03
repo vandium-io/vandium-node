@@ -31,7 +31,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "joi": "^8.4.x",
-    "joi-json": "^1.1.0",
+    "joi-json": "^2.0.1",
     "jwt-simple": "0.5.x",
     "loglevel": "1.4.x",
     "vandium-utils": "^1.0.0"
