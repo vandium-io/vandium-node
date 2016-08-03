@@ -72,7 +72,7 @@ describe( MODULE_PATH, function() {
 
                     name: types.string().min(1).max( 60 ).required(),
                     age: types.number().min(0).max( 120 )
-                }
+                };
 
                 plugin.configure( { schema } );
 
@@ -93,7 +93,40 @@ describe( MODULE_PATH, function() {
 
                     name: 'string:min=1,max=60,required',
                     age: 'number:min=0,max=120'
-                }
+                };
+
+                plugin.configure( { schema } );
+
+                expect( plugin.configuredSchema ).to.exist;
+                expect( plugin.configuredSchema.name ).to.exist;
+                expect( plugin.configuredSchema.age ).to.exist;
+
+                expect( plugin.state ).to.eql( { enabled: true, keys: [ 'name', 'age' ], ignored: [] } );
+            });
+
+            it( 'with string object notation', function() {
+
+                let plugin = new ValidationPlugin();
+
+                expect( plugin.configuredSchema ).to.not.exist;
+
+                let schema = {
+
+                    name: {
+
+                        '@type': 'string',
+                        min: 1,
+                        max: 60,
+                        required: true
+                    },
+
+                    age: {
+
+                        '@type': 'number',
+                        min: 0,
+                        max: 120
+                    }
+                };
 
                 plugin.configure( { schema } );
 
@@ -139,7 +172,7 @@ describe( MODULE_PATH, function() {
 
                     name: types.string().min(1).max( 60 ).required(),
                     age: 'number:min=0,max=120'
-                }
+                };
 
                 let ignore = [ 'jwt' ];
 
@@ -166,7 +199,7 @@ describe( MODULE_PATH, function() {
 
                     name: types.string().min(1).max( 60 ).required(),
                     age: 'number:min=0,max=120'
-                }
+                };
 
                 plugin.configure( { schema }, true );
 
@@ -215,7 +248,7 @@ describe( MODULE_PATH, function() {
 
                     name: true,
                     age: 42
-                }
+                };
 
                 expect( plugin.configure.bind( plugin, { schema } ) ).to.throw( 'invalid schema element at: name' );
             });
