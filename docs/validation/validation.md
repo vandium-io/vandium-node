@@ -2,70 +2,10 @@
 
 Vandium allows validations on basic types, objects and arrays. Additionally validation can be performed on nested values inside objects and arrays. Vandium's validation system uses [joi (version 8.0.x)](https://github.com/hapijs/joi/tree/v8.0.5) internally and thus most of its functionality may be used.
 
-## Types
-
-Type		   | Description
-------------|------------
-string      | String value. Automatically trimmed
-number      | Number value (integer or floating point)
-boolean     | Boolean value (`true` or `false`)
-date        | Date value
-email       | Email address
-uuid        | [Universally unique identifier](https://en.wikipedia.org/wiki/Universally_unique_identifier) (UUID)
-binary	   | Binary value uncoded using `base64`
-any		   | Any type of value
-object      | Object
-array       | Arrays of values
-
 ## Common Scenarios
 
-### Strings
 
-For a string that is between 1 and 250 characters long and required, the following would be used:
 
-```js
-{
-    name: vandium.types.string().min( 1 ).max( 250 ).required()
-}
-```
-
-Regex expressions can be used:
-
-```js
-{
-    type: vandium.types.string().regex( /^[abcdef]+$/ )
-}
-```
-
-Note: Strings are automatically trimmed. To disable this functionality, add an option when creating the type:
-
-```js
-{
-    string_not_trimmed: vandium.types.string( { trim: false } )
-}
-```
-
-For more information on how to configure strings, see the [joi string reference](https://github.com/hapijs/joi/tree/v8.0.5#string).
-
-### Numbers
-
-Numbers can be validated against ranges and forced to be integers:
-
-```js
-{
-	age: vandium.types.number().integer().min( 0 ).max( 130 ).required()
-}
-```
-
-To specify the number of decimal places allowed:
-
-```js
-{
-	price: vandium.types.number(). precision( 2 ).required()
-}
-```
-
-For more information on how to configure numbers, see the [joi numbers reference](https://github.com/hapijs/joi/tree/v8.0.5#number).
 
 ### Boolean
 

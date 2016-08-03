@@ -1,4 +1,4 @@
-# Vandium Load and Execution Times
+# Performance
 
 Load times are conservative 50 ms with ~0.5 ms impact to execution. Please keep in mind that Lambda functions can be loaded once and executed multiple times and thus low on impact and [billing](https://aws.amazon.com/lambda/pricing) is rounded to the nearest 100 ms.
 
@@ -32,6 +32,3 @@ REPORT RequestId: c7d3d4d1-0a62-11e6-9cab-19ffa2158aff	Duration: 0.74 ms	Billed 
 ```
 
 We have also included a set of load benchmarks that can be found in the `benchmark` folder.
-
----
-[Back to Documentation Home](README.md)
