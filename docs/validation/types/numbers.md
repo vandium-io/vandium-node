@@ -1,5 +1,8 @@
 # Numbers
 
+Number validators can be created by calling `vandium.types.number()`. The implementation is based on `Joi` and thus can use functionality
+available in the `Joi` library for the `number` type.
+
 Numbers can be validated against ranges and forced to be integers:
 
 ```js

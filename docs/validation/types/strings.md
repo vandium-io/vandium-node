@@ -1,5 +1,12 @@
 # Strings
 
+The implementation of the `string` validator is based on `Joi`, and thus can use most of the functionality available in the `Joi` library
+for the `string` type.
+
+String validators can be created by calling `vandium.types.string()`.
+
+## Examples
+
 For a string that is between 1 and 250 characters long and required, the following would be used:
 
 ```js
@@ -16,7 +23,9 @@ Regex expressions can be used:
 }
 ```
 
-Note: Strings are automatically trimmed. To disable this functionality, add an option when creating the type:
+## Automatic trimming
+
+Strings are automatically trimmed. To disable this functionality, add an option when creating the type:
 
 ```js
 {
