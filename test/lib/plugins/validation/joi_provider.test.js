@@ -36,6 +36,7 @@ describe( 'lib/plugins/validation/joi_provider', function() {
                 expect( provider.types.string ).to.exist;
                 expect( provider.types.uuid ).to.exist;
                 expect( provider.types.email ).to.exist;
+                expect( provider.types.alternatives ).to.exist;
             });
         });
 
@@ -49,6 +50,7 @@ describe( 'lib/plugins/validation/joi_provider', function() {
                 'date',
                 'number',
                 'object',
+                'alternatives'
             ].forEach( function( type ) {
 
                 it( type, function() {
