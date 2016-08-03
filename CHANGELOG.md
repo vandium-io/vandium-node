@@ -1,5 +1,23 @@
 # Change Log
 
+## 3.0.0 (TBD)
+
+New:
+
+* Vandium instances can now be created programmatically via a builder pattern for integration into frameworks
+* Configure all parameters via a main configuration function
+* Integrates `joi-json` library to allow configuration of validation rules in both simple JSON and strings.
+* Improved documentation
+* New examples
+
+Changed:
+
+* Vandium singleton state gets reset after wrapping handler with `vandium()`. No longer requires module to be unloaded when testing
+
+Internal:
+
+* Refactored all areas where state is preserved. Not a problem for lambda but makes it easier to test on non-lambda environments
+
 ## 2.7.3 (2016-07-14)
 
 Fixed:
