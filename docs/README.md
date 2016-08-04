@@ -31,23 +31,18 @@ Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions
     - [Configuration](using-jwt/configuration)
     - [Accessing token claims](using-jwt/accessing-token-claims.md)
 - [Attack Protection](protection)
-    - [SQL injection protection](protection/sql-injection-protection)
+    - [SQL injection protection](protection/sql-injection-protection.md)
     - [Configuration](protection/configuration.md)
-    - [Disabling attack protection](protection/disable-attack-protection)
+    - [Disabling attack protection](protection/disable-attack-protection.md)
     - [Preventing calls to `eval()`](protection/eval-prevention.md)
 - [Performance](performance.md)
 - [AWS Lambda Compatibility](compatability.md)
 
 
 
+
 * [Configuration](configuration.md)
-
-
-* [Attack Detection and Protection](protection.md)
-
 * [Cleaning Up after Handler Execution](cleanup.md)
-
-* [Load Times and Execution Times](performance.md)
 
 
 
