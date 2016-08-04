@@ -1,6 +1,6 @@
 # Configuration
 
-Vandium can be configured through environment variables, programmatically, JSON file, S3 object or any combination or all.
+Vandium can be configured through environment variables, programmatically, JSON file, S3 object or any combination, all or none.
 
 Table of Contents
 

@@ -1,7 +1,7 @@
 # Configuration object
 
 The configuration object is used to initialize or configure an instance of Vandium. An instance can be configured during the call to
-`vandium.createInstance()` or via a call to the instances `configure()` method.
+`vandium.createInstance()`, or via a call to the instance's `configure()` method.
 
 
 ## Configuring via `vandium.createInstance()`:
@@ -75,5 +75,5 @@ vandium.configure( {
 });
 ```
 
-The values for `validation`, `protect` and `jwt` can be found in their respective sections of the documentation. Global options can be found
+The values for `env`, `validation`, `protect` and `jwt` can be found in their respective sections of the documentation. Global options can be found
 [here](global-options.md).
