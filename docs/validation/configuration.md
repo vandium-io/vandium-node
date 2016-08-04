@@ -82,7 +82,7 @@ vandium.configure( {
 
         ignore: [ "access_token" ]
     }
-})
+});
 
 exports.handler = vandium( function( event, context, callback ) {
 

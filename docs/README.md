@@ -21,7 +21,12 @@ Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions
 - [How it works](how-it-works.md)
 - [Installation](installation.md)
 - [Getting started](getting-started.md)
-- [Using Promises with Lambda](promises.md)
+- [Configuration](configuration)
+    - [Environment variables](configuration/env-vars.md)
+    - [Configuration object](configuration/object.md)
+    - [JSON configuration file](configuration/json-file.md)
+    - [Configuration via S3](configuration/s3-configuration.md)
+    - [Global options](configuration/global-options.md)
 - [Validation](validation)
     - [Configuration](validation/configuration.md)
     - [Types](validation/types)
@@ -35,15 +40,10 @@ Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions
     - [Configuration](protection/configuration.md)
     - [Disabling attack protection](protection/disable-attack-protection.md)
     - [Preventing calls to `eval()`](protection/eval-prevention.md)
+- [Using Promises with Lambda](promises.md)
+- [Cleaning Up after Handler Execution](cleanup.md)
 - [Performance](performance.md)
 - [AWS Lambda Compatibility](compatability.md)
-
-
-
-
-* [Configuration](configuration.md)
-* [Cleaning Up after Handler Execution](cleanup.md)
-
 
 
 ## Feedback

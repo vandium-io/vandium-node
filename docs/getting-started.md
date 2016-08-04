@@ -19,7 +19,7 @@ var vandium = require( 'vandium' );
 vandium.validation( {
 
 	name: vandium.types.string().required()
-});Â
+});
 
 exports.handler = vandium( function( event, context, callback ) {
 

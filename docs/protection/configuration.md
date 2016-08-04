@@ -18,20 +18,35 @@ Value                   |  Result
 The `protect` object, inside the configuration object, contains the properties needed to configure attack protection.
 
 ```js
-{
-    // configuration object
 
+'use strict';
+
+const vandium = require( 'vandium' ).createInstance();
+
+vandium.configure( {
+
+    // other options
 
     protect: {
 
         // 'fail' to fail and prevent further execution
         // 'off' to disable
         // 'report' to log (default)
-        mode: protection_mode,
+        mode: 'report',
     }
+});
 
-}
+exports.handler = vandium( function( event, context, callback ) {
+
+    // handler code here
+});
 ```
+
+Where `mode` can be:
+- `"report"` (default)
+- `"fail"` to fail and prevent further execution
+= `"off"` to disable protection
+
 
 ## Configuration via `vandium.json`:
 
