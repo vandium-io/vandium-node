@@ -17,23 +17,25 @@ Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions
 * AWS Lambda Node.js 4.3.2 compatible
 
 
-## Installation
-Install via npm.
+## Table of Contents
+- [How it works](how-it-works.md)
+- [Installation](installation.md)
+- [Getting started](getting-started.md)
+- [Using Promises with Lambda](promises.md)
+- [Validation](validation)
+    - [Configuration](validation/configuration.md)
+    - [Types](validation/types)
+    - [Value conversion](validation/value-conversion.md)
+- [Using JWT](using-jwt)
+    - [Validation and enforcement](using-jwt/validation-and-enforcement.md)
+    - [Configuration](using-jwt/configuration)
+    - [Accessing token claims](using-jwt/accessing-token-claims.md)
+- [Performance](performance.md)
 
-	npm install vandium --save
 
-
-## Contents
-
-* [Getting Started](getting_started.md)
 
 * [Configuration](configuration.md)
 
-* [Event Validation](validation.md)
-
-* [Using Promises with Lambda](promises.md)
-
-* [JSON Web Token (JWT) Support](jwt.md)
 
 * [Attack Detection and Protection](protection.md)
 
@@ -42,15 +44,6 @@ Install via npm.
 * [Load Times and Execution Times](performance.md)
 
 * [AWS Lambda Compatibility](compatability.md)
-
-## Table of Contents
-
-- [How it works](how-it-works.md)
-- [Getting started](getting-started.md)
-- [Validation](validation)
-- [Using JWT](using-jwt)
-- [Performance](performance.md)
-
 
 
 ## Feedback

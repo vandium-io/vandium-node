@@ -5,14 +5,14 @@ Using promises can simplify asynchronous operations and reduce/eliminate the nee
 The following example demonstrates how one would handle promises manually:
 
 ```js
-const busLogicModule = require( 'my-bl-module' );
+const myModule = require( 'my-module' );
 
 exports.handler = function( event, context, callback ) {
 
-	busLogicModule.getUser( event.user_id )
+	myModule.getUser( event.user_id )
 		.then( function( user ) {
 
-			return busLogicModule.requestFollowUp( user );
+			return myModule.requestFollowUp( user );
 		})
 		.then( function( followupDate ) {
 
@@ -30,19 +30,16 @@ The same example using vandium would look like:
 ```js
 const vandium = require( 'vandium' );
 
-const busLogicModule = require( 'my-bl-module' );
+const myModule = require( 'my-module' );
 
 exports.handler = vandium( function( event /* no need for context or callback */ ) {
 
-	return busLogicModule.getUser( event.user_id )
+	return myModule.getUser( event.user_id )
 		.then( function( user ) {
 
-			return busLogicModule.requestFollowUp( user );
+			return myModule.requestFollowUp( user );
 		});
 });
 ```
 
 Vandium will handle successful and failure conditions and route them appropriately to the callback function.
-
----
-[Back to Documentation Home](README.md)
