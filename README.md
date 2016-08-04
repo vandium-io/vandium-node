@@ -67,7 +67,7 @@ When the lambda function is invoked, the event object will be checked for a pres
 
 ## Documentation
 
-For documentation on how to use vandium in your project, please see our [documentation](docs/main.md) page.
+For documentation on how to use vandium in your project, please see our [documentation](docs) page.
 
 ## Feedback
 
