@@ -7,6 +7,7 @@ New:
 * Vandium instances can now be created programmatically via a builder pattern for integration into frameworks
 * Configure all parameters via a main configuration function
 * Integrates `joi-json` library to allow configuration of validation rules in both simple JSON and strings.
+* Validator will ignore unknown events by default. Can be configured using the `allowUnknown` validation configuration property.
 * Improved documentation
 * New examples
 
