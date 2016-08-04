@@ -30,7 +30,13 @@ Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions
     - [Validation and enforcement](using-jwt/validation-and-enforcement.md)
     - [Configuration](using-jwt/configuration)
     - [Accessing token claims](using-jwt/accessing-token-claims.md)
+- [Attack Protection](protection)
+    - [SQL injection protection](protection/sql-injection-protection)
+    - [Configuration](protection/configuration.md)
+    - [Disabling attack protection](protection/disable-attack-protection)
+    - [Preventing calls to `eval()`](protection/eval-prevention.md)
 - [Performance](performance.md)
+- [AWS Lambda Compatibility](compatability.md)
 
 
 
@@ -43,7 +49,6 @@ Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions
 
 * [Load Times and Execution Times](performance.md)
 
-* [AWS Lambda Compatibility](compatability.md)
 
 
 ## Feedback
