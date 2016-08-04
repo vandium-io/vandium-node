@@ -14,9 +14,19 @@ binary	   | Binary value uncoded using `base64`
 any		   | Any type of value
 object      | Object
 array       | Arrays of values
+alternatives| Alternative selection of values
 
 
 ## Table of Contents
 
-- [Strings](strings.md)
-- [Numbers](numbers.md)
+- [`string`](string.md)
+- [`number`](number.md)
+- [`boolean`](boolean.md)
+- [`date`](date.md)
+- [`email`](email.md)
+- [`uuid`](uuid.md)
+- [`binary`](binary.md)
+- [`any`](any.md)
+- [`object`](object.md)
+- [`array`](array.md)
+- [`alternatives`](alternatives.md)

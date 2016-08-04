@@ -1,8 +1,10 @@
 # Validation
 
-Vandium allows validations on basic types, objects and arrays. Additionally validation can be performed on nested values inside objects and arrays. Vandium's validation system uses [joi (version 8.0.x)](https://github.com/hapijs/joi/tree/v8.0.5) internally and thus most of its functionality may be used.
+Vandium provides the ability to validate properties of the `event` object in the lambda handler.  Validation can be performed on basic types,
+objects, arrays and nested values. Vandium's validation system uses [Joi (version 8.4.x)](https://github.com/hapijs/joi) internally and thus most of its functionality may be used.
 
 Table of Contents
 
+- [Configuration](configuration.md)
 - [Types](types)
--
+- [Value conversion](value-conversion.md)
