@@ -94,14 +94,14 @@ describe( MODULE_PATH, function() {
 
                 stripErrors: true,
                 logUncaughtExceptions: true,
-                stringifyError: false,
+                stringifyErrors: false,
                 validation: {},
                 jwt: { algorithm: 'HS256', secret: 'secret' },
                 protect: { mode: 'report' }
             });
         });
     });
-    
+
     describe( '.reset', function() {
 
         it( 'normal operation', function() {

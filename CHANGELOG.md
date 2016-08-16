@@ -4,7 +4,7 @@
 
 New:
 
-* Added `stringifyError` configuration property to improve error handling with AWS API Gateway
+* Added `stringifyErrors` configuration property to improve error handling with AWS API Gateway
 
 Updated:
 

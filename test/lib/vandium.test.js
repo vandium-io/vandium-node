@@ -191,7 +191,7 @@ describe( MODULE_PATH, function() {
 
                 expect( vandium.stripErrors ).to.be.true;
                 expect( vandium.logUncaughtExceptions ).to.be.true;
-                expect( vandium.stringifyError ).to.be.false;
+                expect( vandium.stringifyErrors ).to.be.false;
                 expect( vandium.postHandler ).to.be.a( 'Function' );
 
                 expect( vandium.plugins ).to.exist;
@@ -214,7 +214,7 @@ describe( MODULE_PATH, function() {
 
                 expect( vandium.stripErrors ).to.be.true;
                 expect( vandium.logUncaughtExceptions ).to.be.true;
-                expect( vandium.stringifyError ).to.be.false;
+                expect( vandium.stringifyErrors ).to.be.false;
                 expect( vandium.postHandler ).to.be.a( 'Function' );
 
                 expect( vandium.plugins ).to.exist;
@@ -267,14 +267,14 @@ describe( MODULE_PATH, function() {
 
                     stripErrors: 'no',
 
-                    stringifyError: true,
+                    stringifyErrors: true,
                 };
 
                 vandium.configure( config );
 
                 expect( vandium.stripErrors ).to.be.false;
                 expect( vandium.logUncaughtExceptions ).to.be.false;
-                expect( vandium.stringifyError ).to.be.true;
+                expect( vandium.stringifyErrors ).to.be.true;
 
                 expect( vandium.postHandler ).to.be.a( 'Function' );
 
@@ -337,14 +337,14 @@ describe( MODULE_PATH, function() {
 
                     stripErrors: 'no',
 
-                    stringifyError: false
+                    stringifyErrors: false
                 };
 
                 vandium.configure( config );
 
                 expect( vandium.stripErrors ).to.be.false;
                 expect( vandium.logUncaughtExceptions ).to.be.false;
-                expect( vandium.stringifyError ).to.be.false;
+                expect( vandium.stringifyErrors ).to.be.false;
 
                 expect( vandium.postHandler ).to.be.a( 'Function' );
 
@@ -409,7 +409,7 @@ describe( MODULE_PATH, function() {
 
                     stripErrors: true,
                     logUncaughtExceptions: true,
-                    stringifyError: false,
+                    stringifyErrors: false,
                     validation: {},
                     jwt: { enable: false },
                     protect: { mode: 'report' }
@@ -458,7 +458,7 @@ describe( MODULE_PATH, function() {
 
                 expect( config.stripErrors ).to.be.true;
                 expect( config.logUncaughtExceptions ).to.be.true;
-                expect( config.stringifyError ).to.be.false;
+                expect( config.stringifyErrors ).to.be.false;
             });
         });
 
@@ -534,9 +534,9 @@ describe( MODULE_PATH, function() {
                 });
             });
 
-            it( 'standard lambda handler with failure, stringifyError = true, stripErrors = true', function( done ) {
+            it( 'standard lambda handler with failure, stringifyErrors = true, stripErrors = true', function( done ) {
 
-                let vandium = new Vandium( { stringifyError: true } );
+                let vandium = new Vandium( { stringifyErrors: true } );
 
                 let handler = vandium.handler( function() {
 
@@ -570,9 +570,9 @@ describe( MODULE_PATH, function() {
                 });
             });
 
-            it( 'standard lambda handler with failure, stringifyError = true, Typed error, stringErrors = true', function( done ) {
+            it( 'standard lambda handler with failure, stringifyErrors = true, Typed error, stringErrors = true', function( done ) {
 
-                let vandium = new Vandium( { stringifyError: true } );
+                let vandium = new Vandium( { stringifyErrors: true } );
 
                 let handler = vandium.handler( function() {
 
@@ -619,9 +619,9 @@ describe( MODULE_PATH, function() {
                 });
             });
 
-            it( 'standard lambda handler with failure, stringifyError = true, Typed error, stringErrors = false', function( done ) {
+            it( 'standard lambda handler with failure, stringifyErrors = true, Typed error, stringErrors = false', function( done ) {
 
-                let vandium = new Vandium( { stringifyError: true, stripErrors: false} );
+                let vandium = new Vandium( { stringifyErrors: true, stripErrors: false} );
 
                 let handler = vandium.handler( function() {
 
@@ -667,9 +667,9 @@ describe( MODULE_PATH, function() {
                 });
             });
 
-            it( 'standard lambda handler with failure, stringifyError = true, Error with no message', function( done ) {
+            it( 'standard lambda handler with failure, stringifyErrors = true, Error with no message', function( done ) {
 
-                let vandium = new Vandium( { stringifyError: true } );
+                let vandium = new Vandium( { stringifyErrors: true } );
 
                 let handler = vandium.handler( function() {
 
@@ -706,9 +706,9 @@ describe( MODULE_PATH, function() {
                 });
             });
 
-            it( 'standard lambda handler with failure, stringifyError = true, Object error (not using Error constructor)', function( done ) {
+            it( 'standard lambda handler with failure, stringifyErrors = true, Object error (not using Error constructor)', function( done ) {
 
-                let vandium = new Vandium( { stringifyError: true } );
+                let vandium = new Vandium( { stringifyErrors: true } );
 
                 let handler = vandium.handler( function() {
 
@@ -742,9 +742,9 @@ describe( MODULE_PATH, function() {
                 });
             });
 
-            it( 'standard lambda handler with failure, stringifyError = true, String error', function( done ) {
+            it( 'standard lambda handler with failure, stringifyErrors = true, String error', function( done ) {
 
-                let vandium = new Vandium( { stringifyError: true } );
+                let vandium = new Vandium( { stringifyErrors: true } );
 
                 let handler = vandium.handler( function( event, context, callback ) {
 
