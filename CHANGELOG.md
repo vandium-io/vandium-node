@@ -1,6 +1,14 @@
 # Change Log
 
-## 3.1.0 (TBD)
+## 3.1.0 (2016-08-16)
+
+New:
+
+* Added `stringifyError` configuration property to improve error handling with AWS API Gateway
+
+Updated:
+
+* Configurations loaded from AWS S3 are now merged with the existing one
 
 
 ## 3.0.0 (2016-08-04)
