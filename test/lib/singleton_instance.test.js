@@ -80,14 +80,28 @@ describe( MODULE_PATH, function() {
             expect( configStub.on.calledOnce ).to.be.true;
             expect( configStub.on.withArgs( 'update' ).calledOnce ).to.be.true;
 
+            configStub.get.returns( { jwt: { algorithm: 'HS256', secret: 'secret' } } );
+
+            instance.configure = sinon.stub();
+
             // invoke callback
             configStub.on.firstCall.args[ 1 ]();
 
             expect( configStub.get.calledTwice ).to.be.true;
             expect( configStub.get.withArgs().calledTwice ).to.be.true;
+
+            expect( instance.configure.firstCall.args[0] ).to.eql( {
+
+                stripErrors: true,
+                logUncaughtExceptions: true,
+                stringifyError: false,
+                validation: {},
+                jwt: { algorithm: 'HS256', secret: 'secret' },
+                protect: { mode: 'report' }
+            });
         });
     });
-
+    
     describe( '.reset', function() {
 
         it( 'normal operation', function() {
