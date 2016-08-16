@@ -137,4 +137,94 @@ describe( 'lib/errors', function() {
             expect( obj ).to.eql( { one: 1 } );
         });
     });
+
+    describe( '.stringify', function() {
+
+        it( 'basic error', function() {
+
+            let str = errors.stringify( new Error( 'bang' ) );
+
+            expect( str ).to.be.a( 'string' );
+
+            let error = JSON.parse( str );
+
+            expect( error.errorType ).to.equal( 'Error' );
+            expect( error.errorMessage ).to.equal( 'bang' );
+            expect( error.stackTrace ).to.exist;
+            expect( Array.isArray( error.stackTrace ) ).to.be.true;
+            expect( error.stackTrace.length > 0 ).to.be.true;
+        });
+
+        it( 'basic error, no message', function() {
+
+            let str = errors.stringify( new Error() );
+
+            expect( str ).to.be.a( 'string' );
+
+            let error = JSON.parse( str );
+
+            expect( error.errorType ).to.equal( 'Error' );
+            expect( error.errorMessage ).to.equal( 'Error' );
+            expect( error.stackTrace ).to.exist;
+            expect( Array.isArray( error.stackTrace ) ).to.be.true;
+            expect( error.stackTrace.length > 0 ).to.be.true;
+        });
+
+        it( 'custom error', function() {
+
+            class MyError extends Error {
+
+                constructor( msg, code ) {
+
+                    super( msg );
+                    this.code = code;
+                    this.name = 'MyError';
+                }
+            }
+
+            let str = errors.stringify( new MyError( 'bang', 42 ) );
+
+            expect( str ).to.be.a( 'string' );
+
+            let error = JSON.parse( str );
+
+            expect( error.errorType ).to.equal( 'MyError' );
+            expect( error.errorMessage ).to.equal( 'bang' );
+            expect( error.code ).to.equal( 42 );
+            expect( error.stackTrace ).to.exist;
+            expect( Array.isArray( error.stackTrace ) ).to.be.true;
+            expect( error.stackTrace.length > 0 ).to.be.true;
+        });
+
+        it( 'bad stack value', function() {
+
+            let err = new Error( 'bang' );
+            err.stack = null;
+
+            let str = errors.stringify( err  );
+
+            expect( str ).to.be.a( 'string' );
+
+            let error = JSON.parse( str );
+
+            expect( error.errorType ).to.equal( 'Error' );
+            expect( error.errorMessage ).to.equal( 'bang' );
+            expect( error.stackTrace ).to.exist;
+            expect( Array.isArray( error.stackTrace ) ).to.be.true;
+            expect( error.stackTrace.length === 0 ).to.be.true;
+        });
+
+        it( 'object value', function() {
+
+            let str = errors.stringify( { message: 'bang' }  );
+
+            expect( str ).to.be.a( 'string' );
+
+            let error = JSON.parse( str );
+
+            expect( error.errorType ).to.equal( 'Error' );
+            expect( error.errorMessage ).to.equal( 'bang' );
+            expect( error.stackTrace ).to.not.exist;
+        });
+    });
 });
