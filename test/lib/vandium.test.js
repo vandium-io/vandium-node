@@ -191,6 +191,7 @@ describe( MODULE_PATH, function() {
 
                 expect( vandium.stripErrors ).to.be.true;
                 expect( vandium.logUncaughtExceptions ).to.be.true;
+                expect( vandium.stringifyError ).to.be.false;
                 expect( vandium.postHandler ).to.be.a( 'Function' );
 
                 expect( vandium.plugins ).to.exist;
@@ -213,6 +214,7 @@ describe( MODULE_PATH, function() {
 
                 expect( vandium.stripErrors ).to.be.true;
                 expect( vandium.logUncaughtExceptions ).to.be.true;
+                expect( vandium.stringifyError ).to.be.false;
                 expect( vandium.postHandler ).to.be.a( 'Function' );
 
                 expect( vandium.plugins ).to.exist;
@@ -263,13 +265,16 @@ describe( MODULE_PATH, function() {
 
                     logUncaughtExceptions: false,
 
-                    stripErrors: 'no'
+                    stripErrors: 'no',
+
+                    stringifyError: true,
                 };
 
                 vandium.configure( config );
 
                 expect( vandium.stripErrors ).to.be.false;
                 expect( vandium.logUncaughtExceptions ).to.be.false;
+                expect( vandium.stringifyError ).to.be.true;
 
                 expect( vandium.postHandler ).to.be.a( 'Function' );
 
@@ -330,13 +335,16 @@ describe( MODULE_PATH, function() {
 
                     logUncaughtExceptions: false,
 
-                    stripErrors: 'no'
+                    stripErrors: 'no',
+
+                    stringifyError: false
                 };
 
                 vandium.configure( config );
 
                 expect( vandium.stripErrors ).to.be.false;
                 expect( vandium.logUncaughtExceptions ).to.be.false;
+                expect( vandium.stringifyError ).to.be.false;
 
                 expect( vandium.postHandler ).to.be.a( 'Function' );
 
@@ -460,6 +468,243 @@ describe( MODULE_PATH, function() {
                     done();
                 });
             });
+
+            it( 'standard lambda handler with failure, stringifyError = true, stripErrors = true', function( done ) {
+
+                let vandium = new Vandium( { stringifyError: true } );
+
+                let handler = vandium.handler( function() {
+
+                    return Promise.reject( new Error( 'bang') );
+                });
+
+                expect( handler ).to.exist;
+                expect( handler.length ).to.equal( 3 );
+
+                handler( {}, {}, function( err, result ) {
+
+                    try {
+
+                        expect( err ).to.exist;
+                        expect( err ).to.be.a( 'string' );
+
+                        err = JSON.parse( err );
+
+                        expect( err.errorMessage ).to.equal( 'bang' );
+                        expect( err.errorType ).to.equal( 'Error' );
+                        expect( err.stackTrace ).to.exist;
+
+                        expect( result ).to.not.exist;
+
+                        done();
+                    }
+                    catch( error ) {
+
+                        done( error );
+                    }
+                });
+            });
+
+            it( 'standard lambda handler with failure, stringifyError = true, Typed error, stringErrors = true', function( done ) {
+
+                let vandium = new Vandium( { stringifyError: true } );
+
+                let handler = vandium.handler( function() {
+
+                    class MyError extends Error {
+
+                        constructor( msg, code ) {
+
+                            super( msg );
+
+                            this.name = 'MyError';
+                            this.code = code;
+                        }
+                    }
+
+                    return Promise.reject( new MyError( 'bang', 42 ) );
+                });
+
+                expect( handler ).to.exist;
+                expect( handler.length ).to.equal( 3 );
+
+                handler( {}, {}, function( err, result ) {
+
+                    try {
+
+                        expect( err ).to.exist;
+                        expect( err ).to.be.a( 'string' );
+
+                        err = JSON.parse( err );
+
+                        expect( err.errorMessage ).to.equal( 'bang' );
+                        expect( err.code ).to.not.exist;    // stripErrors = true!
+                        expect( err.errorType ).to.equal( 'MyError' );
+                        expect( err.stackTrace ).to.exist;
+                        expect( err.stackTrace.length === 0 ).to.be.true;
+
+                        expect( result ).to.not.exist;
+
+                        done();
+                    }
+                    catch( error ) {
+
+                        done( error );
+                    }
+                });
+            });
+
+            it( 'standard lambda handler with failure, stringifyError = true, Typed error, stringErrors = false', function( done ) {
+
+                let vandium = new Vandium( { stringifyError: true, stripErrors: false} );
+
+                let handler = vandium.handler( function() {
+
+                    class MyError extends Error {
+
+                        constructor( msg, code ) {
+
+                            super( msg );
+
+                            this.name = 'MyError';
+                            this.code = code;
+                        }
+                    }
+
+                    return Promise.reject( new MyError( 'bang', 42 ) );
+                });
+
+                expect( handler ).to.exist;
+                expect( handler.length ).to.equal( 3 );
+
+                handler( {}, {}, function( err, result ) {
+
+                    try {
+
+                        expect( err ).to.exist;
+                        expect( err ).to.be.a( 'string' );
+
+                        err = JSON.parse( err );
+
+                        expect( err.errorMessage ).to.equal( 'bang' );
+                        expect( err.code ).to.equal( 42 );
+                        expect( err.errorType ).to.equal( 'MyError' );
+                        expect( err.stackTrace ).to.exist;
+                        expect( err.stackTrace.length > 0 ).to.be.true;
+                        expect( result ).to.not.exist;
+
+                        done();
+                    }
+                    catch( error ) {
+
+                        done( error );
+                    }
+                });
+            });
+
+            it( 'standard lambda handler with failure, stringifyError = true, Error with no message', function( done ) {
+
+                let vandium = new Vandium( { stringifyError: true } );
+
+                let handler = vandium.handler( function() {
+
+                    class MyError extends Error {
+
+                        constructor() {
+
+                            super();
+
+                            this.name = 'MyError';
+                        }
+                    }
+
+                    return Promise.reject( new MyError() );
+                });
+
+                expect( handler ).to.exist;
+                expect( handler.length ).to.equal( 3 );
+
+                handler( {}, {}, function( err, result ) {
+
+                    expect( err ).to.exist;
+                    expect( err ).to.be.a( 'string' );
+
+                    err = JSON.parse( err );
+
+                    expect( err.errorMessage ).to.equal( 'MyError' );
+                    expect( err.errorType ).to.equal( 'MyError' );
+                    expect( err.stackTrace ).to.exist;
+
+                    expect( result ).to.not.exist;
+
+                    done();
+                });
+            });
+
+            it( 'standard lambda handler with failure, stringifyError = true, Object error (not using Error constructor)', function( done ) {
+
+                let vandium = new Vandium( { stringifyError: true } );
+
+                let handler = vandium.handler( function() {
+
+                    return Promise.reject( { message: 'bang' } );
+                });
+
+                expect( handler ).to.exist;
+                expect( handler.length ).to.equal( 3 );
+
+                handler( {}, {}, function( err, result ) {
+
+                    try {
+
+                        expect( err ).to.exist;
+                        expect( err ).to.be.a( 'string' );
+
+                        err = JSON.parse( err );
+
+                        expect( err.errorMessage ).to.equal( 'bang' );
+                        expect( err.errorType ).to.equal( 'Error' );
+                        expect( err.stackTrace ).to.not.exist;
+
+                        expect( result ).to.not.exist;
+
+                        done();
+                    }
+                    catch( error ) {
+
+                        done( error );
+                    }
+                });
+            });
+
+            it( 'standard lambda handler with failure, stringifyError = true, String error', function( done ) {
+
+                let vandium = new Vandium( { stringifyError: true } );
+
+                let handler = vandium.handler( function( event, context, callback ) {
+
+                    callback( 'something went wrong' );
+                });
+
+                expect( handler ).to.exist;
+                expect( handler.length ).to.equal( 3 );
+
+                handler( {}, {}, function( err, result ) {
+
+                    try {
+
+                        expect( err ).to.equal( 'something went wrong' );
+                        expect( result ).to.not.exist;
+
+                        done();
+                    }
+                    catch( error ) {
+
+                        done( error );
+                    }
+                });
+            });
+
 
             it( 'standard lambda handler with failure, stripErrors = false', function( done ) {
 
