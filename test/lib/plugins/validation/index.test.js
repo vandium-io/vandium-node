@@ -254,6 +254,54 @@ describe( MODULE_PATH, function() {
             });
         });
 
+        describe( '.getConfiguration', function() {
+
+            it( 'enabled', function() {
+
+                let plugin = new ValidationPlugin();
+
+                expect( plugin.configuredSchema ).to.not.exist;
+
+                let schema = {
+
+                    name: {
+
+                        '@type': 'string',
+                        min: 1,
+                        max: 60,
+                        required: true
+                    },
+
+                    age: {
+
+                        '@type': 'number',
+                        min: 0,
+                        max: 120
+                    }
+                };
+
+                plugin.configure( { schema, ignore: 'password' } );
+
+                let config = plugin.getConfiguration();
+
+                expect( config.schema ).to.exist;
+                expect( config.schema.name ).to.exist;
+                expect( config.schema.age ).to.exist;
+
+                expect( config.ignore ).to.eql( [ 'password' ] );
+                expect( config.allowUnknown ).to.be.true;
+            });
+
+            it( 'disabled', function() {
+
+                let plugin = new ValidationPlugin();
+
+                let config = plugin.getConfiguration();
+
+                expect( config ).to.eql( {} );
+            });
+        });
+
         describe( '.state', function() {
 
             it( 'normal operation', function() {

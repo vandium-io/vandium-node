@@ -40,6 +40,18 @@ describe( 'lib/plugins/plugin', function() {
             });
         });
 
+        describe( '.getConfiguration', function() {
+
+            it( 'normal operation', function() {
+
+                let plugin = new Plugin( 'test' );
+                expect( plugin.getConfiguration() ).to.eql( {} );
+
+                plugin.configure( {} );
+                expect( plugin.getConfiguration() ).to.eql( {} );
+            });
+        });
+
         describe( '.execute', function() {
 
             it( 'normal operation', function( done ) {
@@ -50,7 +62,7 @@ describe( 'lib/plugins/plugin', function() {
 
                     expect( err ).to.not.exist;
                     expect( result ).to.not.exist;
-                    
+
                     done( err );
                 });
             });

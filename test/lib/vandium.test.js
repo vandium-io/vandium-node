@@ -397,6 +397,71 @@ describe( MODULE_PATH, function() {
             });
         });
 
+        describe( '.getConfiguration', function() {
+
+            it( 'unconfigured', function() {
+
+                let vandium = new Vandium();
+
+                let config = vandium.getConfiguration();
+
+                expect( config ).to.eql( {
+
+                    stripErrors: true,
+                    logUncaughtExceptions: true,
+                    stringifyError: false,
+                    validation: {},
+                    jwt: { enable: false },
+                    protect: { mode: 'report' }
+                });
+            });
+
+            it( 'configured', function() {
+
+                let vandium = new Vandium( {
+
+                    validation: {
+
+                        schema: {
+
+                            name: 'string:required'
+                        }
+                    },
+
+                    protect: {
+
+                        mode: 'fail'
+                    },
+
+                    jwt: {
+
+                        algorithm: 'HS256',
+                        secret: 'super-secret'
+                    }
+                });
+
+                let config = vandium.getConfiguration();
+
+                expect( config.validation.schema ).to.exist;
+                expect( config.validation.schema.name ).to.exist;
+                expect( config.validation.allowUnknown ).to.be.true;
+                expect( config.validation.ignore ).to.eql( [] );
+
+                expect( config.protect ).to.eql( { mode: 'fail' } );
+
+                expect( config.jwt ).to.eql( {
+
+                    enable: true,
+                    algorithm: 'HS256',
+                    secret: 'super-secret'
+                });
+
+                expect( config.stripErrors ).to.be.true;
+                expect( config.logUncaughtExceptions ).to.be.true;
+                expect( config.stringifyError ).to.be.false;
+            });
+        });
+
         describe( '.after', function() {
 
             it( '.normal operation', function() {

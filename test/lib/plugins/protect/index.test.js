@@ -227,6 +227,23 @@ describe( MODULE_PATH, function() {
             });
         });
 
+        describe( '.getConfiguration', function() {
+
+            it( 'normal operation', function() {
+
+                let protect = new ProtectPlugin();
+
+                protect.configure( { mode: 'report' } );
+                expect( protect.getConfiguration() ).to.eql( { mode: 'report' } );
+
+                protect.configure( { mode: 'disabled' } );
+                expect( protect.getConfiguration() ).to.eql( { mode: 'disabled' } );
+
+                protect.configure( { mode: 'fail' } );
+                expect( protect.getConfiguration() ).to.eql( { mode: 'fail' } );
+            });
+        });
+
         describe( '.execute', function() {
 
             it( 'no attack', function( done ) {
@@ -256,8 +273,6 @@ describe( MODULE_PATH, function() {
                 let protect = new ProtectPlugin();
 
                 protect.sql.fail();
-
-                console.log( protect.state );
 
                 protect.execute( { event }, function( err ) {
 

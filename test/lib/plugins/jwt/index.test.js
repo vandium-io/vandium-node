@@ -164,6 +164,27 @@ describe( 'lib/plugins/jwt/index', function() {
             });
         });
 
+        describe( '.getConfiguration', function() {
+
+            it( 'normal operation', function() {
+
+                let plugin = new JWTPlugin();
+
+                plugin.configure( {
+
+                    algorithm: 'HS256',
+                    secret: 'my-secret'
+                });
+
+                expect( plugin.getConfiguration() ).to.eql( {
+
+                    enable: true,
+                    algorithm: 'HS256',
+                    secret: 'my-secret'
+                });
+            });
+        });
+
         describe( '.state', function() {
 
             it( 'normal operation', function() {

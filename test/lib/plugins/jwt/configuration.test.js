@@ -28,7 +28,7 @@ describe( 'lib/plugins/jwt/configuration', function() {
             });
         });
 
-        describe( '.update', function() {
+        describe( '.update and .get', function() {
 
             [ 'HS256', 'HS384', 'HS512' ].forEach( function( algorithm ) {
 
@@ -42,7 +42,13 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
                     configuration.update( options );
 
-                    expect( configuration.state ).to.eql( { algorithm, key: 'my-secret', enabled: true, xsrf: false, tokenName: 'jwt' } );
+                    let state = configuration.state;
+
+                    expect( state ).to.eql( { algorithm, key: 'my-secret', enabled: true, xsrf: false, tokenName: 'jwt' } );
+
+                    configuration.update( configuration.get() );
+
+                    expect( configuration.state ).to.eql( state );
                 });
             });
 
@@ -58,7 +64,13 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
                     configuration.update( options );
 
-                    expect( configuration.state ).to.eql( { algorithm, key: 'my-pub-key', enabled: true, xsrf: false, tokenName: 'jwt' } );
+                    let state = configuration.state;
+
+                    expect( state ).to.eql( { algorithm, key: 'my-pub-key', enabled: true, xsrf: false, tokenName: 'jwt' } );
+
+                    configuration.update( configuration.get() );
+
+                    expect( configuration.state ).to.eql( state );
                 });
             });
 
@@ -71,7 +83,13 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
                 configuration.update( options );
 
-                expect( configuration.state ).to.eql( { tokenName: 'JWT', enabled: true, xsrf: false } );
+                let state = configuration.state;
+
+                expect( state ).to.eql( { tokenName: 'JWT', enabled: true, xsrf: false } );
+
+                configuration.update( configuration.get() );
+
+                expect( configuration.state ).to.eql( state );
             });
 
             it( 'xsrf = true, xsrf_token_name and xsrf_claim_name', function() {
@@ -85,11 +103,36 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
                 configuration.update( options );
 
-                expect( configuration.state ).to.eql( { xsrf: true, xsrfToken: 'XSRF-TOKEN',
+                let state = configuration.state;
+
+                expect( state ).to.eql( { xsrf: true, xsrfToken: 'XSRF-TOKEN',
                                                   xsrfClaimName: 'xsrf', enabled: true, tokenName: 'jwt' } );
+
+                configuration.update( configuration.get() );
+
+                expect( configuration.state ).to.eql( state );
             });
 
-            it( 'xsrf = true, xsrf_token_name and xsrf_claim_name', function() {
+            it( 'xsrf = true', function() {
+
+                let options = {
+
+                    xsrf: true
+                };
+
+                configuration.update( options );
+
+                let state = configuration.state;
+
+                expect( state ).to.eql( { xsrf: true, xsrfToken: 'xsrfToken', xsrfClaimName: 'xsrfToken',
+                                          enabled: true, tokenName: 'jwt' } );
+
+                configuration.update( configuration.get() );
+
+                expect( configuration.state ).to.eql( state );
+            });
+
+            it( 'xsrf = false, xsrf_token_name and xsrf_claim_name', function() {
 
                 let options = {
 
@@ -100,28 +143,53 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
                 configuration.update( options );
 
-                expect( configuration.state ).to.eql( { xsrf: false, tokenName: 'jwt', enabled: true } );
+                let state = configuration.state;
+
+                expect( state ).to.eql( { xsrf: false, tokenName: 'jwt', enabled: true } );
+
+                configuration.update( configuration.get() );
+
+                expect( configuration.state ).to.eql( state );
+
             });
 
             it( 'unknown algorithm', function() {
 
                 configuration.update( { algorithm: 'special' } );
 
+                let state = configuration.state;
+
                 expect( configuration.state ).to.eql( { enabled: false } );
+
+                configuration.update( configuration.get() );
+
+                expect( configuration.state ).to.eql( state );
             });
 
             it( 'options not supplied', function() {
 
                 configuration.update();
 
-                expect( configuration.state ).to.eql( { enabled: false } );
+                let state = configuration.state;
+
+                expect( state ).to.eql( { enabled: false } );
+
+                configuration.update( configuration.get() );
+
+                expect( configuration.state ).to.eql( state );
             });
 
             it( 'options = null', function() {
 
                 configuration.update( null );
 
+                let state = configuration.state;
+
                 expect( configuration.state ).to.eql( { enabled: false} );
+
+                configuration.update( configuration.get() );
+
+                expect( configuration.state ).to.eql( state );
             });
         });
 
