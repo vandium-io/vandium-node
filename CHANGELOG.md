@@ -1,6 +1,6 @@
 # Change Log
 
-## 3.1.0 (2016-08-16)
+## 3.1.0 (2016-08-17)
 
 New:
 
@@ -9,6 +9,10 @@ New:
 Updated:
 
 * Configurations loaded from AWS S3 are now merged with the existing one
+
+Internal:
+
+* Changed callbacks to use ES2015 arrow functions
 
 
 ## 3.0.0 (2016-08-04)
