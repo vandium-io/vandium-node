@@ -22,9 +22,9 @@ function runBenchmark( index ) {
 
     let benchmark = childProcess.fork( './benchmark/' + moduleName );
 
-    benchmark.on( 'exit', function() {
+    benchmark.on( 'exit', () => {
 
-        process.nextTick( function() {
+        process.nextTick( () => {
 
             runBenchmark( index + 1 );
         });
