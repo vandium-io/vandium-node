@@ -510,6 +510,52 @@ describe( MODULE_PATH, function() {
                 });
             });
 
+            it( 'standard lambda handler with success, callbackWaitsForEmptyEventLoop = false', function( done ) {
+
+                let vandium = new Vandium();
+
+                let handler = vandium.handler( function( event, context ) {
+
+                    context.callbackWaitsForEmptyEventLoop = false;
+                    return Promise.resolve( 'ok' );
+                });
+
+                expect( handler ).to.exist;
+                expect( handler.length ).to.equal( 3 );
+
+                let lambdaContext = {};
+
+                handler( {}, lambdaContext, function( err, result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                    expect( lambdaContext.callbackWaitsForEmptyEventLoop === false ).to.be.true;
+                    done();
+                });
+            });
+
+            it( 'standard lambda handler with success, callbackWaitsForEmptyEventLoop = true', function( done ) {
+
+                let vandium = new Vandium();
+
+                let handler = vandium.handler( function( event, context ) {
+
+                    context.callbackWaitsForEmptyEventLoop = true;
+                    return Promise.resolve( 'ok' );
+                });
+
+                expect( handler ).to.exist;
+                expect( handler.length ).to.equal( 3 );
+
+                let lambdaContext = {};
+
+                handler( {}, lambdaContext, function( err, result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                    expect( lambdaContext.callbackWaitsForEmptyEventLoop ).to.not.exist;
+                    done();
+                });
+            });
+
             it( 'standard lambda handler with failure, stripErrors = true', function( done ) {
 
                 let vandium = new Vandium();
