@@ -1,5 +1,15 @@
 # Change Log
 
+## 3.2.0 (2016-09-23)
+
+New:
+
+* `context.callbackWaitsForEmptyEventLoop` is now supported
+
+Internal:
+
+* Removed `codecov` module from build process
+
 ## 3.1.0 (2016-08-17)
 
 New:
