@@ -616,7 +616,7 @@ describe( MODULE_PATH, function() {
                 });
             });
 
-            it( 'standard lambda handler with failure, stringifyErrors = true, Typed error, stringErrors = true', function( done ) {
+            it( 'standard lambda handler with failure, stringifyErrors = true, Typed error, stringifyErrors = true', function( done ) {
 
                 let vandium = new Vandium( { stringifyErrors: true } );
 
@@ -624,16 +624,16 @@ describe( MODULE_PATH, function() {
 
                     class MyError extends Error {
 
-                        constructor( msg, code ) {
+                        constructor( msg, status ) {
 
                             super( msg );
 
                             this.name = 'MyError';
-                            this.code = code;
+                            this.status = status;
                         }
                     }
 
-                    return Promise.reject( new MyError( 'bang', 42 ) );
+                    return Promise.reject( new MyError( 'bang', 404 ) );
                 });
 
                 expect( handler ).to.exist;
@@ -649,7 +649,7 @@ describe( MODULE_PATH, function() {
                         err = JSON.parse( err );
 
                         expect( err.errorMessage ).to.equal( 'bang' );
-                        expect( err.code ).to.not.exist;    // stripErrors = true!
+                        expect( err.status ).to.equal( 404 );
                         expect( err.errorType ).to.equal( 'MyError' );
                         expect( err.stackTrace ).to.exist;
                         expect( err.stackTrace.length === 0 ).to.be.true;
@@ -665,7 +665,7 @@ describe( MODULE_PATH, function() {
                 });
             });
 
-            it( 'standard lambda handler with failure, stringifyErrors = true, Typed error, stringErrors = false', function( done ) {
+            it( 'standard lambda handler with failure, stringifyErrors = true, Typed error, stringifyErrors = false', function( done ) {
 
                 let vandium = new Vandium( { stringifyErrors: true, stripErrors: false} );
 
