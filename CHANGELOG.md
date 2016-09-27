@@ -1,5 +1,17 @@
 # Change Log
 
+## 3.3.0 (TBD)
+
+New:
+
+* `vandium.callbackWaitsForEmptyEventLoop( true | false )` configuration option to prevent callbacks for waiting for empty event loops
+* `callbackWaitsForEmptyEventLoop` configuration option to `Vandium.configure()` to prevent callbacks for waiting for empty event loops
+
+Updated:
+
+* Better error handling for AWS API Gateway including status codes for standard Vandium errors
+
+
 ## 3.2.0 (2016-09-23)
 
 New:
