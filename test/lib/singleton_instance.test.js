@@ -95,6 +95,7 @@ describe( MODULE_PATH, function() {
                 stripErrors: true,
                 logUncaughtExceptions: true,
                 stringifyErrors: false,
+                callbackWaitsForEmptyEventLoop: true,
                 validation: {},
                 jwt: { algorithm: 'HS256', secret: 'secret' },
                 protect: { mode: 'report' }

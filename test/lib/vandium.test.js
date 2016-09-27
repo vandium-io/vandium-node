@@ -411,6 +411,7 @@ describe( MODULE_PATH, function() {
                     logUncaughtExceptions: true,
                     stringifyErrors: false,
                     validation: {},
+                    callbackWaitsForEmptyEventLoop: true,
                     jwt: { enable: false },
                     protect: { mode: 'report' }
                 });
