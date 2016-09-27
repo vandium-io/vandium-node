@@ -438,7 +438,9 @@ describe( MODULE_PATH, function() {
 
                         algorithm: 'HS256',
                         secret: 'super-secret'
-                    }
+                    },
+
+                    callbackWaitsForEmptyEventLoop: false
                 });
 
                 let config = vandium.getConfiguration();
@@ -456,6 +458,8 @@ describe( MODULE_PATH, function() {
                     algorithm: 'HS256',
                     secret: 'super-secret'
                 });
+
+                expect( config.callbackWaitsForEmptyEventLoop ).to.be.false;
 
                 expect( config.stripErrors ).to.be.true;
                 expect( config.logUncaughtExceptions ).to.be.true;
@@ -504,9 +508,14 @@ describe( MODULE_PATH, function() {
                 expect( handler ).to.exist;
                 expect( handler.length ).to.equal( 3 );
 
-                handler( {}, {}, function( err, result ) {
+                let context = {};
+
+
+                handler( {}, context, function( err, result ) {
 
                     expect( result ).to.equal( 'ok' );
+                    expect( context.callbackWaitsForEmptyEventLoop ).to.not.exist;
+
                     done();
                 });
             });
@@ -553,6 +562,29 @@ describe( MODULE_PATH, function() {
 
                     expect( result ).to.equal( 'ok' );
                     expect( lambdaContext.callbackWaitsForEmptyEventLoop ).to.not.exist;
+                    done();
+                });
+            });
+
+            it( 'standard lambda handler with success, config.callbackWaitsForEmptyEventLoop = false', function( done ) {
+
+                let vandium = new Vandium( { callbackWaitsForEmptyEventLoop: false } );
+
+                let handler = vandium.handler( function( event ) {
+
+                    return Promise.resolve( 'ok' );
+                });
+
+                expect( handler ).to.exist;
+                expect( handler.length ).to.equal( 3 );
+
+                let lambdaContext = {};
+
+                handler( {}, lambdaContext, function( err, result ) {
+
+                    expect( result ).to.equal( 'ok' );
+                    expect( lambdaContext.callbackWaitsForEmptyEventLoop ).to.exist;
+                    expect( lambdaContext.callbackWaitsForEmptyEventLoop ).to.be.false;
                     done();
                 });
             });

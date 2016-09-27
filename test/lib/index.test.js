@@ -706,6 +706,20 @@ describe( 'index', function() {
         });
     });
 
+    describe( '.callbackWaitsForEmptyEventLoop', function() {
+
+        it( 'normal operation', function() {
+
+            expect( singleton.get().callbackWaitsForEmptyEventLoop ).to.be.true;
+
+            vandium.callbackWaitsForEmptyEventLoop( false );
+            expect( singleton.get().callbackWaitsForEmptyEventLoop ).to.be.false;
+
+            vandium.callbackWaitsForEmptyEventLoop( true );
+            expect( singleton.get().callbackWaitsForEmptyEventLoop ).to.be.true;
+        });
+    });
+
     describe( '.validator', function() {
 
         it( 'normal operation', function() {
