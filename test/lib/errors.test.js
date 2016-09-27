@@ -150,6 +150,23 @@ describe( 'lib/errors', function() {
 
             expect( error.errorType ).to.equal( 'Error' );
             expect( error.errorMessage ).to.equal( 'bang' );
+            expect( error.status ).to.equal( 500 );
+            expect( error.stackTrace ).to.exist;
+            expect( Array.isArray( error.stackTrace ) ).to.be.true;
+            expect( error.stackTrace.length > 0 ).to.be.true;
+        });
+
+        it( 'basic error with status code', function() {
+
+            let str = errors.stringify( new Error( '[500] bang' ) );
+
+            expect( str ).to.be.a( 'string' );
+
+            let error = JSON.parse( str );
+
+            expect( error.errorType ).to.equal( 'Error' );
+            expect( error.errorMessage ).to.equal( '[500] bang' );
+            expect( error.status ).to.not.exist;
             expect( error.stackTrace ).to.exist;
             expect( Array.isArray( error.stackTrace ) ).to.be.true;
             expect( error.stackTrace.length > 0 ).to.be.true;
@@ -165,6 +182,7 @@ describe( 'lib/errors', function() {
 
             expect( error.errorType ).to.equal( 'Error' );
             expect( error.errorMessage ).to.equal( 'Error' );
+            expect( error.status ).to.equal( 500 );
             expect( error.stackTrace ).to.exist;
             expect( Array.isArray( error.stackTrace ) ).to.be.true;
             expect( error.stackTrace.length > 0 ).to.be.true;
@@ -179,6 +197,7 @@ describe( 'lib/errors', function() {
                     super( msg );
                     this.code = code;
                     this.name = 'MyError';
+                    this.status = 404;
                 }
             }
 
@@ -191,6 +210,7 @@ describe( 'lib/errors', function() {
             expect( error.errorType ).to.equal( 'MyError' );
             expect( error.errorMessage ).to.equal( 'bang' );
             expect( error.code ).to.equal( 42 );
+            expect( error.status ).to.equal( 404 );
             expect( error.stackTrace ).to.exist;
             expect( Array.isArray( error.stackTrace ) ).to.be.true;
             expect( error.stackTrace.length > 0 ).to.be.true;
