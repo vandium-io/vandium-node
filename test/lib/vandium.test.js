@@ -6,8 +6,6 @@ const expect = require( 'chai' ).expect;
 
 const LambdaTester = require( 'lambda-tester' );
 
-const jwtBuilder = require( 'jwt-builder' );
-
 const MODULE_PATH = 'lib/vandium';
 
 const Vandium = require( '../../' + MODULE_PATH );
@@ -518,6 +516,23 @@ describe( MODULE_PATH, function() {
 
                     done();
                 });
+            });
+
+            it( 'prevent double wrapping', function() {
+
+                let vandium = new Vandium();
+
+                let handler = vandium.handler( function() {
+
+                    return Promise.resolve( 'ok' );
+                });
+
+                expect( handler.__isVandium ).to.be.true;
+                expect( handler ).to.be.a( 'function' );
+
+                // should be same instance
+                let handler2 = vandium.handler( handler );
+                expect( handler2 ).to.equal( handler );
             });
 
             it( 'standard lambda handler with success, callbackWaitsForEmptyEventLoop = false', function( done ) {
