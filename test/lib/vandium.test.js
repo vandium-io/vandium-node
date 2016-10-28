@@ -955,6 +955,84 @@ describe( MODULE_PATH, function() {
                 });
             });
 
+            it( 'Using default lambda proxy - success case, httpMethod = GET', function( done ) {
+
+                let vandium = new Vandium( { lambdaProxy: true } );
+
+                let handler = vandium.handler( function() {
+
+                    return Promise.resolve( { ok: true } );
+                });
+
+                handler( { httpMethod: 'GET' }, {}, function( err, result ) {
+
+                    expect( err ).to.not.exist;
+                    expect( result ).to.exist;
+
+                    expect( result ).to.eql( {
+
+                        statusCode: 200,
+                        headers: {},
+                        body: '{"ok":true}'
+                    });
+
+                    done();
+                });
+            });
+
+            it( 'Using default lambda proxy - success case, httpMethod = POST', function( done ) {
+
+                let vandium = new Vandium( { lambdaProxy: true } );
+
+                let handler = vandium.handler( function() {
+
+                    return Promise.resolve( { ok: true } );
+                });
+
+                handler( { httpMethod: 'POST' }, {}, function( err, result ) {
+
+                    expect( err ).to.not.exist;
+                    expect( result ).to.exist;
+
+                    expect( result ).to.eql( {
+
+                        statusCode: 201,
+                        headers: {},
+                        body: '{"ok":true}'
+                    });
+
+                    done();
+                });
+            });
+
+            it( 'Using default lambda proxy - error case, httpMethod = GET', function( done ) {
+
+                let vandium = new Vandium( { lambdaProxy: true } );
+
+                let handler = vandium.handler( function() {
+
+                    let error = new Error( 'not found' );
+                    error.status = 404;
+
+                    return Promise.reject( error );
+                });
+
+                handler( { httpMethod: 'GET' }, {}, function( err, result ) {
+
+                    expect( err ).to.not.exist;
+                    expect( result ).to.exist;
+
+                    expect( result ).to.eql( {
+
+                        statusCode: 404,
+                        headers: {},
+                        body: '{"type":"Error","message":"not found"}'
+                    });
+
+                    done();
+                });
+            });
+
             // must be last test in this describe()
             //
             it( 'fail to run pipeline', function( done ) {
