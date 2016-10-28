@@ -747,6 +747,14 @@ describe( 'index', function() {
         });
     });
 
+    describe( '.LambdaProxy', function() {
+
+        it( 'normal operation', function() {
+
+            expect( vandium.LambdaProxy ).to.exist;
+        });
+    });
+
     describe( 'create singleton instance with configuration file', function() {
 
         it( 'auto update when vandium.json is present', function() {
