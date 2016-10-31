@@ -253,5 +253,68 @@ describe( MODULE_PATH, function() {
                 });
             });
         });
+
+        describe( '.fromConfiguration', function() {
+
+            it( 'config = true', function() {
+
+                let proxyInstance = LambdaProxy.fromConfiguration( true );
+
+                expect( proxyInstance ).to.exist;
+                expect( proxyInstance ).to.be.instanceof( LambdaProxy );
+            });
+
+            it( 'config = LambdaProxy instance', function() {
+
+                let control = new LambdaProxy();
+                let proxyInstance = LambdaProxy.fromConfiguration( control );
+
+                expect( proxyInstance ).to.equal( control );
+            });
+
+            it( 'config = Custom LambdaProxy instance', function() {
+
+                class MyLambdaProxy extends LambdaProxy {
+
+                    constructor() {
+
+                        super();
+                    }
+                }
+
+                let control = new MyLambdaProxy();
+                let proxyInstance = LambdaProxy.fromConfiguration( control );
+
+                expect( proxyInstance ).to.equal( control );
+            });
+
+            it( 'config = configuration object', function() {
+
+                let proxyInstance = LambdaProxy.fromConfiguration( {
+
+                    headers: {
+
+                        "x-my-custom-header": "42"
+                    }
+                });
+
+                expect( proxyInstance ).to.be.an.instanceof( LambdaProxy );
+                expect( proxyInstance._headers ).to.eql( { 'x-my-custom-header': '42' } );
+            });
+
+            it( 'config = null', function() {
+
+                let proxyInstance = LambdaProxy.fromConfiguration( null );
+
+                expect( proxyInstance ).to.not.exist;
+            });
+
+            it( 'config = undefined', function() {
+
+                let proxyInstance = LambdaProxy.fromConfiguration();
+
+                expect( proxyInstance ).to.not.exist;
+            });
+        });
     });
 });
