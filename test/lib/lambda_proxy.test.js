@@ -288,6 +288,20 @@ describe( MODULE_PATH, function() {
                 expect( proxyInstance ).to.equal( control );
             });
 
+            it( 'config = object with onResult() and onError()', function() {
+
+                let control = {
+
+                    onResult() {},
+
+                    onError() {}
+                };
+                
+                let proxyInstance = LambdaProxy.fromConfiguration( control );
+
+                expect( proxyInstance ).to.equal( control );
+            });
+
             it( 'config = configuration object', function() {
 
                 let proxyInstance = LambdaProxy.fromConfiguration( {
@@ -301,6 +315,14 @@ describe( MODULE_PATH, function() {
                 expect( proxyInstance ).to.be.an.instanceof( LambdaProxy );
                 expect( proxyInstance._headers ).to.eql( { 'x-my-custom-header': '42' } );
             });
+
+            it( 'config = empty configuration object', function() {
+
+                let proxyInstance = LambdaProxy.fromConfiguration( {});
+
+                expect( proxyInstance ).to.be.an.instanceof( LambdaProxy );
+            });
+
 
             it( 'config = null', function() {
 
