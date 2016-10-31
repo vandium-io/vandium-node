@@ -216,6 +216,34 @@ describe( 'lib/errors', function() {
             expect( error.stackTrace.length > 0 ).to.be.true;
         });
 
+        it( 'custom error with statusCode', function() {
+
+            class MyError extends Error {
+
+                constructor( msg, code ) {
+
+                    super( msg );
+                    this.code = code;
+                    this.name = 'MyError';
+                    this.statusCode = 404;
+                }
+            }
+
+            let str = errors.stringify( new MyError( 'bang', 42 ) );
+
+            expect( str ).to.be.a( 'string' );
+
+            let error = JSON.parse( str );
+
+            expect( error.errorType ).to.equal( 'MyError' );
+            expect( error.errorMessage ).to.equal( 'bang' );
+            expect( error.code ).to.equal( 42 );
+            expect( error.status ).to.equal( 404 );
+            expect( error.stackTrace ).to.exist;
+            expect( Array.isArray( error.stackTrace ) ).to.be.true;
+            expect( error.stackTrace.length > 0 ).to.be.true;
+        });
+
         it( 'bad stack value', function() {
 
             let err = new Error( 'bang' );
