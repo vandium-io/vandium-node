@@ -4,6 +4,8 @@
 
 const expect = require( 'chai' ).expect;
 
+const sinon = require( 'sinon' );
+
 const LambdaTester = require( 'lambda-tester' );
 
 const MODULE_PATH = 'lib/vandium';
@@ -15,6 +17,8 @@ const envRestorer = require( 'env-restorer' );
 const plugins = require( '../../lib/plugins' );
 
 const ExecPlugin = require( '../../lib/plugins/exec' );
+
+const LambdaProxy = require( '../../lib/lambda_proxy' );
 
 //require( '../lib/logger' ).setLevel( 'debug' );
 
@@ -493,6 +497,16 @@ describe( MODULE_PATH, function() {
         });
 
         describe( '.handler', function() {
+
+            beforeEach( function() {
+
+                sinon.spy( console, 'log' );
+            });
+
+            afterEach( function() {
+
+                console.log.restore();
+            })
 
             it( 'standard lambda handler with success', function( done ) {
 
@@ -1028,6 +1042,38 @@ describe( MODULE_PATH, function() {
                         headers: {},
                         body: '{"type":"Error","message":"not found"}'
                     });
+
+                    done();
+                });
+            });
+
+            it( 'Using lambda proxy - error case while generating response', function( done ) {
+
+                let myProxy = new LambdaProxy();
+
+                myProxy.onResult = function() {
+
+                    throw new Error( 'bang' );
+                }
+
+                let vandium = new Vandium( { lambdaProxy: myProxy } );
+
+                let handler = vandium.handler( function() {
+
+                    return Promise.resolve( { ok: 42 } );
+                });
+
+
+                handler( { httpMethod: 'GET' }, {}, function( err, result ) {
+
+                    expect( err ).to.not.exist;
+                    expect( result ).to.exist;
+
+                    expect( console.log.calledOnce ).to.be.true;
+                    expect( console.log.firstCall.args[0] ).contains( 'error while processing callback' );
+
+                    // should return original unproxied value
+                    expect( result ).to.eql( { ok: 42 } );
 
                     done();
                 });
