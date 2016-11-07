@@ -6,6 +6,7 @@ New:
 
 * `vandium.callbackWaitsForEmptyEventLoop( true | false )` configuration option to prevent callbacks for waiting for empty event loops
 * `callbackWaitsForEmptyEventLoop` configuration option to `Vandium.configure()` to prevent callbacks for waiting for empty event loops
+* `lambdaProxy` configuration option for AWS API Gateway lambda proxy support
 
 Updated:
 
