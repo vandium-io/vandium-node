@@ -185,32 +185,32 @@ describe( MODULE_PATH, function() {
                 expect( plugin.state ).to.eql( { enabled: true, keys: [ 'name', 'age' ], ignored: [ 'jwt' ] } );
             });
 
-            it( 'with schema only flag set', function() {
+            // it( 'with schema only flag set', function() {
+            //
+            //     let plugin = new ValidationPlugin();
+            //
+            //     plugin.ignore( 'jwt' );
+            //
+            //     expect( plugin.configuredSchema ).to.not.exist;
+            //
+            //     const types = plugin.types;
+            //
+            //     let schema = {
+            //
+            //         name: types.string().min(1).max( 60 ).required(),
+            //         age: 'number:min=0,max=120'
+            //     };
+            //
+            //     plugin.configure( { schema }, true );
+            //
+            //     expect( plugin.configuredSchema ).to.exist;
+            //     expect( plugin.configuredSchema.name ).to.exist;
+            //     expect( plugin.configuredSchema.age ).to.exist;
+            //
+            //     expect( plugin.state ).to.eql( { enabled: true, keys: [ 'name', 'age' ], ignored: [ 'jwt' ] } );
+            // });
 
-                let plugin = new ValidationPlugin();
-
-                plugin.ignore( 'jwt' );
-
-                expect( plugin.configuredSchema ).to.not.exist;
-
-                const types = plugin.types;
-
-                let schema = {
-
-                    name: types.string().min(1).max( 60 ).required(),
-                    age: 'number:min=0,max=120'
-                };
-
-                plugin.configure( { schema }, true );
-
-                expect( plugin.configuredSchema ).to.exist;
-                expect( plugin.configuredSchema.name ).to.exist;
-                expect( plugin.configuredSchema.age ).to.exist;
-
-                expect( plugin.state ).to.eql( { enabled: true, keys: [ 'name', 'age' ], ignored: [ 'jwt' ] } );
-            });
-
-            it( 'no schema with schema only flag set', function() {
+            it( 'no schema', function() {
 
                 let plugin = new ValidationPlugin();
 

@@ -980,17 +980,26 @@ describe( MODULE_PATH, function() {
 
                 handler( { httpMethod: 'GET' }, {}, function( err, result ) {
 
-                    expect( err ).to.not.exist;
-                    expect( result ).to.exist;
+                    try {
 
-                    expect( result ).to.eql( {
+                        expect( err ).to.not.exist;
+                        expect( result ).to.exist;
 
-                        statusCode: 200,
-                        headers: {},
-                        body: '{"ok":true}'
-                    });
+                        expect( result ).to.eql( {
 
-                    done();
+                            statusCode: 200,
+                            headers: {},
+                            body: '{"ok":true}'
+                        });
+
+                        done();
+                    }
+                    catch( err ) {
+
+                        console.log( err );
+
+                        done( err );
+                    }
                 });
             });
 
