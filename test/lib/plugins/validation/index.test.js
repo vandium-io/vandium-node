@@ -327,6 +327,19 @@ describe( MODULE_PATH, function() {
             });
         });
 
+        describe( '.types (static)', function() {
+
+            it( 'normal operation', function() {
+
+                expect( ValidationPlugin.types ).to.exist;
+                expect( ValidationPlugin.types.string() ).to.exist;
+                expect( ValidationPlugin.types.boolean() ).to.exist;
+                expect( ValidationPlugin.types.object() ).to.exist;
+                expect( ValidationPlugin.types.number() ).to.exist;
+                expect( ValidationPlugin.types.array() ).to.exist;
+            });
+        });
+
         describe( '.execute', function() {
 
             it( 'basic schema, using object based schema', function( done ) {
@@ -623,6 +636,97 @@ describe( MODULE_PATH, function() {
 
                     done();
                 });
+            });
+
+            it( 'lambdaProxy = true, httpMethod = PUT', function( done ) {
+
+                let plugin = new ValidationPlugin();
+
+                const types = ValidationPlugin.types;
+
+                var schema = {
+
+                    POST: {
+
+                        headers: {
+
+                            'x-custom-header': types.string().required()
+                        },
+                        body: {
+
+                            one: types.number().required(),
+                            two: types.number().required(),
+                            three: types.number().required()
+                        }
+                    },
+
+                    PUT: 'POST' // same as POST
+                };
+
+                plugin.configure( { schema, lambdaProxy: true } );
+
+                var event = {
+
+                    httpMethod: 'PUT',
+
+                    headers: {
+
+                        'x-custom-header': '   test '
+                    },
+
+                    body: {
+
+                        one: 1,
+                        two: '2',
+                        three: '3'
+                    },
+
+                    other: 'stuff'
+                };
+
+                let pipelineEvent = { event, ignored: [] };
+
+                plugin.execute( pipelineEvent, function( err ) {
+
+                    expect( err ).to.not.exist;
+
+                    expect( pipelineEvent.event.headers ).to.eql( {
+
+                        'x-custom-header': 'test'   // trimmed
+                    });
+
+                    expect( pipelineEvent.event.body ).to.eql( {
+
+                        one: 1, two: 2, three: 3
+                    });
+
+                    expect( pipelineEvent.event.other ).to.equal( 'stuff' );
+
+                    done();
+                });
+            });
+
+            it( 'fail: lambdaProxy = true, bad http method reference', function() {
+
+                let plugin = new ValidationPlugin();
+
+                const types = ValidationPlugin.types;
+
+                var schema = {
+
+                    GET: {
+
+                        headers: {
+
+                            'x-custom-header': types.string().required()
+                        }
+                    },
+
+                    PUT: 'POST' // same as POST, but POST does not exist
+                };
+
+                expect( plugin.configure.bind( plugin, { schema, lambdaProxy: true } ) )
+                    .to.throw( 'Invalid schema reference: POST for method PUT' );
             });
 
             it( 'fail: when allowUnknown = false', function( done ) {

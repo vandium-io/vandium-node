@@ -183,6 +183,19 @@ describe( MODULE_PATH, function() {
             });
         });
 
+        describe( '.types (static)', function() {
+
+            it( 'normal operation', function() {
+
+                expect( Vandium.types ).to.exist;
+                expect( Vandium.types.string() ).to.exist;
+                expect( Vandium.types.boolean() ).to.exist;
+                expect( Vandium.types.object() ).to.exist;
+                expect( Vandium.types.number() ).to.exist;
+                expect( Vandium.types.array() ).to.exist;
+            });
+        });
+
         describe( '.configure', function() {
 
             it( 'without configuration', function() {
