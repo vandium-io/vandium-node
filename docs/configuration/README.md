@@ -2,7 +2,7 @@
 
 Vandium can be configured through environment variables, programmatically, JSON file, S3 object or any combination, all or none.
 
-Table of Contents
+## Table of Contents
 
 - [Environment variables](env-vars.md)
 - [Configuration object](object.md)
