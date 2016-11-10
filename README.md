@@ -10,6 +10,7 @@ Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions
 * JSON Web Token (JWT) verification and validation
 * Cross Site Request Forgery (XSRF) detection when using JWT
 * SQL Injection (SQLi) detection and protection
+* Lambda Proxy Resource support for AWS API Gateway
 * Environment variable mapping
 * Free resources post handler execution
 * Forces values into correct types

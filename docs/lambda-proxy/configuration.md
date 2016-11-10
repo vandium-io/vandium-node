@@ -1,25 +1,4 @@
-# API Gateway Proxy Resource Support
-
-The AWS API Gateway allows resource paths to be proxied to a single lambda function using the `ANY` resource type. Unlike typical mapped resources,
-proxy resources will encode results and error conditions using a specific object format:
-
-```js
-{
-    // numeric static code
-    "statusCode": 200,
-
-    // object containing header values
-    "headers": {
-
-        "x-custom-header": "header_value"
-    },
-
-    // body encoded as a string
-    "body": "{\"result\":true}"
-}
-```
-
-## Configuration
+# Configuration
 
 Proxy resource support can be configured several different ways depending on the level of customization that is required.
 
@@ -183,7 +162,3 @@ The result from the above code will return:
     "body": "{\"whatever\":\"results?\"}"
 }
 ```
-
-## Further Information
-
-For more information on AWS API Proxy Resources in Lambda, please see the [AWS API Gateway documentation](http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html)

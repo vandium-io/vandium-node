@@ -7,6 +7,7 @@ Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions
 * JSON Web Token (JWT) verification and validation
 * Cross Site Request Forgery (XSRF) detection when using JWT
 * SQL Injection (SQLi) detection and protection
+* Lambda Proxy Resource support for AWS API Gateway
 * Environment variable mapping
 * Free resources post handler execution
 * Forces values into correct types
@@ -40,6 +41,9 @@ Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions
     - [Configuration](protection/configuration.md)
     - [Disabling attack protection](protection/disable-attack-protection.md)
     - [Preventing calls to `eval()`](protection/eval-prevention.md)
+- [Lambda Proxy Resource](lambda-proxy)
+    - [Configuration](lambda-proxy/configuration.md)
+    - [Validation](lambda-proxy/validation.md)
 - [Using Promises with Lambda](promises.md)
 - [Cleaning Up after Handler Execution](cleanup.md)
 - [Performance](performance.md)
