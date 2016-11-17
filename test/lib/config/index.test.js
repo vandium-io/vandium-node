@@ -8,9 +8,6 @@ const proxyquire = require( 'proxyquire' ).noCallThru();
 
 const sinon = require( 'sinon' );
 
-// sets LAMBDA_TASK_ROOT
-require( 'lambda-tester' );
-
 const configUtils = require( '../config-utils' );
 
 const MODULE_PATH = 'lib/config/index';
@@ -90,7 +87,7 @@ describe( MODULE_PATH, function() {
                 });
 
                 config.load();
-                
+
                 expect( config._loaded ).to.be.true;
             });
 

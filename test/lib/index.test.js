@@ -4,8 +4,6 @@
 
 const expect = require( 'chai' ).expect;
 
-const LambdaTester = require( 'lambda-tester' );
-
 const jwtBuilder = require( 'jwt-builder' );
 
 const configUtils = require( './config-utils' );
@@ -17,6 +15,8 @@ const vandium = require( VANDIUM_MODULE_PATH );
 const singleton = require( '../../lib/singleton_instance' );
 
 const envRestorer = require( 'env-restorer' );
+
+const HandlerInvoker = require( './handler_invoker' );
 
 //require( '../lib/logger' ).setLevel( 'debug' );
 
@@ -50,9 +50,10 @@ describe( 'index', function() {
                 context.succeed( 'ok' );
             });
 
-            return LambdaTester( handler )
-                .expectResult( function( result ) {
+            return HandlerInvoker( handler )
+                .execute( ( err, result ) => {
 
+                    expect( err ).to.not.exist;
                     expect( result ).to.equal( 'ok' );
                 });
         });
@@ -64,9 +65,10 @@ describe( 'index', function() {
                 callback( null, 'ok' );
             });
 
-            return LambdaTester( handler )
-                .expectResult( function( result ) {
+            return HandlerInvoker( handler )
+                .execute( ( err, result ) => {
 
+                    expect( err ).to.not.exist;
                     expect( result ).to.equal( 'ok' );
                 });
         });
@@ -78,11 +80,13 @@ describe( 'index', function() {
                 callback( new Error( 'bang' ) );
             });
 
-            return LambdaTester( handler )
-                .expectError( function( err ) {
+            return HandlerInvoker( handler )
+                .execute( ( err, result ) => {
 
                     expect( err.message ).to.equal( 'bang' );
                     expect( err.stack ).to.equal( '' );
+
+                    expect( result ).to.not.exist;
                 });
         });
 
@@ -95,11 +99,13 @@ describe( 'index', function() {
                 callback( new Error( 'bang' ) );
             });
 
-            return LambdaTester( handler )
-                .expectError( function( err ) {
+            return HandlerInvoker( handler )
+                .execute( ( err, result ) => {
 
                     expect( err.message ).to.equal( 'bang' );
                     expect( err.stack ).to.exist;
+
+                    expect( result ).to.not.exist;
                 });
         });
 
@@ -110,10 +116,12 @@ describe( 'index', function() {
                 callback( 'bang' );
             });
 
-            return LambdaTester( handler )
-                .expectError( function( err ) {
+            return HandlerInvoker( handler )
+                .execute( ( err, result ) => {
 
-                    expect( err.message ).to.equal( 'bang' );
+                    expect( err ).to.equal( 'bang' );
+
+                    expect( result ).to.not.exist;
                 });
         });
 
@@ -125,10 +133,12 @@ describe( 'index', function() {
                 context.fail( new Error( 'bang' ) );
             });
 
-            return LambdaTester( handler )
-                .expectError( function( err ) {
+            return HandlerInvoker( handler )
+                .execute( ( err, result ) => {
 
                     expect( err.message ).to.equal( 'bang' );
+
+                    expect( result ).to.not.exist;
                 });
         });
 
@@ -139,14 +149,16 @@ describe( 'index', function() {
                 context.fail();
             });
 
-            return LambdaTester( handler )
-                .expectError( function( err ) {
+            return HandlerInvoker( handler )
+                .execute( ( err, result ) => {
 
                     expect( err ).to.be.instanceof( Error );
+
+                    expect( result ).to.not.exist;
                 });
         });
 
-        it( 'simple wrap, return value', function( done ) {
+        it( 'simple wrap, return value', function() {
 
             const handler = vandium( function( event, context ) {
 
@@ -160,17 +172,7 @@ describe( 'index', function() {
                 getRemainingTimeInMillis: function() { return 5000 }
             };
 
-            // Can't use lambda-tester here (just yet!)
-
-            let returnValue = handler( {}, context, function( err, result ) {
-
-                if( err ) {
-
-                    return done( err );
-                }
-
-                done();
-            });
+            let returnValue = handler( {}, context, () => {});
 
             expect( returnValue ).to.equal( 42 );
         });
@@ -199,9 +201,9 @@ describe( 'index', function() {
 
             const token = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred' } );
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .event( { name: 'fred', age: 16, jwt: token } )
-                .expectResult( function( result ) {
+                .execute( ( err, result ) => {
 
                     expect( result ).to.equal( 'ok' );
                 });
@@ -233,9 +235,9 @@ describe( 'index', function() {
 
             const token = jwtBuilder( { user: 'fred', secret: 'super-secret', algorithm: 'HS256' } );
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .event( { name: 'fred', age: 16, jwt: token } )
-                .expectResult( function( result ) {
+                .execute( function( err, result ) {
 
                     expect( result ).to.equal( 'ok' );
                 });
@@ -255,7 +257,7 @@ describe( 'index', function() {
                 context.succeed( 'ok' );
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .event( { name: 'fred' } )
                 .expectError( function( err ) {
 
@@ -277,7 +279,7 @@ describe( 'index', function() {
                 });
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .expectResult( function( result ) {
 
                     expect( result ).to.equal( 'ok' );
@@ -298,7 +300,7 @@ describe( 'index', function() {
                 });
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .expectError( function( err ) {
 
                     expect( err.message ).to.equal( 'bang' );
@@ -312,7 +314,7 @@ describe( 'index', function() {
                 throw new Error( 'bang' );
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .expectError( function( err ) {
 
                     expect( err.message ).to.equal( 'bang' );
@@ -328,7 +330,7 @@ describe( 'index', function() {
                 throw new Error( 'bang' );
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .expectError( function( err ) {
 
                     expect( err.message ).to.equal( 'bang' );
@@ -350,8 +352,10 @@ describe( 'index', function() {
                 callback( null, 'ok' );
             });
 
-            return LambdaTester( handler )
-                .expectResult( function( result ) {
+            return HandlerInvoker( handler )
+                .execute( ( err, result ) => {
+
+                    expect( err ).to.not.exist;
 
                     expect( result ).to.equal( 'ok' );
                     expect( afterCalled ).to.be.true;
@@ -373,15 +377,17 @@ describe( 'index', function() {
                 callback( null, 'ok' );
             });
 
-            return LambdaTester( handler )
-                .expectResult( function( result ) {
+            return HandlerInvoker( handler )
+                .execute( ( err, result ) => {
+
+                    expect( err ).to.not.exist;
 
                     expect( result ).to.equal( 'ok' );
                     expect( afterCalled ).to.be.true;
                 });
         });
 
-        it( 'simple wrap with no jwt or validation, eval disabled', function() {
+        it( 'simple wrap with no jwt or validation, prevent eval disabled', function() {
 
             process.env.VANDIUM_PREVENT_EVAL = 'false';
 
@@ -392,16 +398,18 @@ describe( 'index', function() {
                 context.succeed( 'ok' );
             });
 
-            return LambdaTester( handler )
-                .expectResult( function( result ) {
 
+            return HandlerInvoker( handler )
+                .execute( ( err, result ) => {
+
+                    expect( err ).to.not.exist;
                     expect( result ).to.equal( 'ok' );
                 });
         });
 
         it( 'multiple wrap case', function() {
 
-            vandium( function( event, context ) {
+            const handler = vandium( function( event, context ) {
 
                 // should route to callback( null, 'ok' );
                 context.succeed( 'ok' );
@@ -413,9 +421,10 @@ describe( 'index', function() {
                 context.succeed( 'ok!' );
             });
 
-            return LambdaTester( handler2 )
-                .expectResult( function( result ) {
+            return HandlerInvoker( handler2 )
+                .execute( ( err, result ) => {
 
+                    expect( err ).to.not.exist;
                     expect( result ).to.equal( 'ok!' );
                 });
         });
@@ -430,7 +439,7 @@ describe( 'index', function() {
                 callback( null, 'ok' );
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .expectError( function( err ) {
 
                     expect( err.message ).to.contain( 'security violation' );
@@ -452,7 +461,7 @@ describe( 'index', function() {
                 callback( new Error( 'bang' ) );
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .expectError( function( err ) {
 
                     expect( err.message ).to.equal( 'bang' );
@@ -474,7 +483,7 @@ describe( 'index', function() {
                 callback( null, 'ok' );
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .expectResult( function( result ) {
 
                     expect( result ).to.equal( 'ok' );
@@ -498,7 +507,7 @@ describe( 'index', function() {
                 return Promise.resolve( 'ok' );
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .expectResult( function( result ) {
 
                     expect( result ).to.equal( 'ok' );
@@ -521,7 +530,7 @@ describe( 'index', function() {
                 return Promise.resolve( 'ok' );
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .expectResult( function( result ) {
 
                     expect( result ).to.equal( 'ok' );
@@ -538,7 +547,7 @@ describe( 'index', function() {
                 return Promise.resolve( 'ok' );
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .expectResult( function( result ) {
 
                     expect( result ).to.equal( 'ok' );
@@ -554,7 +563,7 @@ describe( 'index', function() {
                 return Promise.resolve( 'ok' );
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .expectResult( function( result ) {
 
                     expect( result ).to.equal( 'ok' );
@@ -570,7 +579,7 @@ describe( 'index', function() {
                 return Promise.resolve( 'ok' );
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .expectResult( function( result ) {
 
                     expect( result ).to.equal( 'ok' );
@@ -614,13 +623,13 @@ describe( 'index', function() {
             const token1 = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred' } );
             const token2 = jwtBuilder( { algorithm: 'HS256', secret: 'more-secret', user: 'joe' } );
 
-            return LambdaTester( handler1 )
+            return HandlerInvoker( handler1 )
                 .event( { name: 'fred', jwt: token1 } )
                 .expectResult( function( result1 ) {
 
                     expect( result1 ).to.equal( 'ok' );
 
-                    return LambdaTester( handler2 )
+                    return HandlerInvoker( handler2 )
                         .event( { age: 42, jwt: token2 } )
                         .expectResult( function( result2 ) {
 
@@ -790,7 +799,7 @@ describe( 'index', function() {
                 return Promise.reject( new Error( 'invalid event state' ) );
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .event( { jwt: token, name: '   fred   ' } )
                 .expectResult( function( result ) {
 
@@ -846,7 +855,7 @@ describe( 'index', function() {
                 return Promise.reject( new Error( 'invalid event state' ) );
             });
 
-            return LambdaTester( handler )
+            return HandlerInvoker( handler )
                 .event( { jwt: token, name: '   fred   ' } )
                 .expectResult( function( result ) {
 
