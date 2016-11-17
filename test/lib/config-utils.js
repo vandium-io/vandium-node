@@ -6,6 +6,8 @@ const appRoot = require( 'app-root-path' );
 
 const path = appRoot + '/vandium.json';
 
+process.env.LAMBDA_TASK_ROOT = appRoot;
+
 function readConfig( callback ) {
 
     try {
