@@ -6,8 +6,6 @@ const expect = require( 'chai' ).expect;
 
 const sinon = require( 'sinon' );
 
-const LambdaTester = require( 'lambda-tester' );
-
 const MODULE_PATH = 'lib/vandium';
 
 const Vandium = require( '../../' + MODULE_PATH );
@@ -19,6 +17,8 @@ const plugins = require( '../../lib/plugins' );
 const ExecPlugin = require( '../../lib/plugins/exec' );
 
 const LambdaProxy = require( '../../lib/lambda_proxy' );
+
+const HandlerInvoker = require( './handler_invoker' );
 
 //require( '../lib/logger' ).setLevel( 'debug' );
 
@@ -521,11 +521,13 @@ describe( MODULE_PATH, function() {
                 console.log.restore();
             })
 
-            it( 'standard lambda handler with success', function( done ) {
+            it( 'standard lambda handler with success', function() {
 
                 let vandium = new Vandium();
 
-                let handler = vandium.handler( function() {
+                let handler = vandium.handler( function( event, context ) {
+
+                    expect( context.callbackWaitsForEmptyEventLoop ).to.not.exist;
 
                     return Promise.resolve( 'ok' );
                 });
@@ -533,16 +535,12 @@ describe( MODULE_PATH, function() {
                 expect( handler ).to.exist;
                 expect( handler.length ).to.equal( 3 );
 
-                let context = {};
+                return HandlerInvoker( handler )
+                    .execute( ( err, result ) => {
 
-
-                handler( {}, context, function( err, result ) {
-
-                    expect( result ).to.equal( 'ok' );
-                    expect( context.callbackWaitsForEmptyEventLoop ).to.not.exist;
-
-                    done();
-                });
+                        expect( err ).to.not.exist;
+                        expect( result ).to.equal( 'ok' );
+                    });
             });
 
             it( 'prevent double wrapping', function() {
@@ -562,7 +560,7 @@ describe( MODULE_PATH, function() {
                 expect( handler2 ).to.equal( handler );
             });
 
-            it( 'standard lambda handler with success, callbackWaitsForEmptyEventLoop = false', function( done ) {
+            it( 'standard lambda handler with success, callbackWaitsForEmptyEventLoop = false', function() {
 
                 let vandium = new Vandium();
 
@@ -577,15 +575,16 @@ describe( MODULE_PATH, function() {
 
                 let lambdaContext = {};
 
-                handler( {}, lambdaContext, function( err, result ) {
+                return HandlerInvoker( handler )
+                    .context( lambdaContext )
+                    .execute( ( err, result ) => {
 
-                    expect( result ).to.equal( 'ok' );
-                    expect( lambdaContext.callbackWaitsForEmptyEventLoop === false ).to.be.true;
-                    done();
-                });
+                        expect( result ).to.equal( 'ok' );
+                        expect( lambdaContext.callbackWaitsForEmptyEventLoop === false ).to.be.true;
+                    });
             });
 
-            it( 'standard lambda handler with success, callbackWaitsForEmptyEventLoop = true', function( done ) {
+            it( 'standard lambda handler with success, callbackWaitsForEmptyEventLoop = true', function() {
 
                 let vandium = new Vandium();
 
@@ -600,19 +599,20 @@ describe( MODULE_PATH, function() {
 
                 let lambdaContext = {};
 
-                handler( {}, lambdaContext, function( err, result ) {
+                return HandlerInvoker( handler )
+                    .context( lambdaContext )
+                    .execute( ( err, result ) => {
 
-                    expect( result ).to.equal( 'ok' );
-                    expect( lambdaContext.callbackWaitsForEmptyEventLoop ).to.not.exist;
-                    done();
-                });
+                        expect( result ).to.equal( 'ok' );
+                        expect( lambdaContext.callbackWaitsForEmptyEventLoop ).to.not.exist;
+                    });
             });
 
-            it( 'standard lambda handler with success, config.callbackWaitsForEmptyEventLoop = false', function( done ) {
+            it( 'standard lambda handler with success, config.callbackWaitsForEmptyEventLoop = false', function() {
 
                 let vandium = new Vandium( { callbackWaitsForEmptyEventLoop: false } );
 
-                let handler = vandium.handler( function( event ) {
+                let handler = vandium.handler( function() {
 
                     return Promise.resolve( 'ok' );
                 });
@@ -622,16 +622,17 @@ describe( MODULE_PATH, function() {
 
                 let lambdaContext = {};
 
-                handler( {}, lambdaContext, function( err, result ) {
+                return HandlerInvoker( handler )
+                    .context( lambdaContext )
+                    .execute( ( err, result ) => {
 
-                    expect( result ).to.equal( 'ok' );
-                    expect( lambdaContext.callbackWaitsForEmptyEventLoop ).to.exist;
-                    expect( lambdaContext.callbackWaitsForEmptyEventLoop ).to.be.false;
-                    done();
-                });
+                        expect( result ).to.equal( 'ok' );
+                        expect( lambdaContext.callbackWaitsForEmptyEventLoop ).to.exist;
+                        expect( lambdaContext.callbackWaitsForEmptyEventLoop ).to.be.false;
+                    });
             });
 
-            it( 'standard lambda handler with failure, stripErrors = true', function( done ) {
+            it( 'standard lambda handler with failure, stripErrors = true', function() {
 
                 let vandium = new Vandium();
 
@@ -643,19 +644,18 @@ describe( MODULE_PATH, function() {
                 expect( handler ).to.exist;
                 expect( handler.length ).to.equal( 3 );
 
-                handler( {}, {}, function( err, result ) {
+                return HandlerInvoker( handler )
+                    .execute( ( err, result ) => {
 
-                    expect( err ).to.exist;
-                    expect( err.message ).to.equal( 'bang' );
-                    expect( err.stack.length ).to.equal( 0 );
+                        expect( err ).to.exist;
+                        expect( err.message ).to.equal( 'bang' );
+                        expect( err.stack.length ).to.equal( 0 );
 
-                    expect( result ).to.not.exist;
-
-                    done();
-                });
+                        expect( result ).to.not.exist;
+                    });
             });
 
-            it( 'standard lambda handler with failure, stringifyErrors = true, stripErrors = true', function( done ) {
+            it( 'standard lambda handler with failure, stringifyErrors = true, stripErrors = true', function() {
 
                 let vandium = new Vandium( { stringifyErrors: true } );
 
@@ -667,9 +667,8 @@ describe( MODULE_PATH, function() {
                 expect( handler ).to.exist;
                 expect( handler.length ).to.equal( 3 );
 
-                handler( {}, {}, function( err, result ) {
-
-                    try {
+                return HandlerInvoker( handler )
+                    .execute( ( err, result ) => {
 
                         expect( err ).to.exist;
                         expect( err ).to.be.a( 'string' );
@@ -681,17 +680,10 @@ describe( MODULE_PATH, function() {
                         expect( err.stackTrace ).to.exist;
 
                         expect( result ).to.not.exist;
-
-                        done();
-                    }
-                    catch( error ) {
-
-                        done( error );
-                    }
-                });
+                    });
             });
 
-            it( 'standard lambda handler with failure, stringifyErrors = true, Typed error, stringifyErrors = true', function( done ) {
+            it( 'standard lambda handler with failure, stringifyErrors = true, Typed error, stringifyErrors = true', function() {
 
                 let vandium = new Vandium( { stringifyErrors: true } );
 
@@ -714,9 +706,8 @@ describe( MODULE_PATH, function() {
                 expect( handler ).to.exist;
                 expect( handler.length ).to.equal( 3 );
 
-                handler( {}, {}, function( err, result ) {
-
-                    try {
+                return HandlerInvoker( handler )
+                    .execute( ( err, result ) => {
 
                         expect( err ).to.exist;
                         expect( err ).to.be.a( 'string' );
@@ -730,17 +721,10 @@ describe( MODULE_PATH, function() {
                         expect( err.stackTrace.length === 0 ).to.be.true;
 
                         expect( result ).to.not.exist;
-
-                        done();
-                    }
-                    catch( error ) {
-
-                        done( error );
-                    }
-                });
+                    });
             });
 
-            it( 'standard lambda handler with failure, stringifyErrors = true, Typed error, stringifyErrors = false', function( done ) {
+            it( 'standard lambda handler with failure, stringifyErrors = true, Typed error, stringifyErrors = false', function() {
 
                 let vandium = new Vandium( { stringifyErrors: true, stripErrors: false} );
 
@@ -763,9 +747,8 @@ describe( MODULE_PATH, function() {
                 expect( handler ).to.exist;
                 expect( handler.length ).to.equal( 3 );
 
-                handler( {}, {}, function( err, result ) {
-
-                    try {
+                return HandlerInvoker( handler )
+                    .execute( ( err, result ) => {
 
                         expect( err ).to.exist;
                         expect( err ).to.be.a( 'string' );
@@ -778,17 +761,10 @@ describe( MODULE_PATH, function() {
                         expect( err.stackTrace ).to.exist;
                         expect( err.stackTrace.length > 0 ).to.be.true;
                         expect( result ).to.not.exist;
-
-                        done();
-                    }
-                    catch( error ) {
-
-                        done( error );
-                    }
-                });
+                    });
             });
 
-            it( 'standard lambda handler with failure, stringifyErrors = true, Error with no message', function( done ) {
+            it( 'standard lambda handler with failure, stringifyErrors = true, Error with no message', function() {
 
                 let vandium = new Vandium( { stringifyErrors: true } );
 
@@ -810,24 +786,23 @@ describe( MODULE_PATH, function() {
                 expect( handler ).to.exist;
                 expect( handler.length ).to.equal( 3 );
 
-                handler( {}, {}, function( err, result ) {
+                return HandlerInvoker( handler )
+                    .execute( ( err, result ) => {
 
-                    expect( err ).to.exist;
-                    expect( err ).to.be.a( 'string' );
+                        expect( err ).to.exist;
+                        expect( err ).to.be.a( 'string' );
 
-                    err = JSON.parse( err );
+                        err = JSON.parse( err );
 
-                    expect( err.errorMessage ).to.equal( 'MyError' );
-                    expect( err.errorType ).to.equal( 'MyError' );
-                    expect( err.stackTrace ).to.exist;
+                        expect( err.errorMessage ).to.equal( 'MyError' );
+                        expect( err.errorType ).to.equal( 'MyError' );
+                        expect( err.stackTrace ).to.exist;
 
-                    expect( result ).to.not.exist;
-
-                    done();
-                });
+                        expect( result ).to.not.exist;
+                    });
             });
 
-            it( 'standard lambda handler with failure, stringifyErrors = true, Object error (not using Error constructor)', function( done ) {
+            it( 'standard lambda handler with failure, stringifyErrors = true, Object error (not using Error constructor)', function() {
 
                 let vandium = new Vandium( { stringifyErrors: true } );
 
@@ -839,9 +814,8 @@ describe( MODULE_PATH, function() {
                 expect( handler ).to.exist;
                 expect( handler.length ).to.equal( 3 );
 
-                handler( {}, {}, function( err, result ) {
-
-                    try {
+                return HandlerInvoker( handler )
+                    .execute( ( err, result ) => {
 
                         expect( err ).to.exist;
                         expect( err ).to.be.a( 'string' );
@@ -853,17 +827,10 @@ describe( MODULE_PATH, function() {
                         expect( err.stackTrace ).to.not.exist;
 
                         expect( result ).to.not.exist;
-
-                        done();
-                    }
-                    catch( error ) {
-
-                        done( error );
-                    }
-                });
+                    });
             });
 
-            it( 'standard lambda handler with failure, stringifyErrors = true, String error', function( done ) {
+            it( 'standard lambda handler with failure, stringifyErrors = true, String error', function() {
 
                 let vandium = new Vandium( { stringifyErrors: true } );
 
@@ -875,24 +842,16 @@ describe( MODULE_PATH, function() {
                 expect( handler ).to.exist;
                 expect( handler.length ).to.equal( 3 );
 
-                handler( {}, {}, function( err, result ) {
-
-                    try {
+                return HandlerInvoker( handler )
+                    .execute( ( err, result ) => {
 
                         expect( err ).to.equal( 'something went wrong' );
                         expect( result ).to.not.exist;
-
-                        done();
-                    }
-                    catch( error ) {
-
-                        done( error );
-                    }
-                });
+                    });
             });
 
 
-            it( 'standard lambda handler with failure, stripErrors = false', function( done ) {
+            it( 'standard lambda handler with failure, stripErrors = false', function() {
 
                 let vandium = new Vandium( {
 
@@ -907,19 +866,18 @@ describe( MODULE_PATH, function() {
                 expect( handler ).to.exist;
                 expect( handler.length ).to.equal( 3 );
 
-                handler( {}, {}, function( err, result ) {
+                return HandlerInvoker( handler )
+                    .execute( ( err, result ) => {
 
-                    expect( err ).to.exist;
-                    expect( err.message ).to.equal( 'bang' );
-                    expect( err.stack.length > 0 ).to.be.true;
+                        expect( err ).to.exist;
+                        expect( err.message ).to.equal( 'bang' );
+                        expect( err.stack.length > 0 ).to.be.true;
 
-                    expect( result ).to.not.exist;
-
-                    done();
-                });
+                        expect( result ).to.not.exist;
+                    });
             });
 
-            it( 'standard lambda handler, post handler returns promise', function( done ) {
+            it( 'standard lambda handler, post handler returns promise', function() {
 
                 let vandium = new Vandium();
 
@@ -933,14 +891,14 @@ describe( MODULE_PATH, function() {
                 expect( handler ).to.exist;
                 expect( handler.length ).to.equal( 3 );
 
-                handler( {}, {}, function( err, result ) {
+                return HandlerInvoker( handler )
+                    .execute( ( err, result ) => {
 
-                    expect( result ).to.equal( 'ok' );
-                    done();
-                });
+                        expect( result ).to.equal( 'ok' );
+                    });
             });
 
-            it( 'standard lambda handler, post handler with callback error', function( done ) {
+            it( 'standard lambda handler, post handler with callback error', function() {
 
                 let vandium = new Vandium();
 
@@ -954,14 +912,14 @@ describe( MODULE_PATH, function() {
                 expect( handler ).to.exist;
                 expect( handler.length ).to.equal( 3 );
 
-                handler( {}, {}, function( err, result ) {
+                return HandlerInvoker( handler )
+                    .execute( ( err, result ) => {
 
-                    expect( result ).to.equal( 'ok' );
-                    done();
-                });
+                        expect( result ).to.equal( 'ok' );
+                    });
             });
 
-            it( 'standard lambda handler, sync post handler throwing error', function( done ) {
+            it( 'standard lambda handler, sync post handler throwing error', function() {
 
                 let vandium = new Vandium();
 
@@ -975,14 +933,14 @@ describe( MODULE_PATH, function() {
                 expect( handler ).to.exist;
                 expect( handler.length ).to.equal( 3 );
 
-                handler( {}, {}, function( err, result ) {
+                return HandlerInvoker( handler )
+                    .execute( ( err, result ) => {
 
-                    expect( result ).to.equal( 'ok' );
-                    done();
-                });
+                        expect( result ).to.equal( 'ok' );
+                    });
             });
 
-            it( 'Using default lambda proxy - success case, httpMethod = GET', function( done ) {
+            it( 'Using default lambda proxy - success case, httpMethod = GET', function() {
 
                 let vandium = new Vandium( { lambdaProxy: true } );
 
@@ -991,9 +949,9 @@ describe( MODULE_PATH, function() {
                     return Promise.resolve( { ok: true } );
                 });
 
-                handler( { httpMethod: 'GET' }, {}, function( err, result ) {
-
-                    try {
+                return HandlerInvoker( handler )
+                    .event( { httpMethod: 'GET' } )
+                    .execute( ( err, result ) => {
 
                         expect( err ).to.not.exist;
                         expect( result ).to.exist;
@@ -1004,19 +962,10 @@ describe( MODULE_PATH, function() {
                             headers: {},
                             body: '{"ok":true}'
                         });
-
-                        done();
-                    }
-                    catch( err ) {
-
-                        console.log( err );
-
-                        done( err );
-                    }
-                });
+                    });
             });
 
-            it( 'Using default lambda proxy - success case, httpMethod = POST', function( done ) {
+            it( 'Using default lambda proxy - success case, httpMethod = POST', function() {
 
                 let vandium = new Vandium( { lambdaProxy: true } );
 
@@ -1025,23 +974,23 @@ describe( MODULE_PATH, function() {
                     return Promise.resolve( { ok: true } );
                 });
 
-                handler( { httpMethod: 'POST' }, {}, function( err, result ) {
+                return HandlerInvoker( handler )
+                    .event( { httpMethod: 'POST' } )
+                    .execute( ( err, result ) => {
 
-                    expect( err ).to.not.exist;
-                    expect( result ).to.exist;
+                        expect( err ).to.not.exist;
+                        expect( result ).to.exist;
 
-                    expect( result ).to.eql( {
+                        expect( result ).to.eql( {
 
-                        statusCode: 201,
-                        headers: {},
-                        body: '{"ok":true}'
+                            statusCode: 201,
+                            headers: {},
+                            body: '{"ok":true}'
+                        });
                     });
-
-                    done();
-                });
             });
 
-            it( 'Using default lambda proxy - error case, httpMethod = GET', function( done ) {
+            it( 'Using default lambda proxy - error case, httpMethod = GET', function() {
 
                 let vandium = new Vandium( { lambdaProxy: true } );
 
@@ -1053,23 +1002,23 @@ describe( MODULE_PATH, function() {
                     return Promise.reject( error );
                 });
 
-                handler( { httpMethod: 'GET' }, {}, function( err, result ) {
+                return HandlerInvoker( handler )
+                    .event( { httpMethod: 'GET' } )
+                    .execute( ( err, result ) => {
 
-                    expect( err ).to.not.exist;
-                    expect( result ).to.exist;
+                        expect( err ).to.not.exist;
+                        expect( result ).to.exist;
 
-                    expect( result ).to.eql( {
+                        expect( result ).to.eql( {
 
-                        statusCode: 404,
-                        headers: {},
-                        body: '{"type":"Error","message":"not found"}'
+                            statusCode: 404,
+                            headers: {},
+                            body: '{"type":"Error","message":"not found"}'
+                        });
                     });
-
-                    done();
-                });
             });
 
-            it( 'Using lambda proxy - error case while generating response', function( done ) {
+            it( 'Using lambda proxy - error case while generating response', function() {
 
                 let myProxy = new LambdaProxy();
 
@@ -1086,24 +1035,24 @@ describe( MODULE_PATH, function() {
                 });
 
 
-                handler( { httpMethod: 'GET' }, {}, function( err, result ) {
+                return HandlerInvoker( handler )
+                    .event( { httpMethod: 'GET' } )
+                    .execute( ( err, result ) => {
 
-                    expect( err ).to.not.exist;
-                    expect( result ).to.exist;
+                        expect( err ).to.not.exist;
+                        expect( result ).to.exist;
 
-                    expect( console.log.calledOnce ).to.be.true;
-                    expect( console.log.firstCall.args[0] ).contains( 'error while processing callback' );
+                        expect( console.log.calledOnce ).to.be.true;
+                        expect( console.log.firstCall.args[0] ).contains( 'error while processing callback' );
 
-                    // should return original unproxied value
-                    expect( result ).to.eql( { ok: 42 } );
-
-                    done();
-                });
+                        // should return original unproxied value
+                        expect( result ).to.eql( { ok: 42 } );
+                    });
             });
 
             // must be last test in this describe()
             //
-            it( 'fail to run pipeline', function( done ) {
+            it( 'fail to run pipeline', function() {
 
                 class MyExecPlugin extends plugins.ExecPlugin {
 
@@ -1131,15 +1080,15 @@ describe( MODULE_PATH, function() {
                 expect( handler ).to.exist;
                 expect( handler.length ).to.equal( 3 );
 
-                handler( {}, {}, function( err, result ) {
+                return HandlerInvoker( handler )
+                    .event( { httpMethod: 'POST' } )
+                    .execute( ( err, result ) => {
 
-                    expect( err ).to.exist;
-                    expect( err.message ).to.equal( 'bang' );
+                        expect( err ).to.exist;
+                        expect( err.message ).to.equal( 'bang' );
 
-                    expect( result ).to.not.exist;
-
-                    done();
-                });
+                        expect( result ).to.not.exist;
+                    });
             });
 
             after( function() {
@@ -1195,9 +1144,10 @@ describe( MODULE_PATH, function() {
 
                         const handler = vandium.handler( test[1] );
 
-                        return LambdaTester( handler )
-                            .expectResult( function( result ) {
+                        return HandlerInvoker( handler )
+                            .execute( ( err, result ) => {
 
+                                expect( err ).to.not.exist;
                                 expect( result ).to.equal( 'ok' );
                             });
                     });
@@ -1247,10 +1197,13 @@ describe( MODULE_PATH, function() {
 
                         const handler = vandium.handler( test[1] );
 
-                        return LambdaTester( handler )
-                            .expectError( function( err ) {
+                        return HandlerInvoker( handler )
+                            .execute( ( err, result ) => {
 
+                                expect( err ).to.exist;
                                 expect( err.message ).to.equal( 'bang' );
+
+                                expect( result ).to.not.exist;
                             });
                     });
                 });
