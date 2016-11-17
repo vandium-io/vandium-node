@@ -1,5 +1,7 @@
 'use strict';
 
+const utils = require( '../../lib/utils' );
+
 class HandlerInvoker {
 
     constructor( handler ) {
@@ -39,6 +41,50 @@ class HandlerInvoker {
 
             try {
 
+                let context = Object.assign( {}, this._context );
+
+                context.succeed = function( result ) {
+
+                    try {
+
+                        validator( null, result );
+
+                        resolve();
+                    }
+                    catch( err ) {
+
+                        reject( err );
+                    }
+                };
+
+                context.fail = function( err ) {
+
+                    try {
+
+                        validator( err );
+
+                        resolve();
+                    }
+                    catch( err ) {
+
+                        reject( err );
+                    }
+                };
+
+                context.done = function( err, result ) {
+
+                    try {
+
+                        validator( err, result );
+
+                        resolve();
+                    }
+                    catch( err ) {
+
+                        reject( err );
+                    }
+                };
+
                 this._handler( this._event, this._context, (err,result) => {
 
                     try {
@@ -57,6 +103,42 @@ class HandlerInvoker {
 
                 reject( err );
             }
+        });
+    }
+
+    expectError( validator ) {
+
+        if( !validator ) {
+
+            throw new Error( 'missing validator' );
+        }
+
+        return this.execute( ( err ) => {
+
+            if( !err ) {
+
+                throw new Error( 'expecting error' );
+            }
+
+            validator( err );
+        });
+    }
+
+    expectResult( validator ) {
+
+        if( !validator ) {
+
+            throw new Error( 'missing validator' );
+        }
+
+        return this.execute( ( err, result ) => {
+
+            if( err ) {
+
+                throw new Error( 'expecting result' );
+            }
+
+            validator( result );
         });
     }
 }
