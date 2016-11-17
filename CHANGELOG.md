@@ -12,6 +12,10 @@ Updated:
 
 * Better error handling for AWS API Gateway including status codes for standard Vandium errors
 
+Internal:
+
+* Tests no longer use `lambda-tester` to reduce possibility of future circular dependency
+
 
 ## 3.2.0 (2016-09-23)
 
