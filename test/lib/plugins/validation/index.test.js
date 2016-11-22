@@ -638,7 +638,7 @@ describe( MODULE_PATH, function() {
                 });
             });
 
-            it( 'lambdaProxy = true, httpMethod = PUT', function( done ) {
+            it( 'lambdaProxy = true, httpMethod = PUT, configured for multiple HTTP methods', function( done ) {
 
                 let plugin = new ValidationPlugin();
 
@@ -661,6 +661,69 @@ describe( MODULE_PATH, function() {
                     },
 
                     PUT: 'POST' // same as POST
+                };
+
+                plugin.configure( { schema, lambdaProxy: true } );
+
+                var event = {
+
+                    httpMethod: 'PUT',
+
+                    headers: {
+
+                        'x-custom-header': '   test '
+                    },
+
+                    body: {
+
+                        one: 1,
+                        two: '2',
+                        three: '3'
+                    },
+
+                    other: 'stuff'
+                };
+
+                let pipelineEvent = { event, ignored: [] };
+
+                plugin.execute( pipelineEvent, function( err ) {
+
+                    expect( err ).to.not.exist;
+
+                    expect( pipelineEvent.event.headers ).to.eql( {
+
+                        'x-custom-header': 'test'   // trimmed
+                    });
+
+                    expect( pipelineEvent.event.body ).to.eql( {
+
+                        one: 1, two: 2, three: 3
+                    });
+
+                    expect( pipelineEvent.event.other ).to.equal( 'stuff' );
+
+                    done();
+                });
+            });
+
+            it( 'lambdaProxy = true, httpMethod = PUT, configured for specific HTTP method', function( done ) {
+
+                let plugin = new ValidationPlugin();
+
+                const types = ValidationPlugin.types;
+
+                var schema = {
+
+                    headers: {
+
+                        'x-custom-header': types.string().required()
+                    },
+                    body: {
+
+                        one: types.number().required(),
+                        two: types.number().required(),
+                        three: types.number().required()
+                    }
                 };
 
                 plugin.configure( { schema, lambdaProxy: true } );
