@@ -24,7 +24,7 @@ describe( MODULE_PATH, function() {
                 expect( engine.mode ).to.equal( 'report' );
                 expect( engine.enabled ).to.be.true;
 
-                expect( engine.state ).to.eql( { enabled: true, mode: 'report' } );
+                expect( engine.state ).to.eql( { enabled: true, mode: 'report', lambdaProxy: false } );
             });
         });
 
@@ -59,7 +59,7 @@ describe( MODULE_PATH, function() {
                 expect( engine.mode ).to.equal( 'report' );
                 expect( engine.enabled ).to.be.true;
 
-                expect( engine.state ).to.eql( { enabled: true, mode: 'report' } );
+                expect( engine.state ).to.eql( { enabled: true, mode: 'report', lambdaProxy: false } );
             });
 
             it( 'after disable()', function() {
@@ -69,7 +69,7 @@ describe( MODULE_PATH, function() {
                 expect( engine.mode ).to.equal( 'report' );
                 expect( engine.enabled ).to.be.true;
 
-                expect( engine.state ).to.eql( { enabled: true, mode: 'report' } );
+                expect( engine.state ).to.eql( { enabled: true, mode: 'report', lambdaProxy: false } );
             });
 
             it( 'after fail()', function() {
@@ -83,7 +83,7 @@ describe( MODULE_PATH, function() {
                 expect( engine.mode ).to.equal( 'report' );
                 expect( engine.enabled ).to.be.true;
 
-                expect( engine.state ).to.eql( { enabled: true, mode: 'report' } );
+                expect( engine.state ).to.eql( { enabled: true, mode: 'report', lambdaProxy: false } );
             });
         });
 
@@ -101,7 +101,7 @@ describe( MODULE_PATH, function() {
                 expect( engine.mode ).to.equal( 'fail' );
                 expect( engine.enabled ).to.be.true;
 
-                expect( engine.state ).to.eql( { enabled: true, mode: 'fail' } );
+                expect( engine.state ).to.eql( { enabled: true, mode: 'fail', lambdaProxy: false } );
             });
 
             it( 'after disable()', function() {
@@ -111,7 +111,7 @@ describe( MODULE_PATH, function() {
                 expect( engine.mode ).to.equal( 'fail' );
                 expect( engine.enabled ).to.be.true;
 
-                expect( engine.state ).to.eql( { enabled: true, mode: 'fail' } );
+                expect( engine.state ).to.eql( { enabled: true, mode: 'fail', lambdaProxy: false } );
             });
 
             it( 'after report()', function() {
@@ -125,7 +125,7 @@ describe( MODULE_PATH, function() {
                 expect( engine.mode ).to.equal( 'fail' );
                 expect( engine.enabled ).to.be.true;
 
-                expect( engine.state ).to.eql( { enabled: true, mode: 'fail' } );
+                expect( engine.state ).to.eql( { enabled: true, mode: 'fail', lambdaProxy: false } );
             });
         });
 

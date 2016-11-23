@@ -57,7 +57,7 @@ describe( MODULE_PATH, function() {
                 expect( vandium.validation.state.enabled ).to.be.false;
 
                 expect( vandium.protect ).to.to.exist;
-                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
             });
 
             it( 'with empty configuration', function() {
@@ -79,7 +79,7 @@ describe( MODULE_PATH, function() {
                 expect( vandium.validation.state.enabled ).to.be.false;
 
                 expect( vandium.protect ).to.to.exist;
-                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
             });
 
             it( 'with configuration', function() {
@@ -144,7 +144,7 @@ describe( MODULE_PATH, function() {
                 expect( vandium.validation.state ).to.eql( { enabled: true, keys: [ 'name' ], ignored: [ 'age' ] } );
 
                 expect( vandium.protect ).to.to.exist;
-                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'fail' } } );
+                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'fail', lambdaProxy: false } } );
 
                 expect( process.env.LIFE_THE_UNIVERSE_AND_EVERYTHING ).to.equal( '42' );
             });
@@ -218,7 +218,7 @@ describe( MODULE_PATH, function() {
                 expect( vandium.validation.state.enabled ).to.be.false;
 
                 expect( vandium.protect ).to.to.exist;
-                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
             });
 
             it( 'with empty configuration', function() {
@@ -241,7 +241,7 @@ describe( MODULE_PATH, function() {
                 expect( vandium.validation.state.enabled ).to.be.false;
 
                 expect( vandium.protect ).to.to.exist;
-                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
             });
 
             it( 'with valid configuration', function() {
@@ -309,7 +309,7 @@ describe( MODULE_PATH, function() {
                 expect( vandium.validation.state ).to.eql( { enabled: true, keys: [ 'name' ], ignored: [ 'age' ] } );
 
                 expect( vandium.protect ).to.to.exist;
-                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'fail' } } );
+                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'fail', lambdaProxy: false } } );
 
                 expect( process.env.LIFE_THE_UNIVERSE_AND_EVERYTHING ).to.equal( '42' );
             });
@@ -379,7 +379,7 @@ describe( MODULE_PATH, function() {
                 expect( vandium.validation.state ).to.eql( { enabled: true, keys: [ 'name' ], ignored: [ 'age' ] } );
 
                 expect( vandium.protect ).to.to.exist;
-                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'fail' } } );
+                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'fail', lambdaProxy: false } } );
 
                 expect( process.env.LIFE_THE_UNIVERSE_AND_EVERYTHING ).to.equal( '42' );
 
@@ -405,7 +405,7 @@ describe( MODULE_PATH, function() {
                 expect( vandium.validation.state.enabled ).to.be.false;
 
                 expect( vandium.protect ).to.to.exist;
-                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( vandium.protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
 
                 // should still be set to the original value
                 expect( process.env.LIFE_THE_UNIVERSE_AND_EVERYTHING ).to.equal( '42' );

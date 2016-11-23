@@ -35,18 +35,18 @@ describe( MODULE_PATH, function() {
                 expect( protect.engines ).to.exist;
                 expect( protect.engines.sql ).to.exist;
 
-                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
             });
 
             [
-                [ 'yes', { sql: { enabled: true, mode: 'fail' } } ],
-                [ 'on', { sql: { enabled: true, mode: 'fail' } } ],
-                [ 'true', { sql: { enabled: true, mode: 'fail' } } ],
+                [ 'yes', { sql: { enabled: true, mode: 'fail', lambdaProxy: false } } ],
+                [ 'on', { sql: { enabled: true, mode: 'fail', lambdaProxy: false } } ],
+                [ 'true', { sql: { enabled: true, mode: 'fail', lambdaProxy: false } } ],
                 [ 'no', { sql: { enabled: false } } ],
                 [ 'off', { sql: { enabled: false } } ],
                 [ 'false', { sql: { enabled: false } } ],
-                [ 'report', { sql: { enabled: true, mode: 'report' } } ],
-                [ 'unknown-value', { sql: { enabled: true, mode: 'report' } } ]
+                [ 'report', { sql: { enabled: true, mode: 'report', lambdaProxy: false } } ],
+                [ 'unknown-value', { sql: { enabled: true, mode: 'report', lambdaProxy: false } } ]
             ].forEach( function( testCase ) {
 
                 it( 'process.env.VANDIUM_PROTECT = ' + testCase[0], function() {
@@ -123,11 +123,11 @@ describe( MODULE_PATH, function() {
 
                 let protect = new ProtectPlugin();
 
-                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
 
                 protect.configure( {} );
 
-                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
             });
 
             it( 'empty configuration, disabled instance', function() {
@@ -140,18 +140,18 @@ describe( MODULE_PATH, function() {
 
                 protect.configure( {} );
 
-                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
             });
 
             it( 'missing configuration, newly created instance', function() {
 
                 let protect = new ProtectPlugin();
 
-                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
 
                 protect.configure();
 
-                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
             });
 
             it( 'missing configuration, disabled instance', function() {
@@ -164,25 +164,25 @@ describe( MODULE_PATH, function() {
 
                 protect.configure();
 
-                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
             });
 
             it( 'configuration = { mode: "fail" }', function() {
 
                 let protect = new ProtectPlugin();
 
-                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
 
                 protect.configure( { mode: 'fail' } );
 
-                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'fail' } } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'fail', lambdaProxy: false } } );
             });
 
             it( 'configuration = { mode: "disabled" }', function() {
 
                 let protect = new ProtectPlugin();
 
-                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
 
                 protect.configure( { mode: 'disabled' } );
 
@@ -199,7 +199,7 @@ describe( MODULE_PATH, function() {
 
                 protect.configure( { mode: 'report' } );
 
-                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
             });
 
             it( 'configuration = { mode: "unknown-value" }', function() {
@@ -212,18 +212,29 @@ describe( MODULE_PATH, function() {
 
                 protect.configure( { mode: 'unknown-value' } );
 
-                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
             });
 
             it( 'configuration = { sql: { mode: "fail" } }', function() {
 
                 let protect = new ProtectPlugin();
 
-                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report' } } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
 
                 protect.configure( { sql: { mode: "fail" } } );
 
-                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'fail' } } );
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'fail', lambdaProxy: false } } );
+            });
+
+            it( 'configuration = { sql: { mode: "fail", lambdaProxy: true } }', function() {
+
+                let protect = new ProtectPlugin();
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
+
+                protect.configure( { sql: { mode: "fail", lambdaProxy: true } } );
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'fail', lambdaProxy: true } } );
             });
         });
 
