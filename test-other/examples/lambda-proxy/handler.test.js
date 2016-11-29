@@ -6,7 +6,7 @@ const expect = require( 'chai' ).expect;
 
 const proxyquire = require( 'proxyquire' );
 
-const HandlerInvoker = require( '../../lib/handler_invoker' );
+const HandlerInvoker = require( '../../../test/lib/handler_invoker' );
 
 describe( 'examples/lambda-proxy/handler', function() {
 
