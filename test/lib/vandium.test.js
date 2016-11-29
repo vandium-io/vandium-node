@@ -974,6 +974,8 @@ describe( MODULE_PATH, function() {
                     return Promise.resolve( { ok: true } );
                 });
 
+                expect( vandium.protect.state.sql.lambdaProxy ).to.be.true;
+
                 return HandlerInvoker( handler )
                     .event( { httpMethod: 'POST' } )
                     .execute( ( err, result ) => {
