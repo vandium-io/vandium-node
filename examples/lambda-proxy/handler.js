@@ -1,6 +1,6 @@
 'use strict';
 
-var vandium = require( 'vandium' );
+const vandium = require( 'vandium' );
 
 exports.handler = vandium.createInstance( {
 
