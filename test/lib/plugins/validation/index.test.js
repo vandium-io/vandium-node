@@ -769,6 +769,61 @@ describe( MODULE_PATH, function() {
                 });
             });
 
+            it( 'fail: when lambdaProxy = true, configured for specific HTTP method and event is missing values', function( done ) {
+
+                let plugin = new ValidationPlugin();
+
+                const types = ValidationPlugin.types;
+
+                var schema = {
+
+                    headers: {
+
+                        'x-custom-header': types.string().required()
+                    },
+                    body: {
+
+                        one: types.number().required(),
+                        two: types.number().required(),
+                        three: types.number().required()
+                    }
+                };
+
+                plugin.configure( { schema, lambdaProxy: true } );
+
+                var event = {
+
+                    httpMethod: 'PUT',
+
+                    headers: {
+
+                        'x-custom-header': '   test '
+                    },
+
+                    // body: {
+                    //
+                    //     one: 1,
+                    //     two: '2',
+                    //     three: '3'
+                    // },
+
+                    other: 'stuff'
+                };
+
+                let pipelineEvent = { event, ignored: [] };
+
+                plugin.execute( pipelineEvent, function( err ) {
+
+                    expect( err ).to.exist;
+
+                    expect( err.name ).to.equal( 'ValidationError' );
+                    expect( err.status ).to.equal( 422 );
+                    expect( err.message ).to.contain( 'validation error:' );
+
+                    done();
+                });
+            });
+
             it( 'fail: lambdaProxy = true, bad http method reference', function() {
 
                 let plugin = new ValidationPlugin();
