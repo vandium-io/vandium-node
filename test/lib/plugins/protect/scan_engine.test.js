@@ -131,7 +131,7 @@ describe( MODULE_PATH, function() {
 
         describe( '.execute', function() {
 
-            it( 'default operaiton', function( done ) {
+            it( 'default operation', function( done ) {
 
                 let engine = new ScanEngine( 'test' );
 
@@ -143,6 +143,37 @@ describe( MODULE_PATH, function() {
 
                     expect( engine._doScan.calledOnce ).to.be.true;
                     expect( engine._doScan.withArgs( event ).calledOnce ).to.be.true;
+
+                    done( err );
+                });
+            });
+
+            it( 'lambdaProxy enabled', function( done ) {
+
+                let engine = new ScanEngine( 'test' );
+
+                engine.enableLambdaProxy( true );
+
+                expect( engine.lambdaProxy ).to.be.true;
+
+                engine._doScan = sinon.stub();
+
+                let event = { one: 1, body: {}, queryStringParameters: {} };
+
+                engine.execute( { event }, function( err ) {
+
+                    expect( engine._doScan.calledOnce ).to.be.true;
+                    expect( engine._doScan.withArgs( event ).calledOnce ).to.be.true;
+
+                    let filter = engine._doScan.firstCall.args[ 1 ];
+
+                    expect( filter.name ).to.equal( 'lambdaProxyFilter' );
+
+                    expect( filter( 'body' ) ).to.be.true;
+                    expect( filter( 'queryStringParameters' ) ).to.be.true;
+
+                    expect( filter( 'headers' ) ).to.be.false;
+                    expect( filter( 'whatever' ) ).to.be.false;
 
                     done( err );
                 });

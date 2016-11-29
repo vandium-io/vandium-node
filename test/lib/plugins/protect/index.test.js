@@ -236,6 +236,17 @@ describe( MODULE_PATH, function() {
 
                 expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'fail', lambdaProxy: true } } );
             });
+
+            it( 'configuration = { lambdaProxy: true, sql: { mode: "fail" } }', function() {
+
+                let protect = new ProtectPlugin();
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'report', lambdaProxy: false } } );
+
+                protect.configure( { lambdaProxy: true, sql: { mode: "fail" } } );
+
+                expect( protect.state ).to.eql( { sql: { enabled: true, mode: 'fail', lambdaProxy: true } } );
+            });
         });
 
         describe( '.getConfiguration', function() {
