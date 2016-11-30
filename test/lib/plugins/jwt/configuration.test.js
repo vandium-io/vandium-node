@@ -233,6 +233,8 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
         describe( '.resolve', function() {
 
+            const token = 'xxxxx-token-here-xxxxxx';
+
             it( 'all set in configuration', function() {
 
                 configuration.update( {
@@ -245,7 +247,7 @@ describe( 'lib/plugins/jwt/configuration', function() {
                     xsrf_claim_name: 'my-xsrf-claim',
                 });
 
-                let configValues = configuration.resolve( {} );
+                let configValues = configuration.resolve( { 'my-token':token } );
 
                 expect( configValues ).to.eql( {
 
@@ -254,7 +256,8 @@ describe( 'lib/plugins/jwt/configuration', function() {
                     xsrf: true,
                     tokenName: 'my-token',
                     xsrfTokenName: 'my-xsrf-token',
-                    xsrfClaimName: 'my-xsrf-claim'
+                    xsrfClaimName: 'my-xsrf-claim',
+                    token
                 })
             });
 
@@ -276,7 +279,8 @@ describe( 'lib/plugins/jwt/configuration', function() {
                     VANDIUM_JWT_SECRET: 'special',
                     VANDIUM_JWT_XSRF_TOKEN_NAME: 'xsrf',
                     VANDIUM_JWT_XSRF_CLAIM_NAME: 'xsrf',
-                    VANDIUM_JWT_TOKEN_NAME: 'special-token'
+                    VANDIUM_JWT_TOKEN_NAME: 'special-token',
+                    "my-token": token
                 });
 
                 expect( configValues ).to.eql( {
@@ -286,7 +290,84 @@ describe( 'lib/plugins/jwt/configuration', function() {
                     xsrf: true,
                     tokenName: 'my-token',
                     xsrfTokenName: 'my-xsrf-token',
-                    xsrfClaimName: 'my-xsrf-claim'
+                    xsrfClaimName: 'my-xsrf-claim',
+                    token
+                })
+            });
+
+            it( 'all set in configuration with stage vars, lambdaProxy = true', function() {
+
+                configuration.update( {
+
+                    lambdaProxy: true,
+                    algorithm: 'HS256',
+                    secret: 'my-secret',
+                    token_name: 'my-token',
+                    xsrf: true,
+                    xsrf_token_name: 'my-xsrf-token',
+                    xsrf_claim_name: 'my-xsrf-claim',
+                });
+
+                let configValues = configuration.resolve( {
+
+                    stageVariables: {
+                        VANDIUM_JWT_ALGORITHM: 'HS512',
+                        VANDIUM_JWT_SECRET: 'special',
+                        VANDIUM_JWT_XSRF_TOKEN_NAME: 'xsrf',
+                        VANDIUM_JWT_XSRF_CLAIM_NAME: 'xsrf',
+                        VANDIUM_JWT_TOKEN_NAME: 'special-token'
+                    },
+
+                    headers: {
+                        "my-token": token
+                    }
+                });
+
+                expect( configValues ).to.eql( {
+
+                    algorithm: 'HS256',
+                    key: 'my-secret',
+                    xsrf: true,
+                    tokenName: 'my-token',
+                    xsrfTokenName: 'my-xsrf-token',
+                    xsrfClaimName: 'my-xsrf-claim',
+                    token
+                })
+            });
+
+            it( 'all set in configuration with stage vars, lambdaProxy = true, missing headers in event', function() {
+
+                configuration.update( {
+
+                    lambdaProxy: true,
+                    algorithm: 'HS256',
+                    secret: 'my-secret',
+                    token_name: 'my-token',
+                    xsrf: true,
+                    xsrf_token_name: 'my-xsrf-token',
+                    xsrf_claim_name: 'my-xsrf-claim',
+                });
+
+                let configValues = configuration.resolve( {
+
+                    stageVariables: {
+                        VANDIUM_JWT_ALGORITHM: 'HS512',
+                        VANDIUM_JWT_SECRET: 'special',
+                        VANDIUM_JWT_XSRF_TOKEN_NAME: 'xsrf',
+                        VANDIUM_JWT_XSRF_CLAIM_NAME: 'xsrf',
+                        VANDIUM_JWT_TOKEN_NAME: 'special-token'
+                    }
+                });
+
+                expect( configValues ).to.eql( {
+
+                    algorithm: 'HS256',
+                    key: 'my-secret',
+                    xsrf: true,
+                    tokenName: 'my-token',
+                    xsrfTokenName: 'my-xsrf-token',
+                    xsrfClaimName: 'my-xsrf-claim',
+                    token: undefined
                 })
             });
 
@@ -298,7 +379,8 @@ describe( 'lib/plugins/jwt/configuration', function() {
                     VANDIUM_JWT_SECRET: 'my-secret',
                     VANDIUM_JWT_XSRF_TOKEN_NAME: 'my-xsrf-token',
                     VANDIUM_JWT_XSRF_CLAIM_NAME: 'my-xsrf-claim',
-                    VANDIUM_JWT_TOKEN_NAME: 'my-token'
+                    VANDIUM_JWT_TOKEN_NAME: 'my-token',
+                    "my-token": token
                 });
 
                 expect( configValues ).to.eql( {
@@ -308,7 +390,8 @@ describe( 'lib/plugins/jwt/configuration', function() {
                     xsrf: true,
                     tokenName: 'my-token',
                     xsrfTokenName: 'my-xsrf-token',
-                    xsrfClaimName: 'my-xsrf-claim'
+                    xsrfClaimName: 'my-xsrf-claim',
+                    token
                 });
             });
 
@@ -320,7 +403,8 @@ describe( 'lib/plugins/jwt/configuration', function() {
                     VANDIUM_JWT_PUBKEY: 'my-pub-key',
                     VANDIUM_JWT_XSRF_TOKEN_NAME: 'my-xsrf-token',
                     VANDIUM_JWT_XSRF_CLAIM_NAME: 'my-xsrf-claim',
-                    VANDIUM_JWT_TOKEN_NAME: 'my-token'
+                    VANDIUM_JWT_TOKEN_NAME: 'my-token',
+                    "my-token": token
                 });
 
                 expect( configValues ).to.eql( {
@@ -330,7 +414,8 @@ describe( 'lib/plugins/jwt/configuration', function() {
                     xsrf: true,
                     tokenName: 'my-token',
                     xsrfTokenName: 'my-xsrf-token',
-                    xsrfClaimName: 'my-xsrf-claim'
+                    xsrfClaimName: 'my-xsrf-claim',
+                    token
                 });
             });
 

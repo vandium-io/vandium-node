@@ -34,7 +34,7 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             const token = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred' } );
 
-            const config = { algorithm: 'HS256', key: 'super-secret', tokenName: 'jwt', xsrf: false };
+            const config = { algorithm: 'HS256', key: 'super-secret', tokenName: 'jwt', xsrf: false, token };
 
             let event = { jwt: token };
 
@@ -56,7 +56,7 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             const token = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred', iat: true, exp: 100 } );
 
-            const config = { algorithm: 'HS256', key: 'super-secret', tokenName: 'jwt', xsrf: false };
+            const config = { algorithm: 'HS256', key: 'super-secret', tokenName: 'jwt', xsrf: false, token };
 
             let event = { jwt: token };
 
@@ -80,7 +80,7 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             const token = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred', iat: true, exp: 100, nbf: true } );
 
-            const config = { algorithm: 'HS256', key: 'super-secret', tokenName: 'jwt', xsrf: false };
+            const config = { algorithm: 'HS256', key: 'super-secret', tokenName: 'jwt', xsrf: false, token };
 
             let event = { jwt: token };
 
@@ -113,7 +113,9 @@ describe( 'lib/plugins/jwt/validator', function() {
                 tokenName: 'jwt',
                 xsrfTokenName: 'xsrfToken',
                 xsrfClaimName: 'xsrf',
-                xsrf: true };
+                xsrf: true,
+                token
+            };
 
             let event = { jwt: token, xsrfToken };
 
@@ -152,7 +154,8 @@ describe( 'lib/plugins/jwt/validator', function() {
                 tokenName: 'jwt',
                 xsrfTokenName: 'xsrfToken',
                 xsrfClaimName: 'xsrf',
-                xsrf: true };
+                xsrf: true
+            };
 
             let event = { /* no token */ };
 
@@ -182,7 +185,9 @@ describe( 'lib/plugins/jwt/validator', function() {
                 tokenName: 'jwt',
                 xsrfTokenName: 'xsrfToken',
                 xsrfClaimName: 'xsrf',
-                xsrf: true };
+                xsrf: true,
+                token
+            };
 
             let event = { jwt: token, xsrfToken };
 
@@ -212,7 +217,9 @@ describe( 'lib/plugins/jwt/validator', function() {
                 tokenName: 'jwt',
                 xsrfTokenName: 'xsrfToken',
                 xsrfClaimName: 'xsrf',
-                xsrf: true };
+                xsrf: true,
+                token
+            };
 
             let event = { jwt: token, xsrfToken };
 
@@ -242,7 +249,9 @@ describe( 'lib/plugins/jwt/validator', function() {
                 tokenName: 'jwt',
                 xsrfTokenName: 'xsrfToken',
                 xsrfClaimName: 'xsrf',
-                xsrf: true };
+                xsrf: true,
+                token
+            };
 
             let event = { jwt: token, xsrfToken };
 
@@ -272,7 +281,9 @@ describe( 'lib/plugins/jwt/validator', function() {
                 tokenName: 'jwt',
                 xsrfTokenName: 'xsrfToken',
                 xsrfClaimName: 'xsrf',
-                xsrf: true };
+                xsrf: true,
+                token
+            };
 
             let event = { jwt: token, /*xsrfToken*/ };
 
@@ -302,7 +313,9 @@ describe( 'lib/plugins/jwt/validator', function() {
                 tokenName: 'jwt',
                 xsrfTokenName: 'xsrfToken',
                 xsrfClaimName: 'xsrf',
-                xsrf: true };
+                xsrf: true,
+                token
+            };
 
             let event = { jwt: token, xsrfToken };
 
@@ -332,7 +345,9 @@ describe( 'lib/plugins/jwt/validator', function() {
                 tokenName: 'jwt',
                 xsrfTokenName: 'xsrfToken',
                 xsrfClaimName: 'xsrf',
-                xsrf: true };
+                xsrf: true,
+                token
+            };
 
             let event = { jwt: token, xsrfToken: uuid.v4() };
 
