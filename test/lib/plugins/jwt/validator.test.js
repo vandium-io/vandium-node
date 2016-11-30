@@ -10,7 +10,7 @@ const jwtBuilder = require( 'jwt-builder' );
 
 const validator = require( '../../../../lib/plugins/jwt/validator' );
 
-const uuid = require( 'node-uuid' );
+const uuid = require( 'uuid' );
 
 //const token = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred' } );
 

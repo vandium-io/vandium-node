@@ -4,7 +4,7 @@
 
 var expect = require( 'chai' ).expect;
 
-var uuid = require( 'node-uuid' );
+var uuid = require( 'uuid' );
 
 const MODULE_PATH = 'lib/plugins/validation';
 
