@@ -1,6 +1,6 @@
 # Change Log
 
-## 3.3.0 (TBD)
+## 3.3.0 (2016-11-30)
 
 New:
 
@@ -15,6 +15,7 @@ Updated:
 Internal:
 
 * Tests no longer use `lambda-tester` to reduce possibility of future circular dependency
+* Changed `node-uuid` package to use new `uuid` one as per author's request
 
 
 ## 3.2.0 (2016-09-23)
