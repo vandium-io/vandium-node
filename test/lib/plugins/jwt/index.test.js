@@ -138,9 +138,9 @@ describe( 'lib/plugins/jwt/index', function() {
 
                 expect( plugin.state.enabled ).to.be.false;
 
-                expect( plugin.configuration ).to.exist;
+                expect( plugin.validator.configuration ).to.exist;
 
-                let configurationUpdateSpy = sinon.spy( plugin.configuration, 'update' );
+                let configurationUpdateSpy = sinon.spy( plugin.validator.configuration, 'update' );
 
                 let config = {
 
@@ -192,7 +192,7 @@ describe( 'lib/plugins/jwt/index', function() {
                 let plugin = new JWTPlugin();
 
                 expect( plugin.state ).to.eql( { enabled: false } );
-                expect( plugin.state ).to.eql( plugin.configuration.state );
+                expect( plugin.state ).to.eql( plugin.validator.configuration.state );
 
                 let config = {
 
@@ -211,12 +211,12 @@ describe( 'lib/plugins/jwt/index', function() {
                     xsrf: false
                 });
 
-                expect( plugin.state ).to.eql( plugin.configuration.state );
+                expect( plugin.state ).to.eql( plugin.validator.configuration.state );
 
                 plugin.configure( {} );
 
                 expect( plugin.state ).to.eql( { enabled: false } );
-                expect( plugin.state ).to.eql( plugin.configuration.state );
+                expect( plugin.state ).to.eql( plugin.validator.configuration.state );
             });
         });
 

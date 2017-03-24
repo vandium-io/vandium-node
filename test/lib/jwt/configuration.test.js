@@ -4,9 +4,9 @@
 
 const expect = require( 'chai' ).expect;
 
-const JWTConfiguration = require( '../../../../lib/plugins/jwt/configuration' );
+const JWTConfiguration = require( '../../../lib/jwt/configuration' );
 
-describe( 'lib/plugins/jwt/configuration', function() {
+describe( 'lib/jwt/configuration', function() {
 
     describe( 'JWTConfiguration', function() {
 
@@ -21,7 +21,7 @@ describe( 'lib/plugins/jwt/configuration', function() {
 
             it( 'normal operation', function() {
 
-                expect( configuration.constructor.name ).to.equal( 'JWTPluginConfiguration' );
+                expect( configuration.constructor.name ).to.equal( 'JWTConfiguration' );
 
                 expect( configuration.enabled ).to.be.false;
                 expect( configuration.useXsrf ).to.be.false;
@@ -292,82 +292,6 @@ describe( 'lib/plugins/jwt/configuration', function() {
                     xsrfTokenName: 'my-xsrf-token',
                     xsrfClaimName: 'my-xsrf-claim',
                     token
-                })
-            });
-
-            it( 'all set in configuration with stage vars, lambdaProxy = true', function() {
-
-                configuration.update( {
-
-                    lambdaProxy: true,
-                    algorithm: 'HS256',
-                    secret: 'my-secret',
-                    token_name: 'my-token',
-                    xsrf: true,
-                    xsrf_token_name: 'my-xsrf-token',
-                    xsrf_claim_name: 'my-xsrf-claim',
-                });
-
-                let configValues = configuration.resolve( {
-
-                    stageVariables: {
-                        VANDIUM_JWT_ALGORITHM: 'HS512',
-                        VANDIUM_JWT_SECRET: 'special',
-                        VANDIUM_JWT_XSRF_TOKEN_NAME: 'xsrf',
-                        VANDIUM_JWT_XSRF_CLAIM_NAME: 'xsrf',
-                        VANDIUM_JWT_TOKEN_NAME: 'special-token'
-                    },
-
-                    headers: {
-                        "my-token": token
-                    }
-                });
-
-                expect( configValues ).to.eql( {
-
-                    algorithm: 'HS256',
-                    key: 'my-secret',
-                    xsrf: true,
-                    tokenName: 'my-token',
-                    xsrfTokenName: 'my-xsrf-token',
-                    xsrfClaimName: 'my-xsrf-claim',
-                    token
-                })
-            });
-
-            it( 'all set in configuration with stage vars, lambdaProxy = true, missing headers in event', function() {
-
-                configuration.update( {
-
-                    lambdaProxy: true,
-                    algorithm: 'HS256',
-                    secret: 'my-secret',
-                    token_name: 'my-token',
-                    xsrf: true,
-                    xsrf_token_name: 'my-xsrf-token',
-                    xsrf_claim_name: 'my-xsrf-claim',
-                });
-
-                let configValues = configuration.resolve( {
-
-                    stageVariables: {
-                        VANDIUM_JWT_ALGORITHM: 'HS512',
-                        VANDIUM_JWT_SECRET: 'special',
-                        VANDIUM_JWT_XSRF_TOKEN_NAME: 'xsrf',
-                        VANDIUM_JWT_XSRF_CLAIM_NAME: 'xsrf',
-                        VANDIUM_JWT_TOKEN_NAME: 'special-token'
-                    }
-                });
-
-                expect( configValues ).to.eql( {
-
-                    algorithm: 'HS256',
-                    key: 'my-secret',
-                    xsrf: true,
-                    tokenName: 'my-token',
-                    xsrfTokenName: 'my-xsrf-token',
-                    xsrfClaimName: 'my-xsrf-claim',
-                    token: undefined
                 })
             });
 

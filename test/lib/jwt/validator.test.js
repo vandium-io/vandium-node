@@ -8,13 +8,13 @@ const sinon = require( 'sinon' );
 
 const jwtBuilder = require( 'jwt-builder' );
 
-const validator = require( '../../../../lib/plugins/jwt/validator' );
+const Validator = require( '../../../lib/jwt/validator' );
 
 const uuid = require( 'uuid' );
 
 //const token = jwtBuilder( { algorithm: 'HS256', secret: 'super-secret', user: 'fred' } );
 
-describe( 'lib/plugins/jwt/validator', function() {
+describe( 'lib/jwt/validator', function() {
 
     let configuration;
 
@@ -40,7 +40,9 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             configuration.resolve.returns( config );
 
-            validator.validate( event, configuration );
+            let validator = new Validator( configuration );
+
+            validator.validate( event );
 
             expect( event.jwt.token ).to.equal( token );
             expect( event.jwt.claims ).to.eql( { user: 'fred' } );
@@ -62,7 +64,9 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             configuration.resolve.returns( config );
 
-            validator.validate( event, configuration );
+            let validator = new Validator( configuration );
+
+            validator.validate( event );
 
             expect( event.jwt.token ).to.equal( token );
             expect( event.jwt.claims.user ).to.equal( 'fred' );
@@ -86,7 +90,9 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             configuration.resolve.returns( config );
 
-            validator.validate( event, configuration );
+            let validator = new Validator( configuration );
+
+            validator.validate( event );
 
             expect( event.jwt.token ).to.equal( token );
             expect( event.jwt.claims.user ).to.equal( 'fred' );
@@ -121,7 +127,9 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             configuration.resolve.returns( config );
 
-            validator.validate( event, configuration );
+            let validator = new Validator( configuration );
+
+            validator.validate( event );
 
             expect( event.jwt.token ).to.equal( token );
             expect( event.jwt.claims ).to.eql( { user: 'fred', xsrf: xsrfToken } );
@@ -137,7 +145,9 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             configuration.isEnabled.returns( false );
 
-            validator.validate( {}, configuration );
+            let validator = new Validator( configuration );
+
+            validator.validate( {} );
 
             expect( configuration.isEnabled.calledOnce ).to.be.true;
             expect( configuration.isEnabled.withArgs().calledOnce ).to.be.true;
@@ -161,7 +171,9 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             configuration.resolve.returns( config );
 
-            expect( validator.validate.bind( validator, event, configuration ) ).to.throw( 'authentication error: missing jwt token' );
+            let validator = new Validator( configuration );
+
+            expect( validator.validate.bind( validator, event ) ).to.throw( 'authentication error: missing jwt token' );
 
             expect( event ).to.eql( {} );
 
@@ -193,7 +205,9 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             configuration.resolve.returns( config );
 
-            expect( validator.validate.bind( validator, event, configuration ) ).to.throw( 'authentication error: Token not yet active' );
+            let validator = new Validator( configuration );
+
+            expect( validator.validate.bind( validator, event ) ).to.throw( 'authentication error: Token not yet active' );
 
             expect( event.jwt ).to.equal( token );
 
@@ -225,7 +239,9 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             configuration.resolve.returns( config );
 
-            expect( validator.validate.bind( validator, event, configuration ) ).to.throw( 'authentication error: token used before issue date' );
+            let validator = new Validator( configuration );
+
+            expect( validator.validate.bind( validator, event ) ).to.throw( 'authentication error: token used before issue date' );
 
             expect( event.jwt ).to.equal( token );
 
@@ -257,7 +273,9 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             configuration.resolve.returns( config );
 
-            expect( validator.validate.bind( validator, event, configuration ) ).to.throw( 'authentication error: Token expired' );
+            let validator = new Validator( configuration );
+
+            expect( validator.validate.bind( validator, event ) ).to.throw( 'authentication error: Token expired' );
 
             expect( event.jwt ).to.equal( token );
 
@@ -289,7 +307,9 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             configuration.resolve.returns( config );
 
-            expect( validator.validate.bind( validator, event, configuration ) ).to.throw( 'authentication error: missing xsrf token' );
+            let validator = new Validator( configuration );
+
+            expect( validator.validate.bind( validator, event ) ).to.throw( 'authentication error: missing xsrf token' );
 
             expect( event.jwt ).to.equal( token );
 
@@ -321,7 +341,9 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             configuration.resolve.returns( config );
 
-            expect( validator.validate.bind( validator, event, configuration ) ).to.throw( 'authentication error: xsrf claim missing' );
+            let validator = new Validator( configuration );
+
+            expect( validator.validate.bind( validator, event ) ).to.throw( 'authentication error: xsrf claim missing' );
 
             expect( event.jwt ).to.equal( token );
 
@@ -353,7 +375,9 @@ describe( 'lib/plugins/jwt/validator', function() {
 
             configuration.resolve.returns( config );
 
-            expect( validator.validate.bind( validator, event, configuration ) ).to.throw( 'authentication error: xsrf token mismatch' );
+            let validator = new Validator( configuration );
+
+            expect( validator.validate.bind( validator, event ) ).to.throw( 'authentication error: xsrf token mismatch' );
 
             expect( event.jwt ).to.equal( token );
 
