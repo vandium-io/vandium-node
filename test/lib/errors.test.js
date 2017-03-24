@@ -104,7 +104,8 @@ describe( 'lib/errors', function() {
 
             errors.strip( err );
 
-            expect(  Object.getOwnPropertyNames( err ) ).to.eql( [ 'message', 'stack' ] );
+            expect( Object.getOwnPropertyNames( err ) ).to.contain( 'message' );
+            expect( Object.getOwnPropertyNames( err ) ).to.contain( 'stack' );
         });
 
 
@@ -119,7 +120,9 @@ describe( 'lib/errors', function() {
 
             errors.strip( err );
 
-            expect(  Object.getOwnPropertyNames( err ) ).to.eql( [ 'name', 'message', 'stack' ] );
+            expect(  Object.getOwnPropertyNames( err ) ).to.contain( 'name' );
+            expect(  Object.getOwnPropertyNames( err ) ).to.contain( 'message' );
+            expect(  Object.getOwnPropertyNames( err ) ).to.contain( 'stack' );
         });
 
         it( 'non error (string) case', function() {
