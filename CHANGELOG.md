@@ -1,5 +1,16 @@
 # Change Log
 
+## 4.0.0 (TBD)
+
+New:
+
+* Added new API Gateway handler mechanism to simplify lambda-proxy implementations
+
+Updated:
+
+* Changed to work better with Node 6.1.x LTS
+
+
 ## 3.3.0 (2016-11-30)
 
 New:
