@@ -6,9 +6,9 @@ const expect = require( 'chai' ).expect;
 
 const sinon = require( 'sinon' );
 
-const MODULE_PATH = 'lib/plugins/validation/validation_provider';
+const MODULE_PATH = 'lib/validation/validation_provider';
 
-const ValidationProvider = require( '../../../../' + MODULE_PATH );
+const ValidationProvider = require( '../../../' + MODULE_PATH );
 
 describe( MODULE_PATH, function() {
 
@@ -103,7 +103,7 @@ describe( MODULE_PATH, function() {
                 let provider = ValidationProvider.getInstance();
 
                 expect( provider ).to.exist;
-                
+
                 // should be cached
                 expect( ValidationProvider.getInstance() ).to.equal( provider );
             });
