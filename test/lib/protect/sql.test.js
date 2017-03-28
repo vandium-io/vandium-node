@@ -4,34 +4,32 @@
 
 const expect = require( 'chai' ).expect;
 
-const MODULE_PATH = 'lib/plugins/protect/sql';
+const MODULE_PATH = 'lib/protect/sql';
 
-const SQLScanEngine = require( '../../../../' + MODULE_PATH );
+const SQLScanner = require( '../../../' + MODULE_PATH );
 
 describe( MODULE_PATH, function() {
 
-    describe( 'SQLScanEngine', function() {
+    describe( 'SQLScanner', function() {
 
         describe( 'constructor', function() {
 
             it( 'normal operation', function() {
 
-                let engine = new SQLScanEngine();
-
-                expect( engine.name ).to.equal( 'protect_sql' );
+                let engine = new SQLScanner();
             });
         });
 
-        describe( '.execute', function() {
+        describe( '.scan', function() {
 
-            let engine;
+            let scanner;
 
             beforeEach( function() {
 
-                engine = new SQLScanEngine().fail();
+                scanner = new SQLScanner().fail();
             });
 
-            it( 'test normal values', function( done ) {
+            it( 'test normal values', function() {
 
                 var event = {
 
@@ -44,17 +42,17 @@ describe( MODULE_PATH, function() {
                     bool: true
                 };
 
-                engine.execute( { event }, done );
+                scanner.scan( event );
             });
 
-            it( 'regression false positive tests', function( done ) {
+            it( 'regression false positive tests', function() {
 
                 var event = {
 
                     escapeComment1: "/details?seoName=smith---whatever-main-office"
                 };
 
-                engine.execute( { event }, done );
+                scanner.scan( event );
             });
 
             [
@@ -67,9 +65,10 @@ describe( MODULE_PATH, function() {
                 [ "x' AND 1=(SELECT COUNT(*) FROM tabname); --", 'ESCAPED_AND' ],
                 [ "1' union all select name from users where name is not null", 'ESCAPED_UNION' ],
                 [ "' union all select name from users where name is not null", 'ESCAPED_UNION' ],
+
             ].forEach( function( test ) {
 
-                it( 'fail: ' + test[1], function( done ) {
+                it( 'fail: ' + test[1], function() {
 
                     var event = {
 
@@ -77,16 +76,18 @@ describe( MODULE_PATH, function() {
                         other: 'my other field'
                     };
 
-                    engine.execute( { event }, function( err ) {
+                    try {
+
+                        scanner.scan( event );
+                    }
+                    catch( err ) {
 
                         expect( err.message ).to.equal( 'myField is invalid' );
                         expect( err.attackType ).to.equal( test[1] );
-
-                        done();
-                    });
+                    }
                 });
 
-                it( 'fail: nested case - ' + test[1], function( done ) {
+                it( 'fail: nested case - ' + test[1], function() {
 
                     var event = {
 
@@ -96,18 +97,20 @@ describe( MODULE_PATH, function() {
                         other: 'my other field'
                     };
 
-                    engine.execute( { event }, function( err ) {
+                    try {
+
+                        scanner.scan( event );
+                    }
+                    catch( err ) {
 
                         expect( err.message ).to.equal( 'myField is invalid' );
                         expect( err.attackType ).to.equal( test[1] );
-
-                        done();
-                    });
+                    }
                 });
 
-                it( 'fail: ' + test[1] + ' - report only', function( done ) {
+                it( 'fail: ' + test[1] + ' - report only', function() {
 
-                    engine.report();
+                    scanner.report();
 
                     var event = {
 
@@ -115,7 +118,7 @@ describe( MODULE_PATH, function() {
                         other: 'my other field'
                     };
 
-                    engine.execute( { event }, done );
+                    scanner.scan( event );
                 });
             });
         });

@@ -10,19 +10,26 @@ const MODULE_PATH = 'lib/plugins/protect/scan_engine';
 
 const ScanEngine = require( '../../../../' + MODULE_PATH );
 
+const Scanner = require( '../../../../lib/protect/scanner' );
+
 describe( MODULE_PATH, function() {
 
     describe( 'ScanEngine', function() {
+
+        let scanner;
+
+        beforeEach( function() {
+
+            scanner = new Scanner();
+        });
 
         describe( 'constructor', function() {
 
             it( 'normal operation', function() {
 
-                let engine = new ScanEngine( 'test' );
+                let engine = new ScanEngine( 'test', scanner );
 
                 expect( engine.name ).to.equal( 'protect_test' );
-                expect( engine.mode ).to.equal( 'report' );
-                expect( engine.enabled ).to.be.true;
 
                 expect( engine.state ).to.eql( { enabled: true, mode: 'report', lambdaProxy: false } );
             });
@@ -32,14 +39,13 @@ describe( MODULE_PATH, function() {
 
             it( 'normal operation', function() {
 
-                let engine = new ScanEngine( 'test' );
+                let engine = new ScanEngine( 'test', scanner );
 
-                expect( engine.enabled ).to.be.true;
+                expect( engine.state ).to.eql( { enabled: true, mode: 'report', lambdaProxy: false } );
 
                 let returnValue = engine.disable();
 
                 expect( returnValue ).to.equal( engine );
-                expect( engine.enabled ).to.be.false;
 
                 expect( engine.state ).to.eql( { enabled: false } );
             });
@@ -49,39 +55,27 @@ describe( MODULE_PATH, function() {
 
             it( 'default case', function() {
 
-                let engine = new ScanEngine( 'test' );
-
-                expect( engine.enabled ).to.be.true;
+                let engine = new ScanEngine( 'test', scanner );
 
                 let returnValue = engine.report();
 
                 expect( returnValue ).to.equal( engine );
-                expect( engine.mode ).to.equal( 'report' );
-                expect( engine.enabled ).to.be.true;
 
                 expect( engine.state ).to.eql( { enabled: true, mode: 'report', lambdaProxy: false } );
             });
 
             it( 'after disable()', function() {
 
-                let engine = new ScanEngine( 'test' ).disable().report();
-
-                expect( engine.mode ).to.equal( 'report' );
-                expect( engine.enabled ).to.be.true;
+                let engine = new ScanEngine( 'test', scanner ).disable().report();
 
                 expect( engine.state ).to.eql( { enabled: true, mode: 'report', lambdaProxy: false } );
             });
 
             it( 'after fail()', function() {
 
-                let engine = new ScanEngine( 'test' ).fail();
-
-                expect( engine.mode ).to.equal( 'fail' );
+                let engine = new ScanEngine( 'test', scanner ).fail();
 
                 engine.report();
-
-                expect( engine.mode ).to.equal( 'report' );
-                expect( engine.enabled ).to.be.true;
 
                 expect( engine.state ).to.eql( { enabled: true, mode: 'report', lambdaProxy: false } );
             });
@@ -91,39 +85,27 @@ describe( MODULE_PATH, function() {
 
             it( 'default case', function() {
 
-                let engine = new ScanEngine( 'test' );
-
-                expect( engine.enabled ).to.be.true;
+                let engine = new ScanEngine( 'test', scanner );
 
                 let returnValue = engine.fail();
 
                 expect( returnValue ).to.equal( engine );
-                expect( engine.mode ).to.equal( 'fail' );
-                expect( engine.enabled ).to.be.true;
 
                 expect( engine.state ).to.eql( { enabled: true, mode: 'fail', lambdaProxy: false } );
             });
 
             it( 'after disable()', function() {
 
-                let engine = new ScanEngine( 'test' ).disable().fail();
-
-                expect( engine.mode ).to.equal( 'fail' );
-                expect( engine.enabled ).to.be.true;
+                let engine = new ScanEngine( 'test', scanner ).disable().fail();
 
                 expect( engine.state ).to.eql( { enabled: true, mode: 'fail', lambdaProxy: false } );
             });
 
             it( 'after report()', function() {
 
-                let engine = new ScanEngine( 'test' ).report();
-
-                expect( engine.mode ).to.equal( 'report' );
+                let engine = new ScanEngine( 'test', scanner ).report();
 
                 engine.fail();
-
-                expect( engine.mode ).to.equal( 'fail' );
-                expect( engine.enabled ).to.be.true;
 
                 expect( engine.state ).to.eql( { enabled: true, mode: 'fail', lambdaProxy: false } );
             });
@@ -133,24 +115,33 @@ describe( MODULE_PATH, function() {
 
             it( 'default operation', function( done ) {
 
-                let engine = new ScanEngine( 'test' );
-
-                engine._doScan = sinon.stub();
+                let engine = new ScanEngine( 'test', scanner );
 
                 let event = { one: 1 };
 
+                let scanSpy = sinon.spy( scanner, 'scan' );
+
                 engine.execute( { event }, function( err ) {
 
-                    expect( engine._doScan.calledOnce ).to.be.true;
-                    expect( engine._doScan.withArgs( event ).calledOnce ).to.be.true;
+                    try {
 
-                    done( err );
+                        expect( err ).to.not.exist;
+
+                        expect( scanSpy.calledOnce ).to.be.true;
+                        expect( scanSpy.withArgs( event ).calledOnce ).to.be.true;
+
+                        done();
+                    }
+                    catch( err ) {
+
+                        done( err );
+                    }
                 });
             });
 
             it( 'lambdaProxy enabled', function( done ) {
 
-                let engine = new ScanEngine( 'test' );
+                let engine = new ScanEngine( 'test', scanner );
 
                 engine.enableLambdaProxy( true );
 
@@ -158,57 +149,79 @@ describe( MODULE_PATH, function() {
 
                 engine._doScan = sinon.stub();
 
-                let event = { one: 1, body: {}, queryStringParameters: {} };
+                let event = { one: 1, body: { two: 2 }, queryStringParameters: { three: 3 } };
+
+                let scanSpy = sinon.spy( scanner, 'scan' );
 
                 engine.execute( { event }, function( err ) {
 
-                    expect( engine._doScan.calledOnce ).to.be.true;
-                    expect( engine._doScan.withArgs( event ).calledOnce ).to.be.true;
+                    try {
 
-                    let filter = engine._doScan.firstCall.args[ 1 ];
+                        expect( err ).to.not.exist;
 
-                    expect( filter.name ).to.equal( 'lambdaProxyFilter' );
+                        expect( scanSpy.calledTwice ).to.be.true;
+                        expect( scanSpy.withArgs( event.body ).calledOnce ).to.be.true;
+                        expect( scanSpy.withArgs( event.queryStringParameters ).calledOnce ).to.be.true;
 
-                    expect( filter( 'body' ) ).to.be.true;
-                    expect( filter( 'queryStringParameters' ) ).to.be.true;
+                        done();
+                    }
+                    catch( err ) {
 
-                    expect( filter( 'headers' ) ).to.be.false;
-                    expect( filter( 'whatever' ) ).to.be.false;
-
-                    done( err );
+                        done( err );
+                    }
                 });
             });
 
             it( 'when disabled', function( done ) {
 
-                let engine = new ScanEngine( 'test' ).disable()
+                let engine = new ScanEngine( 'test', scanner ).disable()
 
                 engine._doScan = sinon.stub();
 
                 let event = {};
 
+                let scanSpy = sinon.spy( scanner, 'scan' );
+
                 engine.execute( event, function( err ) {
 
-                    expect( engine._doScan.called ).to.be.false;
+                    try {
 
-                    done( err );
+                        expect( err ).to.not.exist;
+
+                        expect( scanSpy.called ).to.be.false;
+
+                        done();
+                    }
+                    catch( err ) {
+
+                        done( err );
+                    }
                 });
             });
 
             it( 'fail: when _doScan throws an error', function( done ) {
 
-                let engine = new ScanEngine( 'test' );
+                let engine = new ScanEngine( 'test', scanner );
 
-                engine._doScan = sinon.stub().throws( new Error( 'bang' ) );
+                scanner.scan = sinon.stub().throws( new Error( 'bang' ) );
 
                 let event = {};
 
                 engine.execute( event, function( err ) {
 
-                    expect( err ).to.exist;
-                    expect( err.message ).to.equal( 'bang' );
+                    try {
 
-                    done();
+                        expect( err ).to.exist;
+
+                        expect( err ).to.exist;
+                        expect( err.message ).to.equal( 'bang' );
+
+                        done();
+                    }
+                    catch( err ) {
+
+                        done( err );
+                    }
                 });
             });
         });
@@ -217,7 +230,7 @@ describe( MODULE_PATH, function() {
 
             it( 'empty configuration - default state', function() {
 
-                let engine = new ScanEngine( 'test' );
+                let engine = new ScanEngine( 'test', scanner );
 
                 engine.configure( { } );
 
@@ -226,7 +239,7 @@ describe( MODULE_PATH, function() {
 
             it( 'empty configuration - from state other than report', function() {
 
-                let engine = new ScanEngine( 'test' ).fail();
+                let engine = new ScanEngine( 'test', scanner ).fail();
 
                 expect( engine.state.mode ).to.equal( 'fail' );
 
@@ -237,7 +250,7 @@ describe( MODULE_PATH, function() {
 
             it( 'config.mode = report', function() {
 
-                let engine = new ScanEngine( 'test' ).fail();
+                let engine = new ScanEngine( 'test', scanner ).fail();
 
                 expect( engine.state.mode ).to.equal( 'fail' );
 
@@ -248,7 +261,7 @@ describe( MODULE_PATH, function() {
 
             it( 'config.mode = fail', function() {
 
-                let engine = new ScanEngine( 'test' );
+                let engine = new ScanEngine( 'test', scanner );
 
                 expect( engine.state.mode ).to.equal( 'report' );
 
@@ -259,7 +272,7 @@ describe( MODULE_PATH, function() {
 
             it( 'config.mode = unknown', function() {
 
-                let engine = new ScanEngine( 'test' ).fail();
+                let engine = new ScanEngine( 'test', scanner ).fail();
 
                 expect( engine.state.mode ).to.equal( 'fail' );
 
@@ -270,23 +283,13 @@ describe( MODULE_PATH, function() {
 
             it( 'config.mode = disabled', function() {
 
-                let engine = new ScanEngine( 'test' ).fail();
+                let engine = new ScanEngine( 'test', scanner ).fail();
 
                 expect( engine.state.mode ).to.equal( 'fail' );
 
                 engine.configure( { mode: 'disabled' } );
 
                 expect( engine.state.enabled ).to.be.false;
-            });
-        });
-
-        describe( '._doScan', function() {
-
-            it( 'abstract implementation', function() {
-
-                let engine = new ScanEngine( 'test' );
-
-                expect( engine._doScan.bind( engine, {} ) ).to.throw( 'not implemented' );
             });
         });
     });
