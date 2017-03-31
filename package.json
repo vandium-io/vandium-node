@@ -30,6 +30,7 @@
   "author": "Vandium Software Inc.",
   "license": "BSD-3-Clause",
   "dependencies": {
+    "@vandium/event-identifier": "^1.0.0",
     "joi": "^8.4.x",
     "joi-json": "^2.0.1",
     "jwt-simple": "0.5.x",
