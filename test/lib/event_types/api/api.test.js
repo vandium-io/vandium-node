@@ -39,10 +39,10 @@ describe( MODULE_PATH, function() {
 
             let event = require( './put-event.json' );
 
-            return helper.asPromise( handler, event, {} )
+            return helper.asPromise( handler, null, event, {} )
                 .then( (result) => {
 
-                    expect( result ).to.equal( 'put called' );
+                    expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'put called' } );
                 });
         });
     });
