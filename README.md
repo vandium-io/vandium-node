@@ -5,6 +5,17 @@
 
 Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions using [Node.js](https://nodejs.org) for [API Gateway](https://aws.amazon.com/api-gateway), IoT applications, and other Lambda-based cases.
 
+
+----
+# Please note 4.0 changes
+
+* Vandium 4.0 will only support node 6 and higher
+* Existing "vandiumized" handlers will still work but might be deprecated in future releases.
+* New method for API Gateway lambda proxy functions
+* New event handlers for services such as s3, kinesis, dynamodb, etc.
+---
+
+
 ## Features
 * Powerful input validation
 * JSON Web Token (JWT) verification and validation
