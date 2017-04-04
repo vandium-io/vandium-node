@@ -764,6 +764,54 @@ describe( 'index', function() {
         });
     });
 
+    describe( '.api', function() {
+
+        it( 'normal operation', function() {
+
+            expect( vandium.api ).to.existl;
+        });
+    });
+
+    describe( '.s3', function() {
+
+        it( 'normal operation', function() {
+
+            expect( vandium.s3 ).to.existl;
+        });
+    });
+
+    describe( '.dyanmodb', function() {
+
+        it( 'normal operation', function() {
+
+            expect( vandium.dyanmodb ).to.existl;
+        });
+    });
+
+    describe( '.sns', function() {
+
+        it( 'normal operation', function() {
+
+            expect( vandium.sns ).to.existl;
+        });
+    });
+
+    describe( '.ses', function() {
+
+        it( 'normal operation', function() {
+
+            expect( vandium.ses ).to.existl;
+        });
+    });
+
+    describe( '.kinesis', function() {
+
+        it( 'normal operation', function() {
+
+            expect( vandium.kinesis ).to.existl;
+        });
+    });
+
     describe( 'create singleton instance with configuration file', function() {
 
         it( 'auto update when vandium.json is present', function() {
