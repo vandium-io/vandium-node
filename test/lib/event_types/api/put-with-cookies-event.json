@@ -1,0 +1,46 @@
+{
+    "resource": "/",
+    "path": "/",
+    "httpMethod": "PUT",
+    "headers": {
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate",
+        "cache-control": "no-cache",
+        "CloudFront-Forwarded-Proto": "https",
+        "CloudFront-Is-Desktop-Viewer": "true",
+        "CloudFront-Is-Mobile-Viewer": "false",
+        "CloudFront-Is-SmartTV-Viewer": "false",
+        "CloudFront-Is-Tablet-Viewer": "false",
+        "CloudFront-Viewer-Country": "CA",
+        "Cookie": "firstcookie=chocolate; secondcookie=chip; thirdcookie=strawberry"
+    },
+    "queryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "accountId": "999999999999",
+        "resourceId": "5kwokute99",
+        "stage": "test-stage",
+        "requestId": "test-invoke-request",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": "999999999999",
+            "cognitoIdentityId": null,
+            "caller": "999999999999",
+            "apiKey": "test-invoke-api-key",
+            "sourceIp": "test-invoke-source-ip",
+            "accessKey": "ASIAJ7WA3PXZVP6WUPZQ",
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": "arn:aws:iam::999999999999:root",
+            "userAgent": "Apache-HttpClient/4.5.x (Java/1.8.0_102)",
+            "user": "999999999999"
+        },
+        "resourcePath": "/",
+        "apiId": "33hqk9a57e"
+    },
+    "body": {
+        "name": "  John Doe  "
+    },
+    "isBase64Encoded": false
+}

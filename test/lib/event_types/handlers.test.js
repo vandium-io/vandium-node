@@ -50,7 +50,7 @@ describe( 'lib/event_types/handlers', function() {
 
             let evt = { whatever: true };
 
-            return helper.asPromise( handler, null, evt, {} )
+            return helper.asPromise( handler, evt, {} )
                 .then( (result) => {
 
                     expect( result ).to.equal( 42 );
