@@ -1,26 +1,8 @@
 'use strict';
 
-function asPromise( handler, ...args ) {
-
-    return new Promise( (resolve, reject ) => {
-
-        let handlerArgs = args.slice();
-
-        handlerArgs.push( (err,result) => {
-
-            if( err ) {
-
-                return reject( err );
-            }
-
-            resolve( result );
-        });
-
-        handler( ...handlerArgs );
-    });
-}
+const utils = require( '../../../lib/utils' );
 
 module.exports = {
 
-    asPromise
+    asPromise: utils.asPromise
 };

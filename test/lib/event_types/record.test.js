@@ -47,7 +47,7 @@ describe( 'lib/event_types/record', function() {
 
             let evt = require( './s3-put.json' );
 
-            return helper.asPromise( handler, evt, {} );
+            return helper.asPromise( handler, null, evt, {} );
         });
     });
 });
