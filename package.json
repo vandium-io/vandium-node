@@ -23,6 +23,9 @@
     "type": "git",
     "url": "https://github.com/vandium-io/vandium-node.git"
   },
+  "engines": {
+    "node": ">=6.10"
+  },
   "scripts": {
     "test": "./node_modules/.bin/mocha --recursive",
     "coverage": "./node_modules/.bin/istanbul cover node_modules/mocha/bin/_mocha -- -R spec --recursive"
