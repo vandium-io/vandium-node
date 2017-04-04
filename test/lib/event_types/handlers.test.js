@@ -10,9 +10,9 @@ const proxyquire = require( 'proxyquire' ).noCallThru();
 
 const helper = require( './helper' );
 
-describe( 'lib/event_types/record', function() {
+describe( 'lib/event_types/handlers', function() {
 
-    let createHandler;
+    let handlers;
 
     let identifierStub;
     let executorsStub;
@@ -29,25 +29,32 @@ describe( 'lib/event_types/record', function() {
             create: sinon.stub()
         };
 
-        createHandler = proxyquire( '../../../lib/event_types/record', {
+        handlers = proxyquire( '../../../lib/event_types/handlers', {
 
             '@vandium/event-identifier': identifierStub,
             './executors': executorsStub
         });
     });
 
-    describe( '.createHandler', function() {
+    describe( '.create', function() {
 
         it( 'normal operation', function() {
 
-            identifierStub.identify.returns( 's3' );
+            identifierStub.identify.returns( 'my-type' );
             executorsStub.create.returns( function() { return Promise.resolve( 42 ) } );
 
-            let handler = createHandler( 's3', (event) => {} );
+            let handler = handlers.create( 'my-type', (event) => {
 
-            let evt = require( './s3-put.json' );
+                expect( event.number ).to.equal( 42 );
+            });
 
-            return helper.asPromise( handler, null, evt, {} );
+            let evt = { whatever: true };
+
+            return helper.asPromise( handler, null, evt, {} )
+                .then( (result) => {
+
+                    expect( result ).to.equal( 42 );
+                });
         });
     });
 });
