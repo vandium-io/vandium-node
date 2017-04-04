@@ -2,29 +2,15 @@
 
 /*jshint expr: true*/
 
-var expect = require( 'chai' ).expect;
+const expect = require( 'chai' ).expect;
+
+const helper = require( '../helper' );
 
 const MODULE_PATH = 'lib/event_types/api/index';
 
 const vandium = require( '../../../../' );
 
 const apiHandler = require( '../../../../' + MODULE_PATH );
-
-function runHandler( handler, event, context ) {
-
-    return new Promise( (resolve, reject ) => {
-
-        handler( event, context, (err,result) => {
-
-            if( err ) {
-
-                return reject( err );
-            }
-
-            resolve( result );
-        });
-    })
-}
 
 describe( MODULE_PATH, function() {
 
@@ -47,13 +33,13 @@ describe( MODULE_PATH, function() {
             }, ( evt ) => {
 
                 expect( evt.body.name ).to.equal( 'John Doe' );     // event contains padded input
-                
+
                 return 'put called';
             });
 
             let event = require( './put-event.json' );
 
-            return runHandler( handler, event, {} )
+            return helper.asPromise( handler, event, {} )
                 .then( (result) => {
 
                     expect( result ).to.equal( 'put called' );
