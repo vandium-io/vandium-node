@@ -346,7 +346,7 @@ describe( 'lib/plugins/jwt/configuration', function() {
             it( 'fail: when algorithm is not supported', function() {
 
                 expect( configuration.resolve.bind( configuration, { VANDIUM_JWT_ALGORITHM: 'HS1048' } ) )
-                    .to.throw( 'authentication error: unsupported jwt algorithm: HS1048' );
+                    .to.throw( 'authentication error: jwt algorithm "HS1048" is unsupported' );
             });
 
             it( 'fail: when algorithm not set', function() {
