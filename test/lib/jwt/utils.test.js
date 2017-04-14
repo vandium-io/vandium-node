@@ -6,7 +6,7 @@ const expect = require( 'chai' ).expect;
 
 const utils = require( '../../../lib/jwt/utils' );
 
-describe( 'lib/event_types/index', function() {
+describe( 'lib/jwt/utils', function() {
 
     describe( '.resolveAlgorithm', function() {
 
