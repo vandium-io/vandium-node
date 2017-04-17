@@ -19,24 +19,24 @@ describe( 'lib/event_types/handlers', function() {
 
     beforeEach( function() {
 
-        identifierStub = {
-
-            identify: sinon.stub()
-        };
-
-        executorsStub = {
-
-            create: sinon.stub()
-        };
-
-        handlers = proxyquire( '../../../lib/event_types/handlers', {
-
-            '@vandium/event-identifier': identifierStub,
-            './executors': executorsStub
-        });
+        // identifierStub = {
+        //
+        //     identify: sinon.stub()
+        // };
+        //
+        // executorsStub = {
+        //
+        //     create: sinon.stub()
+        // };
+        //
+        // handlers = proxyquire( '../../../lib/event_types/handlers', {
+        //
+        //     '@vandium/event-identifier': identifierStub,
+        //     './executors': executorsStub
+        // });
     });
 
-    describe( '.create', function() {
+    xdescribe( '.create', function() {
 
         it( 'normal operation', function() {
 

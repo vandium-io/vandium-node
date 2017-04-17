@@ -4,28 +4,9 @@
 
 const expect = require( 'chai' ).expect;
 
-const sinon = require( 'sinon' );
-
-const proxyquire = require( 'proxyquire' ).noCallThru();
+const eventTypes = require( '../../../lib/event_types/index' );
 
 describe( 'lib/event_types/index', function() {
-
-    let eventTypes;
-
-    let handlersStub;
-
-    beforeEach( function() {
-
-        handlersStub = {
-
-            create: sinon.stub()
-        };
-
-        eventTypes = proxyquire( '../../../lib/event_types/index', {
-
-            './handlers': handlersStub
-        });
-    });
 
     describe( '.api', function() {
 
@@ -34,8 +15,6 @@ describe( 'lib/event_types/index', function() {
             let api = require( '../../../lib/event_types/api' );
 
             expect( eventTypes.api ).to.equal( api );
-
-            expect( handlersStub.create.called ).to.be.false;
         });
     });
 
@@ -52,20 +31,12 @@ describe( 'lib/event_types/index', function() {
 
             it( 'normal operation', function() {
 
-                let mockHandler = function() {};
+                expect( eventTypes[ type ] ).to.exist;
+                expect( eventTypes[ type ] ).to.be.a( 'function' );
 
-                let myHandler = function( event ) {};
+                let handler = eventTypes[ type ]( function() {} );
 
-                handlersStub.create.returns( mockHandler );
-
-                let lambda = eventTypes[type]( myHandler );
-
-                expect( lambda ).to.equal( mockHandler );
-
-                expect( handlersStub.create.calledOnce ).to.be.true;
-                expect( handlersStub.create.firstCall.args[0] ).to.equal( type );
-                expect( handlersStub.create.firstCall.args[1] ).to.equal( myHandler );
-                expect( handlersStub.create.firstCall.args[2] ).to.exist;
+                expect( handler ).to.be.a( 'function' );
             });
         });
     });
