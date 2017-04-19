@@ -4,8 +4,6 @@
 
 const expect = require( 'chai' ).expect;
 
-const helper = require( '../helper' );
-
 const MODULE_PATH = 'lib/event_types/api/index';
 
 const vandium = require( '../../../../' );
@@ -16,7 +14,7 @@ describe( MODULE_PATH, function() {
 
     describe( 'handler', function() {
 
-        it( 'normal operation', function() {
+        it( 'normal operation', function( done ) {
 
             let handler = apiHandler();
 
@@ -39,14 +37,21 @@ describe( MODULE_PATH, function() {
 
             let event = require( './put-event.json' );
 
-            return helper.asPromise( handler, event, {} )
-                .then( (result) => {
+            handler( event, {}, (err,result) => {
+
+                try {
 
                     expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'put called' } );
-                });
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
         });
 
-        it( 'normal operation, with cookie', function() {
+        it( 'normal operation, with cookie', function( done ) {
 
             let handler = apiHandler();
 
@@ -73,11 +78,18 @@ describe( MODULE_PATH, function() {
 
             let event = require( './put-with-cookies-event.json' );
 
-            return helper.asPromise( handler, event, {} )
-                .then( (result) => {
+            handler( event, {}, (err,result) => {
+
+                try {
 
                     expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'put called' } );
-                });
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
         });
     });
 });
