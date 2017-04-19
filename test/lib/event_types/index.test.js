@@ -40,4 +40,28 @@ describe( 'lib/event_types/index', function() {
             });
         });
     });
+
+    // basic types
+    [
+        'cloudformation',
+        'cloudwatch',
+        'cognito',
+        'lex',
+        'scheduled'
+
+    ].forEach( ( type ) => {
+
+        describe( `.${type}`, function() {
+
+            it( 'normal operation', function() {
+
+                expect( eventTypes[ type ] ).to.exist;
+                expect( eventTypes[ type ] ).to.be.a( 'function' );
+
+                let handler = eventTypes[ type ]( function() {} );
+
+                expect( handler ).to.be.a( 'function' );
+            });
+        });
+    });
 });
