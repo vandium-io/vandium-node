@@ -99,37 +99,6 @@ describe( 'lib/event_types/handler', function() {
         });
     });
 
-    describe( '.handleCallback', function() {
-
-        it( 'result object contains a result', function() {
-
-            let resultObject = { result: 42 };
-
-            let instance = new Handler();
-
-            let callback = sinon.stub();
-
-            instance.handleCallback( resultObject, callback );
-
-            expect( callback.calledOnce ).to.be.true;
-            expect( callback.firstCall.args ).to.eql( [ undefined, resultObject.result ] );
-        });
-
-        it( 'result object contains an error', function() {
-
-            let resultObject = { error: new Error( 'bang' ) };
-
-            let instance = new Handler();
-
-            let callback = sinon.stub();
-
-            instance.handleCallback( resultObject, callback );
-
-            expect( callback.calledOnce ).to.be.true;
-            expect( callback.firstCall.args ).to.eql( [ resultObject.error, undefined ] );
-        });
-    });
-
     describe( '.finally', function() {
 
         it( 'normal operation', function() {
@@ -159,6 +128,302 @@ describe( 'lib/event_types/handler', function() {
             let returnValue = instance.eventProcessor( eventProc );
             expect( returnValue ).to.equal( instance );
             expect( instance.eventProc ).to.equal( eventProc );
+        });
+    });
+
+    describe( '.execute', function() {
+
+        it( 'handler with result, no finally', function( done ) {
+
+            let instance = new Handler();
+
+            let lambda = instance.handler( function( event, context  ) {
+
+                    expect( context.getRemainingTimeInMillis ).to.exist;
+                    expect( context.getRemainingTimeInMillis() ).to.equal( 1000 );
+
+                    return 42;
+                } ).createLambda();
+
+            let event = {};
+            let context = {
+
+                getRemainingTimeInMillis() { return 1000; }
+            };
+
+            lambda( event, context, (err, result) => {
+
+                try {
+
+                    expect( err ).to.not.exist;
+                    expect( result ).to.equal( 42 );
+
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
+        it( 'handler with result with finally', function( done ) {
+
+            let instance = new Handler();
+
+            let after = sinon.stub().returns( 4 );
+
+            let lambda = instance.handler( function( event, context  ) {
+
+                    expect( context.getRemainingTimeInMillis ).to.exist;
+                    expect( context.getRemainingTimeInMillis() ).to.equal( 1000 );
+
+                    return 42;
+                } )
+                .finally( after )
+                .createLambda();
+
+            let event = {};
+            let context = {
+
+                getRemainingTimeInMillis() { return 1000; }
+            };
+
+            lambda( event, context, (err, result) => {
+
+                try {
+
+                    expect( err ).to.not.exist;
+                    expect( result ).to.equal( 42 );
+                    expect( after.calledOnce ).to.be.true;
+
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
+        it( 'handler with result with finally that throws uncaught exception', function( done ) {
+
+            let instance = new Handler();
+
+            let after = sinon.stub().throws( new Error( 'bang' ) );
+
+            let lambda = instance.handler( function( event, context  ) {
+
+                    expect( context.getRemainingTimeInMillis ).to.exist;
+                    expect( context.getRemainingTimeInMillis() ).to.equal( 1000 );
+
+                    return 42;
+                } )
+                .finally( after )
+                .createLambda();
+
+            let event = {};
+            let context = {
+
+                getRemainingTimeInMillis() { return 1000; }
+            };
+
+            lambda( event, context, (err, result) => {
+
+                try {
+
+                    expect( err ).to.not.exist;
+                    expect( result ).to.equal( 42 );
+                    expect( after.calledOnce ).to.be.true;
+
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
+        it( 'handler with result with async finally', function( done ) {
+
+            let instance = new Handler();
+
+            let afterStub = sinon.stub().yieldsAsync( null, 4 );
+            let after = function( context, callback ) { afterStub( callback ); };
+
+            let lambda = instance.handler( function( event, context  ) {
+
+                    expect( context.getRemainingTimeInMillis ).to.exist;
+                    expect( context.getRemainingTimeInMillis() ).to.equal( 1000 );
+
+                    return 42;
+                } )
+                .finally( after )
+                .createLambda();
+
+            let event = {};
+            let context = {
+
+                getRemainingTimeInMillis() { return 1000; }
+            };
+
+            lambda( event, context, (err, result) => {
+
+                try {
+
+                    expect( err ).to.not.exist;
+                    expect( result ).to.equal( 42 );
+
+                    expect( afterStub.calledOnce ).to.be.true;
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
+        it( 'handler with context.callbackWaitsForEmptyEventLoop = true', function( done ) {
+
+            let instance = new Handler();
+
+            let lambda = instance.handler( function( event, context  ) {
+
+                    expect( context.getRemainingTimeInMillis ).to.exist;
+                    expect( context.getRemainingTimeInMillis() ).to.equal( 1000 );
+                    context.callbackWaitsForEmptyEventLoop = true;
+
+                    return 42;
+                } ).createLambda();
+
+            let event = {};
+            let context = {
+
+                getRemainingTimeInMillis() { return 1000; }
+            };
+
+            lambda( event, context, (err, result) => {
+
+                try {
+
+                    expect( err ).to.not.exist;
+                    expect( result ).to.equal( 42 );
+
+                    expect( context.callbackWaitsForEmptyEventLoop ).to.not.exist;
+
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
+        it( 'handler with context.callbackWaitsForEmptyEventLoop = false', function( done ) {
+
+            let instance = new Handler();
+
+            let lambda = instance.handler( function( event, context  ) {
+
+                    expect( context.getRemainingTimeInMillis ).to.exist;
+                    expect( context.getRemainingTimeInMillis() ).to.equal( 1000 );
+                    context.callbackWaitsForEmptyEventLoop = false;
+
+                    return 42;
+                } ).createLambda();
+
+            let event = {};
+            let context = {
+
+                getRemainingTimeInMillis() { return 1000; }
+            };
+
+            lambda( event, context, (err, result) => {
+
+                try {
+
+                    expect( err ).to.not.exist;
+                    expect( result ).to.equal( 42 );
+
+                    expect( context.callbackWaitsForEmptyEventLoop ).to.exist;
+                    expect( context.callbackWaitsForEmptyEventLoop ).to.be.false;
+
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
+        it( 'handler (err result) with context.callbackWaitsForEmptyEventLoop = false', function( done ) {
+
+            let instance = new Handler();
+
+            let lambda = instance.handler( function( event, context  ) {
+
+                    expect( context.getRemainingTimeInMillis ).to.exist;
+                    expect( context.getRemainingTimeInMillis() ).to.equal( 1000 );
+                    context.callbackWaitsForEmptyEventLoop = false;
+
+                    throw new Error( 'bang' );
+                } ).createLambda();
+
+            let event = {};
+            let context = {
+
+                getRemainingTimeInMillis() { return 1000; }
+            };
+
+            lambda( event, context, (err, result) => {
+
+                try {
+
+                    expect( err ).to.exist;
+                    expect( result ).to.not.exist;
+
+                    expect( context.callbackWaitsForEmptyEventLoop ).to.exist;
+                    expect( context.callbackWaitsForEmptyEventLoop ).to.be.false;
+
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
+        it( 'fail when handler not defined', function( done ) {
+
+            let lambda = new Handler().createLambda();
+
+            let event = {};
+            let context = {
+
+                getRemainingTimeInMillis() { return 1000; }
+            };
+
+            lambda( event, context, (err, result) => {
+
+                try {
+
+                    expect( err ).to.exist;
+                    expect( err.message ).to.equal( 'handler not defined' );
+
+                    expect( result ).to.not.exist;
+
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
         });
     });
 });
