@@ -2,29 +2,60 @@
 
 const vandium = require( 'vandium' );
 
-exports.handler = vandium.createInstance( {
+function getUsers( offset, expand ) {
 
-            lambdaProxy: true,
-            validation: {
+    let users = [];
 
-                schema: {
+    // TODO: read users from database
 
-                    body: {
+    return Promise.resolve( users );
+}
 
-                        firstName: vandium.types.string().min( 1 ).max( 250 ).required(),
+function addUser( firstName, lastName, age ) {
 
-                        lastName: vandium.types.string().min( 1 ).max( 250 ).required(),
+    // TODO: add user to database
 
-                        age: vandium.types.number().min( 0 ).max( 130 ).required()
-                    }
+    return Promise( { id: Date.now(), firstName, lastName, age } );
+}
+
+exports.handler = vandium.api()
+        .GET( {
+
+                queryStringParameters: {
+
+                    offset: vandium.types.number(),
+                    expand: vandium.types.boolean()
                 }
-            }
-        })
-        .handler( function( event /*, context, callback*/ ) {
+            },
+            (event) => {
 
-            // log event ?
-            // console.log( JSON.stringify( event, null, 2 ) );
+                let offset = event.queryStringParameters.offset;
+                let expand = event.queryStringParameters.expand;
 
-            // echo body portion
-            return Promise.resolve( event.body );
-        });
+                return getUsers( offset, expand )
+                    .then( (users) => {
+
+                        return {
+
+                            users,
+                            offset
+                        };
+                    });
+            })
+        .POST( {
+
+                body: {
+
+                    firstName: vandium.types.string().min(1).max(250).required(),
+                    lastName: vandium.types.string().min(1).max(250).required(),
+                    age: vandium.types.number().min(0).max(130)
+                }
+            },
+            (event) => {
+
+                let firstName = event.body.firstName;
+                let lastName = event.body.lastName;
+                let age = event.body.age;
+
+                return addUser( firstName, lastName, age );
+            });

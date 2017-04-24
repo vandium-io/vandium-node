@@ -55,12 +55,14 @@ exports.handler = vandium.api( /* config here too */ )
 
                         // config here
                     })
-                    .validate( {
+                    .protection( {
 
-                        headers: {
+                        sql: true,  // or false
 
-                            version: vandium.types.string()
-                        }
+                        body: true,
+                        queryStringParameters: true,
+                        headers: true,
+                        // etc
                     })
                     .GET( {
 
