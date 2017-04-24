@@ -1,76 +1,68 @@
-# Post Handler Cleanup
+# Cleaning Up after Handler Execution
 
-Leaving resources open at the end of a handler's execution can lead to timeouts and longer execution times. For example, one might use a
-caching server but freeing the resource during the handler's execution might add unwanted complexity. Vandium's `after` function gets called
-before the callback gets invoked, thus freeing your resources without extra code bloat.
-
-Usage: `vandium.after( funct )` where `funct` is a function that returns synchronously, asynchronously using a callback, or returns a `Promise`.
-
-## Synchronous call to `vandium.after()`:
-
-When calling synchronously, when the function returns the vandium will invoke the callback handler.
+Leaving resources open at the end of a handler's execution can lead to timeouts and longer execution times.
+For example, one might use a caching server but freeing the resource during the handler's execution might add unwanted complexity. Vandium's `finally` operation can be used to free resources upon each invocation whether the handler succeeds or fails.
 
 ```js
 const vandium = require( 'vandium' );
 
-const busLogicModule = require( 'my-bl-module' );
+const cache = require( './cache' );
 
-vandium.after( function() {
+const scanner = require( './scanner' );
 
-        busLogcModule.closeCache();
-    });
+// handler for an s3 event
+exports.handler = vandium.s3( (records) => {
 
-exports.handler = vandium( function( event ) {
+        return cache.connect()
+            .then( () => {
 
-	return busLogicModule.getUser( event.user_id )
-		.then( function( user ) {
+                // assume that we only have 1 record
+                let bucket = record[0].s3.bucket.name;
+                let key = record[0].s3.object.key;
 
-			return busLogicModule.requestFollowUp( user );
-		});
+                return scanner( bucket, key, cache );
+            })
+            .finally( ( /*context*/ ) => {
+
+                return cache.release();
+            });
 ```
 
-## Asynchronous call to `vandium.after()`:
-
-When calling asynchronously with a function that takes a callback `done` that gets invoked when the operation inside `after()` is complete.
+If the finally is not returning a synchronous operation or a `Promise` and requires an asynchronous callback, then the code might look as follows:
 
 ```js
 const vandium = require( 'vandium' );
 
-const busLogicModule = require( 'my-bl-module' );
+const cache = require( './cache' );
 
-vandium.after( function( done ) {
+const scanner = require( './scanner' );
 
-        busLogcModule.closeCache( done );
-    });
+// handler for an s3 event
+exports.handler = vandium.s3( (records) => {
 
-exports.handler = vandium( function( event ) {
+        return cache.connect()
+            .then( () => {
 
-	return busLogicModule.getUser( event.user_id )
-		.then( function( user ) {
+                // assume that we only have 1 record
+                let bucket = record[0].s3.bucket.name;
+                let key = record[0].s3.object.key;
 
-			return busLogicModule.requestFollowUp( user );
-		});
+                return scanner( bucket, key, cache );
+            })
+            .finally( (context, done) => {
+
+                cache.release( (err) => {
+
+                    if( err ) {
+
+                        console.log( 'failed to release cache' );
+
+                        return done( err );
+                    }
+
+                    done();
+                });
+            });
 ```
 
-## Asynchronous call with Promises in `vandium.after()`:
-
-A `Promise` can be returned and once it has been resolved, the handler will complete.
-
-```js
-const vandium = require( 'vandium' );
-
-const busLogicModule = require( 'my-bl-module' );
-
-vandium.after( function() {
-
-        return busLogcModule.closeCacheAsync();
-    });
-
-exports.handler = vandium( function( event ) {
-
-	return busLogicModule.getUser( event.user_id )
-		.then( function( user ) {
-
-			return busLogicModule.requestFollowUp( user );
-		});
-```
+If an exception is thrown during the `finally` operation, it will be logged and the handler will continue to exit normally.
