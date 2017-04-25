@@ -131,5 +131,38 @@ describe( MODULE_PATH, function() {
                 }
             });
         });
+
+        it( 'handle JWT failure', function( done ) {
+
+            let handler = apiHandler()
+                .jwt( {
+
+                    algorithm: 'HS256',
+                    key: 'secret'
+                })
+                .PUT( ( evt ) => {
+
+                    expect( evt.body.name ).to.equal( 'John Doe' );     // event contains padded input
+
+                    return 'put called';
+                });
+
+            let event = require( './put-event.json'  );
+
+            handler( event, {}, (err,result) => {
+
+                try {
+
+                    expect( result.statusCode ).to.equal( 403 );
+                    expect( result.body ).to.equal( '{"type":"AuthenticationFailureError","message":"authentication error: missing jwt token"}' );
+
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
     });
 });
