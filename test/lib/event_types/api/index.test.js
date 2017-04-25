@@ -91,5 +91,45 @@ describe( MODULE_PATH, function() {
                 }
             });
         });
+
+        it( 'normal operation, with headers', function( done ) {
+
+            let handler = apiHandler();
+
+            handler.PUT( {
+
+                body: {
+
+                    name: vandium.types.string().trim().required()
+                }
+
+            }, ( evt ) => {
+
+                expect( evt.body.name ).to.equal( 'John Doe' );     // event contains padded input
+
+                return 'put called';
+            });
+
+            handler.headers( {
+
+                header1: 'HEADER1',
+                header2: 'HEADER2'
+            });
+
+            let event = require( './put-event.json'  );
+
+            handler( event, {}, (err,result) => {
+
+                try {
+
+                    expect( result ).to.eql( { statusCode: 200, headers: { header1: 'HEADER1', header2: 'HEADER2' }, body: 'put called' } );
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
     });
 });
