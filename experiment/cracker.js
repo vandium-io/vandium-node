@@ -106,6 +106,10 @@ exports.handler = vandium.api( /* config here too */ )
 
                         }
                     )
+                    .onError( (err) => {
+
+                        // transforn error
+                    })
                     .finally( () => {
 
                         // clean up here
