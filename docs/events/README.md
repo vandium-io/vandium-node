@@ -5,7 +5,7 @@ Vandium targets specific event types to allow validation and targeting of specif
 
 ## Table of Contents
 
-- [api](api.md)
+- [api](api)
 - [cloudformation](cloudformation.md)
 - [cloudwatch](cloudwatch.md)
 - [cognito](cognito.md)
