@@ -35,27 +35,27 @@
   "dependencies": {
     "@vandium/event-identifier": "^1.0.0",
     "cookie": "^0.3.1",
-    "joi": "^8.4.x",
+    "joi": "^10.4.1",
     "joi-json": "^2.0.1",
     "jwt-simple": "0.5.x",
     "loglevel": "1.4.x",
     "vandium-utils": "^1.1.0"
   },
   "devDependencies": {
-    "app-root-path": "^1.0.0",
+    "app-root-path": "^2.0.1",
     "aws-sdk": "^2.2.39",
     "bluebird": "^3.3.4",
     "chai": "^3.4.1",
-    "dotenv": "^2.0.0",
+    "dotenv": "^4.0.0",
     "env-restorer": "^1.0.0",
     "freshy": "^1.0.2",
     "istanbul": "^0.4.2",
     "jwt-builder": "^1.0.0",
     "lov": "^1.0.1",
     "mocha": "^3.0.2",
-    "node-rsa": "^0.3.2",
+    "node-rsa": "^0.4.2",
     "proxyquire": "^1.7.9",
-    "sinon": "^1.17.3",
+    "sinon": "^2.1.0",
     "uuid": "^3.0.1"
   }
 }
