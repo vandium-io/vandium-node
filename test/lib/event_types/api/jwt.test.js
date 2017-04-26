@@ -48,6 +48,14 @@ describe( MODULE_PATH, function() {
                 expect( instance.enabled ).to.be.false;
             });
 
+            it( 'enabled = false', function() {
+
+                let instance = new JWTValidator( { enabled: false } );
+
+                expect( instance ).to.be.instanceof( JWTValidator );
+                expect( instance.enabled ).to.be.false;
+            });
+
             it( 'no options, env vars set for algorithm and secret', function() {
 
                 process.env.VANDIUM_JWT_ALGORITHM = 'HS256';
