@@ -1,6 +1,7 @@
 # Vandium
 
-Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions using [Node.js](https://nodejs.org) for [API Gateway](https://aws.amazon.com/api-gateway), IoT applications, and other Lambda-based cases.
+Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions using [Node.js](https://nodejs.org) for
+[API Gateway](https://aws.amazon.com/api-gateway), IoT applications, and other Lambda-based cases.
 
 ## Features
 * Simplifies writing lambda handlers
@@ -41,7 +42,8 @@ exports.handler = vandium.s3( (records) => {
     });
 ```
 
-Since this is an `s3` type handler, Vandium isolates the records from the lambda event. If we wanted to access the lambda context, we would modify the code as follows:
+Since this is an `s3` type handler, Vandium isolates the records from the lambda event. If we wanted to access the lambda context, we would
+modify the code as follows:
 
 ```js
 const vandium = require( 'vandium' );
@@ -58,7 +60,8 @@ exports.handler = vandium.s3( ( records, context ) => {
     });
 ```
 
-Also note that Vandium is handling the `callback` for us. If we wanted to do something asynchronous, we could add the `callback` parameter and then return the appropriate response.
+Also note that Vandium is handling the `callback` for us. If we wanted to do something asynchronous, we could add the `callback` parameter
+and then return the appropriate response.
 
 ```js
 const vandium = require( 'vandium' );
@@ -93,7 +96,8 @@ exports.handler = vandium.s3( ( records, context, callback ) => {
     });
 ```
 
-Promises can be used to make writing asynchronous code a little easier to understand and maintain. Vandium supports the `Promise` implementation without any special configuration.
+Promises can be used to make writing asynchronous code a little easier to understand and maintain. Vandium supports the `Promise`
+implementation without any special configuration.
 
 ```js
 const vandium = require( 'vandium' );

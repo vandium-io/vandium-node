@@ -30,7 +30,7 @@ Install via npm.
 ## Getting Started
 
 Vandium creates event specific handlers to reduce the amount of code than one needs to maintain. Vandium will automatically detect and
-validate that the event is intended for the target service.For example, creating a handler for S3 events:
+validate that the event is intended for the target service. For example, creating a handler for S3 events:
 
 ```js
 const vandium = require( 'vandium' );
