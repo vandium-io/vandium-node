@@ -4,14 +4,235 @@ The `api` event type is used to handle [AWS API Gateway](https://aws.amazon.com/
 handling resource events. The `api` handler can be used to create sub-handlers for each of the HTTP methods, handle results or errors and
 ensure that the response is in the correct format for API Gateway.
 
+Typical handler for API Gateway would be as follows:
 
-## Table of Contents
+```js
+const vandium = require( 'vandium' );
 
-- [Getting Started](getting-started.md)
-- [HTTP Methods](methods.md)
-- [Validation](validation.md)
-- [JSON Web Token (JWT)](jwt.md)
-- [Responses](responses.md)
-- [Errors](errors.md)
-- [Injection Protection](protection.md)
-- [Cleaning up post execution](finally.md)
+const User = require( './user' );
+
+const cache = require( './cache' );
+
+exports.handler = vandium.api()
+        .GET( (event) => {
+
+                // handle get request
+                return User.get( event.pathParmeters.name );
+            })
+        .POST( {
+
+                // validate
+                body: {
+
+                    name: vandium.types.string().min(4).max(200).required()
+                }
+            },
+            (event) => {
+
+                // handle POST request
+                return User.create( event.body.name );
+            })
+        .PATCH( {
+
+                // validate
+                body: {
+
+                    age: vandium.types.number().min(0).max(130)
+                }
+            },
+            (event) => {
+
+                // handle PATCH request
+                return User.update( event.pathParmeters.name, event.body );
+            })
+        .DELETE( (event) => {
+
+                // handle DELETE request
+                return User.delete( event.pathParmeters.name );
+            })
+        .finally( () => {
+
+            // close the cache if open - gets executed on every call
+            return cache.close();
+        });
+```
+
+As you can see, the individual HTTP methods have their own independent paths inside the proxied handler, each with their own ability to
+validate specific event parameters if required. Also note that the `User` module used Promises to handle the asynchronous calls, this
+simplifies the code, enhances readability and reduces complexity.
+
+## HTTP Methods
+
+The `api` event handler supports the following HTTP methods:
+
+* GET
+* POST
+* PUT
+* PATCH
+* DELETE
+* HEAD
+
+Each method handler can have an optional validation section, specified before the handler, to ensure the supplied request information is
+valid before any logic gets executed. Method handlers can receive additional information to allow them access to more information
+as needed. Revisiting the example in the "Getting Started" section, we can expand the method handlers to illustrate how one might want to
+access the `context` parameter or perform traditional asynchronous calls using a `callback` function.
+
+```js
+const vandium = require( 'vandium' );
+
+exports.handler = vandium.api()
+        .GET( (event) => {
+
+                // handle get request
+            })
+        .POST( {
+
+                // validate
+                body: {
+
+                    name: vandium.types.string().min(4).max(200).required()
+                }
+            },
+            (event, context) => {
+
+                // handle POST request
+                return User.create( event.body.name );
+            })
+        .PATCH( {
+
+                // validate
+                body: {
+
+                    age: vandium.types.number().min(0).max(130)
+                }
+            },
+            (event, context, callback) => {
+
+                // do something
+                callback( null, 'updated!' );
+            });
+```
+
+**Note:** Although the `context` parameter is available, Vandium will disable `context.succeed()`, `context.fail()` and `context.done()`
+methods.
+
+## Validation of Event Elements
+
+Vandium uses [Joi](https://github.com/hapijs/joi) as the engine for validation on specific elements inside the event. Validation schemas are
+applied to one or more sections of the `event` object and can be targeted to the `headers`, `queryStringParameters`, `body` and
+`pathParameters` elements. Each item inside the element can be validated using one of the build-in types inside Vandium.
+
+The following types are supported for validation.
+
+Type		   | Description
+------------|------------
+string      | String value. Automatically trimmed
+number      | Number value (integer or floating point)
+boolean     | Boolean value (`true` or `false`)
+date        | Date value
+email       | Email address
+uuid        | [Universally unique identifier](https://en.wikipedia.org/wiki/Universally_unique_identifier) (UUID)
+binary	    | Binary value uncoded using `base64`
+any		    | Any type of value
+object      | Object
+array       | Arrays of values
+alternatives| Alternative selection of values
+
+See the [validation](validation) section for more information on how to apply validation rules.
+
+## JSON Web Tokens (JWT)
+
+Vandium can handle validation, enforcement and processing of JSON Web Token (JWT) values. Configuration can be provided either via code or
+through environment variables.
+
+The following JWT signature algorithms are supported:
+
+Algorithm | Type
+----------|------------
+HS256     | HMAC SHA256 (shared secret)
+HS384     | HMAC SHA384 (shared secret)
+HS512     | HMAC SHA512 (shared secret)
+RS256     | RSA SHA256 (public-private key)
+
+To enable JWT using code, use the `jwt()` function on the `api` handler. By specifying an algorithm, JWT processing is automatically enabled
+
+```js
+const vandium = require( 'vandium' );
+
+exports.handler = vandium.api()
+        .jwt( {
+
+            algorithm: 'RS256'
+            key: '<public key goes here>'
+        })
+        .GET( (event) => {
+
+                // handle get request
+            })
+        // other method handlers...
+```
+
+See the [JWT](jwt.md) section for for information about how to configure JSON Web Token support.
+
+## Response and error handling
+
+API Gateway expects all Lambda proxy handlers to return a defined object indicating success or failure, typically via the `callback()` function. The
+response format is as follows:
+
+```js
+{
+    // numeric static code
+    "statusCode": status_code,
+
+    // object containing header values
+    "headers": {
+
+        "header1": "header 1 value",
+        "header2": "header 2 value",
+
+        // etc.
+    },
+
+    // body encoded as a string
+    "body": "{\"result\":\"json_string_encoded\"}"
+}
+```
+
+Vandium will automatically try to determine the correct status code (successful or error condition) and process the body section accordingly.
+
+If the following code was executed for a `GET` request;
+
+```js
+const vandium = require( 'vandium' );
+
+exports.handler = vandium.api()
+        .GET( (event) => {
+
+            // handle get request
+            return {
+
+                id: "12345",
+                name: "john.doe"
+            };
+        });
+```
+
+The response object would be:
+
+```js
+{
+    // Vandium determined that a successful GET request should return status code of 200
+    "statusCode": 200,
+
+    // no headers were set
+    "headers": {},
+
+    // Vandium encoded the response object and stored as the body
+    "body": "{\"id\":\"12345\",\"name\":\"john.doe\"}"
+}
+```
+
+See the [Response and error handling](responses.md) section for for information about how to configure responses, headers and errors.
+
+
+## Injection protection
