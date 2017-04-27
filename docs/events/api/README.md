@@ -17,7 +17,7 @@ exports.handler = vandium.api()
         .GET( (event) => {
 
                 // handle get request
-                return User.get( event.pathParmeters.name );
+                return User.get( event.pathParameters.name );
             })
         .POST( {
 
@@ -43,12 +43,12 @@ exports.handler = vandium.api()
             (event) => {
 
                 // handle PATCH request
-                return User.update( event.pathParmeters.name, event.body );
+                return User.update( event.pathParameters.name, event.body );
             })
         .DELETE( (event) => {
 
                 // handle DELETE request
-                return User.delete( event.pathParmeters.name );
+                return User.delete( event.pathParameters.name );
             })
         .finally( () => {
 
@@ -236,3 +236,52 @@ See the [Response and error handling](responses.md) section for for information 
 
 
 ## Injection protection
+
+Vandium will analyze the `queryStringParameters`, `body` and `pathParameters` sections in the event object to determine if potential attacks
+are present. If attacks are detected, the default mode will be to log the attack. Injection protection can be configured using the
+`protection()` method on the `api` handler. Currently only SQL Injection (SQLi) attacks are detected but future versions will detect other
+types.
+
+To prevent execution when potential attacks are detected:
+
+```js
+const vandium = require( 'vandium' );
+
+exports.handler = vandium.api()
+        .protection( {
+
+            // "fail" mode will prevent execution of the method handler
+            mode: 'fail'
+        })
+        .GET( (event) => {
+
+            // handle get request
+            return {
+
+                id: "12345",
+                name: "john.doe"
+            };
+        });
+```
+
+To disable protection:
+
+```js
+const vandium = require( 'vandium' );
+
+exports.handler = vandium.api()
+        .protection( {
+
+            // "fail" mode will prevent execution of the method handler
+            mode: 'off'
+        })
+        .GET( (event) => {
+
+            // handle get request
+            return {
+
+                id: "12345",
+                name: "john.doe"
+            };
+        });
+```
