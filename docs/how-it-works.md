@@ -1,3 +1,0 @@
-# How it works
-
-To be written...

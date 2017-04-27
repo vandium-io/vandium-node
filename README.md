@@ -5,37 +5,21 @@
 
 Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions using [Node.js](https://nodejs.org) for [API Gateway](https://aws.amazon.com/api-gateway), IoT applications, and other Lambda-based cases.
 
-
-----
-# Please note 4.0 changes
-
-* Vandium 4.0 will only support node 6 and higher
-* Existing "vandiumized" handlers will still work but might be deprecated in future releases.
-* New method for API Gateway lambda proxy functions
-* New event handlers for services such as s3, kinesis, dynamodb, etc.
----
-
-
 ## Features
+* Simplifies writing lambda handlers
+* Automatically verifies event types
 * Powerful input validation
 * JSON Web Token (JWT) verification and validation
 * Cross Site Request Forgery (XSRF) detection when using JWT
 * SQL Injection (SQLi) detection and protection
 * Lambda Proxy Resource support for AWS API Gateway
-* Environment variable mapping
 * Free resources post handler execution
 * Forces values into correct types
 * Handles uncaught exceptions
 * Promise support
 * Automatically trimmed strings for input event data
 * Low startup overhead
-* AWS Lambda Node.js 4.3.2 compatible
-
-## How it works
-
-Vandium wraps your Node.js handler and takes responsibility for validating JWT tokens, detecting SQL Injection attacks, validating input values from the incoming event and assisting your code in cleaning up any open resources. This allows you to focus on the core functionality of your code while reducing the overall amount of code that needs to be written. In addition to reduction the code you need to write, Vandium will add increased robustness, greater level of security and reduction in technical debt.
-
-![Lambda Execution Handler Flow](docs/flow.png?raw=true "")
+* AWS Lambda Node.js 6.10.x compatible
 
 
 ## Installation
@@ -45,36 +29,76 @@ Install via npm.
 
 ## Getting Started
 
-Vandium can be used with minimal change to your existing code.
+Vandium creates event specific handlers to reduce the amount of code than one needs to maintain. Vandium will automatically detect and
+validate that the event is intended for the target service.For example, creating a handler for S3 events:
 
 ```js
-var vandium = require( 'vandium' );
+const vandium = require( 'vandium' );
 
-exports.handler = vandium( function( event, context, callback ) {
+// handler for an s3 event
+exports.handler = vandium.s3( (records) => {
 
-	callback( null, 'ok' );
-});
+        let bucket = record[0].s3.bucket.name;
+        let key = record[0].s3.object.key;
+
+        console.log( `event triggered on bucket: ${bucket}, key: ${key}` );
+    });
 ```
 
-To enable validation on the values in the `event` object, configure it using a validation schema object.
+For handling API Gateway proxy events, Vandium simplifies JWT processing, input validation and method handling while reducing overall code
+that you need to write, maintain and test. The following is an example of a resource event that handles GET, POST, PATCH and DELETE
+operations:
 
 ```js
-var vandium = require( 'vandium' );
+const vandium = require( 'vandium' );
 
-vandium.validation( {
+const User = require( './user' );
 
-	name: vandium.types.string().required()
-});
+const cache = require( './cache' );
 
-exports.handler = vandium( function( event, context, callback ) {
+exports.handler = vandium.api()
+        .GET( (event) => {
 
-	console.log( 'hello: ' + event.name );
+                // handle get request
+                return User.get( event.pathParameters.name );
+            })
+        .POST( {
 
-	callback( null, 'ok' );
-});
+                // validate
+                body: {
+
+                    name: vandium.types.string().min(4).max(200).required()
+                }
+            },
+            (event) => {
+
+                // handle POST request
+                return User.create( event.body.name );
+            })
+        .PATCH( {
+
+                // validate
+                body: {
+
+                    age: vandium.types.number().min(0).max(130)
+                }
+            },
+            (event) => {
+
+                // handle PATCH request
+                return User.update( event.pathParameters.name, event.body );
+            })
+        .DELETE( (event) => {
+
+                // handle DELETE request
+                return User.delete( event.pathParameters.name );
+            })
+        .finally( () => {
+
+            // close the cache if open - gets executed on every call
+            return cache.close();
+        });
 ```
-
-When the lambda function is invoked, the event object will be checked for a presence of `event.name`. If the value does not exist, then the lambda will fail and an error message will be returned to the caller. Vandium will take care of calling `callback()` to route the error.
 
 
 ## Documentation

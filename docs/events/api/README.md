@@ -138,7 +138,7 @@ object      | Object
 array       | Arrays of values
 alternatives| Alternative selection of values
 
-See the [validation](validation) section for more information on how to apply validation rules.
+See the [validation](validation.md) section for more information on how to apply validation rules.
 
 ## JSON Web Tokens (JWT)
 
