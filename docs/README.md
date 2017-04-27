@@ -197,7 +197,7 @@ exports.handler = vandium.api()
         });
 ```
 
-See the [api](events/api.md) documentation for additional information on how to create API event handlers.
+See the [api](events/api) documentation for additional information on how to create API event handlers.
 
 ### `cloudformation` Event Type
 
@@ -361,7 +361,18 @@ See the [sns](events/sns.md) documentation for additional information on how to 
 
 ### `generic` Event Type
 
+The `generic` event type allows you to handle any type of Lambda event from any source. To map the event using Vandium, use the `generic()`
+handler:
 
+```js
+const vandium = require( 'vandium' );
+
+exports.handler = vandium.generic()
+    .handler( (event, context) => {
+
+        // handle the event
+    });
+```
 
 ## Cleaning up after event handlers
 
