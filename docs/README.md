@@ -132,11 +132,14 @@ exports.handler = vandium.s3( ( records, context ) => {
 
 Please note that you must call `return` on your Promise and do not specify the `callback` parameter if you intend to use Promises.
 
+## Configuration
+
+Vandium can be [configured](configuration) through environment variables, programmatically, JSON file, S3 object or any combination, all or none.
+
 ## Events
 
-Vandium targets specific event types to allow validation and targeting of specific event specific data. You can use the
+Vandium targets [specific event types](events) to allow validation and targeting of specific event specific data. You can use the
 [`generic`](events/generic.md) handler for custom or generic handling of supported or user defined event types.
-
 
 ### `api` Event Type
 
@@ -419,13 +422,15 @@ exports.handler = vandium.api()
 then the code inside `finally()` will not get called.
 
 
-## Compatibility
+## Backwards Compatibility
+
+#### Vanidum 3
 
 Vandium 4 is compatible with AWS Lambda environments that support Node.js 6.10.x or higher. Vandium 4's event handler mechanism allows
 targeted handling of event specific scenarios and thus code written using Vandium 3.x will **not** be compatible with this version. To
 migrate your Vandium 3 code, use a targeted event handler or the [`generic`](events/generic.md) event.
 
-## Node 4.3.2
+#### Support for Node 4.3.2
 If you require support for the previous version of Node.js (4.x) then use Vandium 3.x
 
 

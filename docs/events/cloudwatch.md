@@ -7,7 +7,7 @@ AWS Lambda documentation:
 {
     "awslogs": {
 
-        "data": "H4sIAAAAAAAAAHWPwQqCQBCGX0Xm7EFtK+smZBEUgXoLCdMhFtOEJ4M3/qOI49vMHj+zCKdlFqLaU2ZHV2a4Ct/an0/ivdX8oYc1UVX860fQDQiMdxRQEAAA=="
+        "data": "eW91ciBsb2cgZ29lcyBoZXJl"
     }
 }
 ```

@@ -12,7 +12,7 @@ must be in the same region and your lambda should have access to it.
 }
 ```
 
-The object returned by S3 should conform to that of the [`vandium-json`](json-file.md) file.
+The object returned by S3 should conform to that of the [`vandium.json`](json-file.md) file.
 
 ## Considerations
 
