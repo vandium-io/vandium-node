@@ -38,7 +38,6 @@
     "joi": "^10.4.1",
     "joi-json": "^2.0.1",
     "jwt-simple": "0.5.x",
-    "loglevel": "1.4.x",
     "vandium-utils": "^1.1.0"
   },
   "devDependencies": {
