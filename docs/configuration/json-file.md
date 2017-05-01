@@ -7,30 +7,30 @@ environment variable. The file **must** be named `vandium.json`. The format of t
 ```js
 // vandium.json
 {
-    env: {
+    "env": {
 
         // application defined environment variables
         // "MY_ENV1": "value1",
         // "MY_ENV2": "value2"
     },
 
-    validation: {
+    "validation": {
 
         // validation options here
     },
 
-    protect: {
+    "protect": {
 
         // protection options here
     },
 
-    jwt: {
+    "jwt": {
 
         // JWT options here
     },
 
     // optional referral to s3 to load the configuration file
-    s3: {
+    "s3": {
 
         // "bucket": "< your s3 bucket name >",
 		// "key": "< your s3 object key >"

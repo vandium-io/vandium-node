@@ -54,7 +54,7 @@ would be converted to:
 ```js
 {
     // other event elements
-    //
+    
     body: {
 
         age: 42
