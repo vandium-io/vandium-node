@@ -14,24 +14,46 @@ describe( MODULE_PATH, function() {
 
         describe( 'constructor', function() {
 
-            it( 'normal operation', function() {
+            it( 'no options', function() {
 
-                let engine = new SQLScanner();
+                let scanner = new SQLScanner();
+
+                expect( scanner.enabled ).to.be.true;
+                expect( scanner.mode ).to.equal( 'report' );
             });
+
+            it( 'mode = disabled', function() {
+
+                let scanner = new SQLScanner( { mode: 'disabled' } );
+
+                expect( scanner.enabled ).to.be.false;
+                expect( scanner.mode ).to.not.exist;
+            });
+
+            [
+                [ 'report', 'report' ],
+                [ 'fail', 'fail' ],
+                [ 'whatever', 'report' ]
+
+            ].forEach( (test) => {
+
+                it( `mode = ${test[0]}`, function() {
+
+                    let scanner = new SQLScanner( { mode: test[0] } );
+
+                    expect( scanner.enabled ).to.be.true;
+                    expect( scanner.mode ).to.equal( test[1] );
+                });
+            })
         });
 
         describe( '.scan', function() {
 
-            let scanner;
-
-            beforeEach( function() {
-
-                scanner = new SQLScanner().fail();
-            });
-
             it( 'test normal values', function() {
 
-                var event = {
+                let scanner = new SQLScanner( { mode: 'fail' } );
+
+                let event = {
 
                     string1: "what's up",
                     string2: "double -- dash",
@@ -47,7 +69,9 @@ describe( MODULE_PATH, function() {
 
             it( 'regression false positive tests', function() {
 
-                var event = {
+                let scanner = new SQLScanner( { mode: 'fail' } );
+
+                let event = {
 
                     escapeComment1: "/details?seoName=smith---whatever-main-office"
                 };
@@ -70,11 +94,13 @@ describe( MODULE_PATH, function() {
 
                 it( 'fail: ' + test[1], function() {
 
-                    var event = {
+                    let event = {
 
                         myField: test[0],
                         other: 'my other field'
                     };
+
+                    let scanner = new SQLScanner( { mode: 'fail' } );
 
                     try {
 
@@ -89,13 +115,15 @@ describe( MODULE_PATH, function() {
 
                 it( 'fail: nested case - ' + test[1], function() {
 
-                    var event = {
+                    let event = {
 
                         update: {
                             myField: test[0],
                         },
                         other: 'my other field'
                     };
+
+                    let scanner = new SQLScanner( { mode: 'fail' } );
 
                     try {
 
@@ -110,9 +138,9 @@ describe( MODULE_PATH, function() {
 
                 it( 'fail: ' + test[1] + ' - report only', function() {
 
-                    scanner.report();
+                    let scanner = new SQLScanner( { mode: 'report' } );
 
-                    var event = {
+                    let event = {
 
                         myField: test[0],
                         other: 'my other field'
