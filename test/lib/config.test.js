@@ -153,7 +153,7 @@ describe( 'lib/config', function() {
                 token: 'header.JWT',
                 xsrf: true,
                 xsrfToken: 'headers.xsrf',
-                xsrfClaimName: 'xsrf'
+                xsrfClaim: 'xsrf'
             }
         });
 
@@ -162,7 +162,7 @@ describe( 'lib/config', function() {
         expect( process.env.VANDIUM_JWT_KEY ).to.equal( 'whatever' );
         expect( process.env.VANDIUM_JWT_USE_XSRF ).to.equal( 'true' );
         expect( process.env.VANDIUM_JWT_XSRF_TOKEN_PATH ).to.equal( 'headers.xsrf' );
-        expect( process.env.VANDIUM_JWT_XSRF_CLAIM_NAME ).to.equal( 'xsrf' );
+        expect( process.env.VANDIUM_JWT_XSRF_CLAIM_PATH ).to.equal( 'xsrf' );
     });
 
     it( 'prevent settings', function() {

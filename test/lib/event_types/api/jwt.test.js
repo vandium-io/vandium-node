@@ -125,8 +125,8 @@ describe( MODULE_PATH, function() {
                 expect( instance.key ).to.equal( 'super-secret' );
                 expect( instance.tokenPath ).to.eql( [ 'headers', 'jwt' ] );
                 expect( instance.xsrf ).to.be.true;
-                expect( instance.xsrfTokenPath ).to.eql( [ 'headers', 'xsrfToken' ] );
-                expect( instance.xsrfClaimName ).to.equal( 'xsrfToken' );
+                expect( instance.xsrfTokenPath ).to.eql( [ 'headers', 'xsrf' ] );
+                expect( instance.xsrfClaimPath ).to.eql( ['nonce'] );
             });
 
             it( 'no options, all env vars set including xsrf', function() {
@@ -135,7 +135,7 @@ describe( MODULE_PATH, function() {
                 process.env.VANDIUM_JWT_SECRET = 'super-secret';
                 process.env.VANDIUM_JWT_USE_XSRF = 'TRUE';
                 process.env.VANDIUM_JWT_XSRF_TOKEN_PATH = 'queryParamters.xsrf';
-                process.env.VANDIUM_JWT_XSRF_CLAIM_NAME = 'my-xsrf-token';
+                process.env.VANDIUM_JWT_XSRF_CLAIM_PATH = 'app-data.my-xsrf-token';
                 process.env.VANDIUM_JWT_TOKEN_PATH = 'queryParamters.jwt';
 
                 let instance = new JWTValidator();
@@ -146,7 +146,7 @@ describe( MODULE_PATH, function() {
                 expect( instance.tokenPath ).to.eql( [ 'queryParamters', 'jwt' ] );
                 expect( instance.xsrf ).to.be.true;
                 expect( instance.xsrfTokenPath ).to.eql( [ 'queryParamters', 'xsrf' ] );
-                expect( instance.xsrfClaimName ).to.equal( 'my-xsrf-token' );
+                expect( instance.xsrfClaimPath ).to.eql( [ 'app-data', 'my-xsrf-token'] );
             });
 
             it( 'configure with options for HS algorithm with secret', function() {
@@ -158,7 +158,7 @@ describe( MODULE_PATH, function() {
                     token: 'headers.JWT',
                     xsrf: true,
                     xsrfToken: 'headers.XSRF',
-                    xsrfClaimName: 'xsrfHere'
+                    xsrfClaim: 'xsrfHere'
                 });
 
                 expect( instance.enabled ).to.be.true;
@@ -167,7 +167,7 @@ describe( MODULE_PATH, function() {
                 expect( instance.tokenPath ).to.eql( [ 'headers', 'JWT' ] );
                 expect( instance.xsrf ).to.be.true;
                 expect( instance.xsrfTokenPath ).to.eql( [ 'headers', 'XSRF' ] );
-                expect( instance.xsrfClaimName ).to.equal( 'xsrfHere' );
+                expect( instance.xsrfClaimPath).to.eql( ['xsrfHere'] );
             });
 
             it( 'configure with options for RS algorithm with secret', function() {
@@ -179,7 +179,7 @@ describe( MODULE_PATH, function() {
                     token: 'headers.JWT',
                     xsrf: true,
                     xsrfToken: 'headers.XSRF',
-                    xsrfClaimName: 'xsrfHere'
+                    xsrfClaim: 'xsrfHere'
                 });
 
                 expect( instance.enabled ).to.be.true;
@@ -188,7 +188,7 @@ describe( MODULE_PATH, function() {
                 expect( instance.tokenPath ).to.eql( [ 'headers', 'JWT' ] );
                 expect( instance.xsrf ).to.be.true;
                 expect( instance.xsrfTokenPath ).to.eql( [ 'headers', 'XSRF' ] );
-                expect( instance.xsrfClaimName ).to.equal( 'xsrfHere' );
+                expect( instance.xsrfClaimPath ).to.eql( ['xsrfHere'] );
             });
 
             it( 'fail when secret key is missing', function() {
@@ -301,7 +301,7 @@ describe( MODULE_PATH, function() {
 
                 expect( jwtStub.validateXSRF.calledOnce ).to.be.true;
 
-                expect( jwtStub.validateXSRF.firstCall.args ).to.eql( [ decoded, 'xsrfTokenHere', 'xsrfToken' ] );
+                expect( jwtStub.validateXSRF.firstCall.args ).to.eql( [ decoded, 'xsrfTokenHere', ['nonce'] ] );
 
                 expect( event.jwt ).to.exist;
                 expect( event.jwt ).to.eql( decoded );
