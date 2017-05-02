@@ -113,11 +113,7 @@ describe( 'lib/config', function() {
                 algorithm: 'HS256',
                 key: 'whatever',
                 token: 'header.JWT',
-
-                xsrf: {
-
-                    enabled: true
-                }
+                xsrf: true
             }
         });
 
@@ -136,11 +132,7 @@ describe( 'lib/config', function() {
                 algorithm: 'HS256',
                 key: 'whatever',
                 token: 'header.JWT',
-
-                xsrf: {
-
-                    enabled: false
-                }
+                xsrf: false
             }
         });
 
@@ -159,12 +151,9 @@ describe( 'lib/config', function() {
                 algorithm: 'HS256',
                 key: 'whatever',
                 token: 'header.JWT',
-
-                xsrf: {
-
-                    token: 'headers.xsrf',
-                    claimName: 'xsrf'
-                }
+                xsrf: true,
+                xsrfToken: 'headers.xsrf',
+                xsrfClaimName: 'xsrf'
             }
         });
 
