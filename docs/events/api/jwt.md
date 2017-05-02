@@ -34,6 +34,20 @@ exports.handler = vandium.api()
         // other method handlers...
 ```
 
+The `jwt` configuration format is:
+
+```js
+{
+    algorithm: 'RS256' | 'HS256' | 'HS384' | 'HS512',
+    publicKey: '<public key>',          // if algorithm is 'RS256'
+    secret: '<shared secret',           // if algorithm is 'HS256', 'HS384' or 'HS512'
+    token: '<token path>',              // path to jwt token. Defaults to 'headers.jwt'
+    xsrf: true | false,                 // enables xsrf verification. Defaults to false unless other xsrf* options are enabled
+    xsrfToken: '<xsrf token path>',     // path to xsrf token. Defaults to 'headers.xsrf'
+    xsrfClaim: '<xsrf claim name>'      // path to xsrf claim inside jwt. Defaults to 'nonce'
+}
+```
+
 ## Configuration via Environment Variables
 
 Environment variables can be used to configure support for JWT processing. The following environment variables can be used:
@@ -46,8 +60,8 @@ VANDIUM_JWT_PUBKEY      | Public key used used with `RS256` algorithm
 VANDIUM_JWT_KEY         | Alias for either VANDIUM_JWT_SECRET or VANDIUM_JWT_PUBKEY
 VANDIUM_JWT_TOKEN_PATH  | Name of the token variable in the `event` object. Defaults to `headers.jwt`
 VANDIUM_JWT_USE_XSRF    | Enable or disable Cross Site Request Forgery (XSRF) token. Defaults to `false`
-VANDIUM_JWT_XSRF_TOKEN_PATH | Name of the XSRF token in the `event`. Defaults to `headers.xsrfToken`
-VANDIUM_JWT_XSRF_CLAIM_NAME | XSRF claim name inside JWT. Defaults to `xsrf_token`
+VANDIUM_JWT_XSRF_TOKEN_PATH | Name of the XSRF token in the `event`. Defaults to `headers.xsrf`
+VANDIUM_JWT_XSRF_CLAIM_PATH | XSRF claim path inside JWT. Defaults to `nonce`
 
 When the `VANDIUM_JWT_ALGORITHM` value is present, JWT processing is automatically enabled within Vandium.
 

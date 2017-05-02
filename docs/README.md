@@ -1,7 +1,6 @@
 # Vandium
 
-Simplifies writing [AWS Lambda](https://aws.amazon.com/lambda/details) functions using [Node.js](https://nodejs.org) for
-[API Gateway](https://aws.amazon.com/api-gateway), IoT applications, and other Lambda-based cases.
+[AWS Lambda](https://aws.amazon.com/lambda/details) framework for building functions using [Node.js](https://nodejs.org) for [API Gateway](https://aws.amazon.com/api-gateway), IoT applications, and other AWS events.
 
 ## Features
 * Simplifies writing lambda handlers
@@ -421,6 +420,29 @@ exports.handler = vandium.api()
 **Note:** If an exception is thrown during the validation and verification, such as JWT processing, phase prior to your code execution,
 then the code inside `finally()` will not get called.
 
+## Configuration via `vandium.json`
+
+If you would like to specify configuration using a configuration file, you can place a `vandium.json` file at the root of your project. The
+file is a standard JSON file with the following structure:
+
+```js
+{
+    "jwt": {
+
+        "algorithm": "<algorithm-type>",
+        "publicKey": "<public key",         // if using RS256
+        "secret": "<secret value>",         // if using HS256, HS384 or HS512
+        "token": "<token path inside event",
+        "xsrf": "true | false",
+        "xsrfToken": "<xsrf token path inside element>",
+        "xsrfClaim": "<xsrf claim name inside jwt element>"
+    },
+    "prevent": {
+
+        "eval": "true | false"              // prevents the use of eval()
+    }
+}
+```
 
 ## Backwards Compatibility
 
