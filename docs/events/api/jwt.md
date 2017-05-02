@@ -16,7 +16,22 @@ RS256     | RSA SHA256 (public-private key)
 
 ## Enabling JWT Programatically
 
-To enable JWT using code, use the `jwt()` function on the `api` handler. By specifying an algorithm, JWT processing is automatically enabled
+To enable JWT using code, use the `jwt()` function on the `api` handler. By specifying an algorithm, JWT processing is automatically enabled.
+The `jwt` configuration format is:
+
+```js
+{
+    algorithm: 'RS256' | 'HS256' | 'HS384' | 'HS512',
+    publicKey: '<public key>',          // if algorithm is 'RS256'
+    secret: '<shared secret',           // if algorithm is 'HS256', 'HS384' or 'HS512'
+    token: '<token path>',              // path to jwt token. Defaults to 'headers.jwt'
+    xsrf: true | false,                 // enables xsrf verification. Defaults to false unless other xsrf* options are enabled
+    xsrfToken: '<xsrf token path>',     // path to xsrf token. Defaults to 'headers.xsrf'
+    xsrfClaim: '<xsrf claim name>'      // path to xsrf claim inside jwt. Defaults to 'nonce'
+}
+```
+
+The following example enables JWT processing programmatically:
 
 ```js
 const vandium = require( 'vandium' );
@@ -34,19 +49,7 @@ exports.handler = vandium.api()
         // other method handlers...
 ```
 
-The `jwt` configuration format is:
 
-```js
-{
-    algorithm: 'RS256' | 'HS256' | 'HS384' | 'HS512',
-    publicKey: '<public key>',          // if algorithm is 'RS256'
-    secret: '<shared secret',           // if algorithm is 'HS256', 'HS384' or 'HS512'
-    token: '<token path>',              // path to jwt token. Defaults to 'headers.jwt'
-    xsrf: true | false,                 // enables xsrf verification. Defaults to false unless other xsrf* options are enabled
-    xsrfToken: '<xsrf token path>',     // path to xsrf token. Defaults to 'headers.xsrf'
-    xsrfClaim: '<xsrf claim name>'      // path to xsrf claim inside jwt. Defaults to 'nonce'
-}
-```
 
 ## Configuration via Environment Variables
 
