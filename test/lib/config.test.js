@@ -188,4 +188,28 @@ describe( 'lib/config', function() {
 
         expect( process.env.VANDIUM_PREVENT_EVAL ).to.equal( 'false' );
     });
+
+    it( 'detect values already set', function() {
+
+        process.env.VANDIUM_PREVENT_EVAL = 'true';
+
+        createAndLoadConfig( {
+
+            prevent: {
+
+                eval: false
+            }
+        });
+
+        expect( process.env.VANDIUM_PREVENT_EVAL ).to.equal( 'true' );
+    });
+
+    it( 'fail: when bad config file', function() {
+
+        process.env.VANDIUM_PREVENT_EVAL = 'true';
+
+        let config = createAndLoadConfig( 'string value!' );
+
+        expect( config ).to.eql( {} );
+    });
 });
