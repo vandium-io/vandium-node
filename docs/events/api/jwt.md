@@ -27,7 +27,7 @@ The `jwt` configuration format is:
     token: '<token path>',              // path to jwt token. Defaults to 'headers.jwt'
     xsrf: true | false,                 // enables xsrf verification. Defaults to false unless other xsrf* options are enabled
     xsrfToken: '<xsrf token path>',     // path to xsrf token. Defaults to 'headers.xsrf'
-    xsrfClaim: '<xsrf claim name>'      // path to xsrf claim inside jwt. Defaults to 'nonce'
+    xsrfClaim: '<xsrf claim path>'      // path to xsrf claim inside jwt. Defaults to 'nonce'
 }
 ```
 
