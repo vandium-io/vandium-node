@@ -4,10 +4,18 @@
 
 New:
 
-* Added new API Gateway handler mechanism to simplify lambda-proxy implementations
+* Event-based handler framework
+* API Gateway handler mechanism to simplify lambda-proxy implementations
+* Targeted validation, JWT enforcement and injection protection
+
+Removed:
+
+* Legacy wrapper for lambda functions
+* Generalized validation, JWT and injection protection
 
 Updated:
 
+* Re-wrote most of the library
 * Changed to work better with Node 6.1.x LTS
 
 
