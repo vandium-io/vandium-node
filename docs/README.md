@@ -10,7 +10,7 @@
 * Cross Site Request Forgery (XSRF) detection when using JWT
 * SQL Injection (SQLi) detection and protection
 * Lambda Proxy Resource support for AWS API Gateway
-* Free resources post handler execution
+* Post handler execution to allow deallocation of resources
 * Forces values into correct types
 * Handles uncaught exceptions
 * Promise support
@@ -435,7 +435,7 @@ file is a standard JSON file with the following structure:
         "token": "<token path inside event",
         "xsrf": "true | false",
         "xsrfToken": "<xsrf token path inside element>",
-        "xsrfClaim": "<xsrf claim name inside jwt element>"
+        "xsrfClaim": "<xsrf claim path inside jwt element>"
     },
     "prevent": {
 
