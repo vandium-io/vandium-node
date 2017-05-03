@@ -131,10 +131,6 @@ exports.handler = vandium.s3( ( records, context ) => {
 
 Please note that you must call `return` on your Promise and do not specify the `callback` parameter if you intend to use Promises.
 
-## Configuration
-
-Vandium can be [configured](configuration) through environment variables, programmatically, JSON file, S3 object or any combination, all or none.
-
 ## Events
 
 Vandium targets [specific event types](events) to allow validation and targeting of specific event specific data. You can use the
