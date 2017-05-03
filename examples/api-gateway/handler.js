@@ -7,6 +7,12 @@ function getUsers( offset, expand ) {
     let users = [];
 
     // TODO: read users from database
+    users.push( {
+
+        firstName: 'Jon',
+        lastName: 'Doe',
+        age: 42
+    });
 
     return Promise.resolve( users );
 }
