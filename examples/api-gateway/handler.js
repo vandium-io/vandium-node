@@ -21,7 +21,7 @@ function addUser( firstName, lastName, age ) {
 
     // TODO: add user to database
 
-    return Promise( { id: Date.now(), firstName, lastName, age } );
+    return Promise.resolve( { id: Date.now(), firstName, lastName, age } );
 }
 
 exports.handler = vandium.api()
