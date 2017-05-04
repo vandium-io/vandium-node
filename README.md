@@ -9,6 +9,7 @@
 * Simplifies writing lambda handlers
 * Automatically verifies event types
 * Powerful input validation
+* Works with [Serverless](https://serverless.com/)
 * JSON Web Token (JWT) verification and validation
 * Cross Site Request Forgery (XSRF) detection when using JWT
 * SQL Injection (SQLi) detection and protection
@@ -46,8 +47,32 @@ exports.handler = vandium.s3( (records) => {
 ```
 
 For handling API Gateway proxy events, Vandium simplifies JWT processing, input validation and method handling while reducing overall code
-that you need to write, maintain and test. The following is an example of a resource event that handles GET, POST, PATCH and DELETE
-operations:
+that you need to write, maintain and test. Typical handler for a `GET` method request for API Gateway would look like:
+
+```js
+const vandium = require( 'vandium' );
+
+const User = require( './user' );
+
+const cache = require( './cache' );
+
+exports.handler = vandium.api()
+        .GET( (event) => {
+
+                // handle get request
+                return User.get( event.pathParameters.name );
+            })
+        .finally( () => {
+
+            // close the cache if open - gets executed on every call
+            return cache.close();
+        });
+```
+
+In the above example, the handler will validate that the event is for API Gateway and that it is a `GET` HTTP request. Note that the `User`
+module used Promises to handle the asynchronous calls, this simplifies the code, enhances readability and reduces complexity.
+
+Vandium allows you to create a compound function for handling different types of HTTP requests.
 
 ```js
 const vandium = require( 'vandium' );
@@ -99,6 +124,9 @@ exports.handler = vandium.api()
             return cache.close();
         });
 ```
+
+The individual HTTP methods have their own independent paths inside the proxied handler, each with their own ability to validate specific
+event parameters as required.
 
 
 ## Documentation

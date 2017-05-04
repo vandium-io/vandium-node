@@ -6,6 +6,7 @@
 * Simplifies writing lambda handlers
 * Automatically verifies event types
 * Powerful input validation
+* Works with [Serverless](https://serverless.com/)
 * JSON Web Token (JWT) verification and validation
 * Cross Site Request Forgery (XSRF) detection when using JWT
 * SQL Injection (SQLi) detection and protection
@@ -142,7 +143,32 @@ The `api` event type is used to handle [AWS API Gateway](https://aws.amazon.com/
 handling resource events. The `api` handler can be used to create sub-handlers for each of the HTTP methods, handle results or errors and
 ensure that the response is in the correct format for API Gateway.
 
-Typical handler for API Gateway would be as follows:
+Typical handler for a `GET` method request for API Gateway would look like:
+
+```js
+const vandium = require( 'vandium' );
+
+const User = require( './user' );
+
+const cache = require( './cache' );
+
+exports.handler = vandium.api()
+        .GET( (event) => {
+
+                // handle get request
+                return User.get( event.pathParameters.name );
+            })
+        .finally( () => {
+
+            // close the cache if open - gets executed on every call
+            return cache.close();
+        });
+```
+
+In the above example, the handler will validate that the event is for API Gateway and that it is a `GET` HTTP request. Note that the `User`
+module used Promises to handle the asynchronous calls, this simplifies the code, enhances readability and reduces complexity.
+
+Vandium allows you to create a compound function for handling different types of HTTP requests.
 
 ```js
 const vandium = require( 'vandium' );
@@ -194,6 +220,9 @@ exports.handler = vandium.api()
             return cache.close();
         });
 ```
+
+The individual HTTP methods have their own independent paths inside the proxied handler, each with their own ability to validate specific
+event parameters as required.
 
 See the [api](events/api) documentation for additional information on how to create API event handlers.
 
