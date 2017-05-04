@@ -4,7 +4,33 @@ The `api` event type is used to handle [AWS API Gateway](https://aws.amazon.com/
 handling resource events. The `api` handler can be used to create sub-handlers for each of the HTTP methods, handle results or errors and
 ensure that the response is in the correct format for API Gateway.
 
-Typical handler for API Gateway would be as follows:
+Typical handler for a `GET` method request for API Gateway would look like:
+
+```js
+const vandium = require( 'vandium' );
+
+const User = require( './user' );
+
+const cache = require( './cache' );
+
+exports.handler = vandium.api()
+        .GET( (event) => {
+
+                // handle get request
+                return User.get( event.pathParameters.name );
+            })
+        .finally( () => {
+
+            // close the cache if open - gets executed on every call
+            return cache.close();
+        });
+```
+
+In the above example, the handler will validate that the event is for API Gateway and that it is a `GET` HTTP request. Note that the `User`
+module used Promises to handle the asynchronous calls, this simplifies the code, enhances readability and reduces complexity.
+
+
+Vandium allows you to create a compound function for handling different types of HTTP requests.
 
 ```js
 const vandium = require( 'vandium' );
@@ -57,9 +83,8 @@ exports.handler = vandium.api()
         });
 ```
 
-As you can see, the individual HTTP methods have their own independent paths inside the proxied handler, each with their own ability to
-validate specific event parameters if required. Also note that the `User` module used Promises to handle the asynchronous calls, this
-simplifies the code, enhances readability and reduces complexity.
+The individual HTTP methods have their own independent paths inside the proxied handler, each with their own ability to validate specific
+event parameters as required.
 
 ## HTTP Methods
 
@@ -140,6 +165,57 @@ alternatives| Alternative selection of values
 
 See the [validation](validation.md) section for more information on how to apply validation rules.
 
+## headers
+
+HTTP response headers can be set using the `headers()` method on the handler. The following example demonstrates the setting of custom
+headers:
+
+```js
+const vandium = require( 'vandium' );
+
+exports.handler = vandium.api()
+        .headers( {
+
+            'x-custom-header': 'header-value-here'
+        })
+        .GET( (event) => {
+
+                // handle get request
+        });
+```
+
+## CORS
+
+CORS can be set by using the `cors()` method on the handler. The CORS implementation in Vandium can accept all request values, including
+pre-flight ones, as documented by [W3C](https://www.w3.org/TR/cors/). The following example sets the `Access-Control-Allow-Origin` and
+`Access-Control-Allow-Credentials` CORS values in the response headers:
+
+```js
+const vandium = require( 'vandium' );
+
+exports.handler = vandium.api()
+        .cors( {
+
+            allowOrigin: 'https://app.vandium.io',
+            allowCredentials: true
+        })
+        .GET( (event) => {
+
+                // handle get request
+        });
+```
+
+The following CORS options are available
+
+Property         | CORS Header Name
+-----------------|--------------------------------------
+allowOrigin      | `Access-Control-Allow-Origin`
+allowCredentials | `Access-Control-Allow-Credentials`
+exposeHeaders    | `Access-Control-Expose-Headers`
+maxAge           | `Access-Control-Max-Age`
+allowHeaders     | `Access-Control-Allow-Headers`
+
+
 ## JSON Web Tokens (JWT)
 
 Vandium can handle validation, enforcement and processing of JSON Web Token (JWT) values. Configuration can be provided either via code or
@@ -148,7 +224,7 @@ through environment variables.
 The following JWT signature algorithms are supported:
 
 Algorithm | Type
-----------|------------
+----------|-----------------------------------
 HS256     | HMAC SHA256 (shared secret)
 HS384     | HMAC SHA384 (shared secret)
 HS512     | HMAC SHA512 (shared secret)
@@ -168,8 +244,7 @@ exports.handler = vandium.api()
         .GET( (event) => {
 
                 // handle get request
-            })
-        // other method handlers...
+            });
 ```
 
 See the [JWT](jwt.md) section for for information about how to configure JSON Web Token support.
