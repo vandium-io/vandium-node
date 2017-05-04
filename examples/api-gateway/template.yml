@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Resources:
+  testGetdev:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      CodeUri: 's3://<<path-to-code-zip-file>>'
+      Events:
+        getEvent:
+          Type: Api
+          Properties:
+            Method: get
+            Path: /users
+            RestApiId:
+              Ref: theApi
+        postEvent:
+          Type: Api
+          Properties:
+            Method: post
+            Path: /users
+            RestApiId:
+              Ref: theApi
+      Handler: handlers/testGet.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBFullAccess
+      MemorySize: 128
+      Timeout: 3
+  theApi:
+    Type: 'AWS::Serverless::Api'
+    Properties:
+      DefinitionUri: >-
+        s3://<<path-to-swagger.yml>>
+      StageName: dev
+      Variables:
+        testGetdev:
+          Ref: testGetdev

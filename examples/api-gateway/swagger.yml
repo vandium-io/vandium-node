@@ -1,0 +1,50 @@
+swagger: '2.0'
+basePath: /dev
+info:
+  title: <<name-of-the-api>>
+schemes:
+  - https
+paths:
+  /users:
+    get:
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        uri: >-
+          arn:aws:apigateway:<<region>>:lambda:path/2015-03-31/functions/arn:aws:lambda:<<region>>:<<account-id>>:function:<<function-name>>/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        responses:
+          default:
+            statusCode: '200'
+      consumes:
+        - application/json
+      responses:
+        '200':
+          description: 200 response
+          schema:
+            $ref: '#/definitions/Empty'
+      produces:
+        - application/json
+    post:
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        uri: >-
+          arn:aws:apigateway:<<region>>:lambda:path/2015-03-31/functions/arn:aws:lambda:<<region>>:<<account-id>>:function:<<function-name>>/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        responses:
+          default:
+            statusCode: '200'
+      consumes:
+        - application/json
+      responses:
+        '200':
+          description: 200 response
+          schema:
+            $ref: '#/definitions/Empty'
+      produces:
+        - application/json
+definitions:
+  Empty:
+    type: object
+    title: Empty Schema
