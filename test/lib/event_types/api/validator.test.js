@@ -119,7 +119,7 @@ describe( MODULE_PATH, function() {
 
                         age: '6'
                     }
-                }
+                };
 
                 instance.validate( event );
 
@@ -127,7 +127,7 @@ describe( MODULE_PATH, function() {
                 expect( event.body.age ).to.equal( 6 );     // converted
             });
 
-            it( 'normal operation', function() {
+            it( 'missing required values', function() {
 
                 let schemas = {
 
@@ -145,9 +145,30 @@ describe( MODULE_PATH, function() {
 
                         last: 'smith'
                     }
-                }
+                };
 
                 expect( instance.validate.bind( instance, event ) ).to.throw( '"name" is required' );
+            });
+
+            it( 'undefined value objects', function() {
+
+                let schemas = {
+
+                    queryStringParameters: {
+
+                        name: vandium.types.string()
+                    }
+                };
+
+                let instance = new Validator( schemas );
+
+                let event = {
+
+                };
+
+                instance.validate.bind( instance, event )
+
+                //expect( instance.validate.bind( instance, event ) ).to.throw( '"name" is required' );
             });
         });
     });
