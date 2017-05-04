@@ -92,7 +92,7 @@ describe( MODULE_PATH, function() {
             });
         });
 
-        it( 'normal operation, with headers', function( done ) {
+        it( 'normal operation, with headers and cors', function( done ) {
 
             let handler = apiHandler();
 
@@ -116,13 +116,30 @@ describe( MODULE_PATH, function() {
                 header2: 'HEADER2'
             });
 
+            handler.cors( {
+
+                allowOrigin: 'https://whatever.vandium.io',
+                allowCredentials: true
+            });
+
             let event = require( './put-event.json'  );
 
             handler( event, {}, (err,result) => {
 
                 try {
 
-                    expect( result ).to.eql( { statusCode: 200, headers: { header1: 'HEADER1', header2: 'HEADER2' }, body: 'put called' } );
+                    expect( result ).to.eql( {
+
+                        statusCode: 200,
+                        headers: {
+                            header1: 'HEADER1',
+                            header2: 'HEADER2',
+                            "Access-Control-Allow-Credentials": "true",
+                            "Access-Control-Allow-Origin": "https://whatever.vandium.io"
+                        },
+                        body: 'put called'
+                    });
+
                     done();
                 }
                 catch( e ) {

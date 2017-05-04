@@ -114,6 +114,199 @@ describe( MODULE_PATH, function() {
                 expect( instance._headers ).to.eql( newHeaders );
                 expect( instance._headers ).to.not.equal( newHeaders );  // should be cloned
             });
+
+            it( 'called multple times to compount items', function() {
+
+                let instance = new APIHandler();
+                expect( instance._headers ).to.eql( {} );
+
+                let newHeaders = {
+
+                    header1: 'A',
+                    header2: 'B'
+                };
+
+                let returnValue = instance.headers( newHeaders );
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._headers ).to.eql( newHeaders );
+
+                let newNewHeaders = {
+
+                    header3: 'C',
+                    header4: 'D'
+                };
+
+                instance.headers( newNewHeaders );
+                expect( instance._headers ).to.eql( {
+
+                    header1: 'A',
+                    header2: 'B',
+                    header3: 'C',
+                    header4: 'D'
+                });
+            });
+        });
+
+        describe( '.header', function() {
+
+            it( 'normal operation', function() {
+
+                let instance = new APIHandler();
+                expect( instance._headers ).to.eql( {} );
+
+                let returnValue = instance.header( 'header1', 'A' );
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._headers ).to.eql( {
+
+                    header1: 'A'
+                });
+
+                instance.header( 'header2', 'B' );
+                expect( instance._headers ).to.eql( {
+
+                    header1: 'A',
+                    header2: 'B'
+                });
+            });
+
+            it( 'name is not set', function() {
+
+                let instance = new APIHandler();
+                expect( instance._headers ).to.eql( {} );
+
+                let returnValue = instance.header();
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._headers ).to.eql( {} );
+            });
+
+            it( 'value not set', function() {
+
+                let instance = new APIHandler();
+                expect( instance._headers ).to.eql( {} );
+
+                let returnValue = instance.header( 'myHeader' );
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._headers ).to.eql( {} );
+            });
+
+            it( 'value is false', function() {
+
+                let instance = new APIHandler();
+                expect( instance._headers ).to.eql( {} );
+
+                let returnValue = instance.header( 'myHeader', false );
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._headers ).to.eql( {
+
+                    myHeader: "false"
+                });
+            });
+
+            it( 'value is null', function() {
+
+                let instance = new APIHandler();
+                expect( instance._headers ).to.eql( {} );
+
+                let returnValue = instance.header( 'myHeader', null );
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._headers ).to.eql( {} );
+            });
+        });
+
+        describe( '.cors', function() {
+
+            it( 'normal operation with partial cors', function() {
+
+                let instance = new APIHandler();
+                instance.headers( {
+
+                    header1: 'A',
+                    header2: 'B'
+                });
+
+                let returnValue = instance.cors( {
+
+                    allowOrigin: 'https://whatever.vandium.io',
+                    allowCredentials: true
+                });
+
+                expect( returnValue ).to.equal( instance );
+                expect( instance._headers ).to.eql( {
+
+                    header1: 'A',
+                    header2: 'B',
+                    'Access-Control-Allow-Origin': 'https://whatever.vandium.io',
+                    'Access-Control-Allow-Credentials': 'true'
+                });
+            });
+
+            it( 'normal operation with all cors values', function() {
+
+                let instance = new APIHandler();
+                instance.headers( {
+
+                    header1: 'A',
+                    header2: 'B'
+                });
+
+                let returnValue = instance.cors( {
+
+                    allowOrigin: 'https://whatever.vandium.io',
+                    allowCredentials: true,
+                    exposeHeaders: 'exposed-header-here',
+                    maxAge: 600,
+                    allowHeaders: 'allowed-header-here'
+                });
+
+                expect( returnValue ).to.equal( instance );
+                expect( instance._headers ).to.eql( {
+
+                    header1: 'A',
+                    header2: 'B',
+                    'Access-Control-Allow-Origin': 'https://whatever.vandium.io',
+                    'Access-Control-Allow-Credentials': 'true',
+                    'Access-Control-Expose-Headers': 'exposed-header-here',
+                    'Access-Control-Max-Age': '600',
+                    'Access-Control-Allow-Headers': 'allowed-header-here'
+                });
+            });
+
+            it( 'normal operation with all cors values, array values for exposedHeaders and allowHeaders', function() {
+
+                let instance = new APIHandler();
+                instance.headers( {
+
+                    header1: 'A',
+                    header2: 'B'
+                });
+
+                let returnValue = instance.cors( {
+
+                    allowOrigin: 'https://whatever.vandium.io',
+                    allowCredentials: true,
+                    exposeHeaders: ['exposed-header-here', 'another-header' ],
+                    maxAge: 600,
+                    allowHeaders: ['allowed-header-here']
+                });
+
+                expect( returnValue ).to.equal( instance );
+                expect( instance._headers ).to.eql( {
+
+                    header1: 'A',
+                    header2: 'B',
+                    'Access-Control-Allow-Origin': 'https://whatever.vandium.io',
+                    'Access-Control-Allow-Credentials': 'true',
+                    'Access-Control-Expose-Headers': 'exposed-header-here, another-header',
+                    'Access-Control-Max-Age': '600',
+                    'Access-Control-Allow-Headers': 'allowed-header-here'
+                });
+            });
         });
 
         describe( '.protection', function() {
