@@ -9,8 +9,5 @@ functions:
         handler: handler.hello
         events:
             - http:
-                path: users/create
+                path: users
                 method: get
-            - http:
-                path: users/create
-                method: post

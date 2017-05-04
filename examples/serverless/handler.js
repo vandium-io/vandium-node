@@ -5,23 +5,21 @@ const vandium = require( 'vandium' );
 module.exports.hello = vandium.api()
         .GET( ( event ) => {
 
-                return {
+            const users = [
 
-                    statusCode: 200,
-                    body: JSON.stringify({
+                {
+                    id: 111,
+                    name: 'Joe Bloggs'
+                },
+                {
+                    id: 222,
+                    name: 'Jon Doe'
+                },
+                {
+                    id: 333,
+                    name: 'Fred Smith'
+                }
+            ];
 
-                        message: 'hello world with GET',
-                    }),
-                };
-            })
-            .POST( ( event ) => {
-
-                return {
-
-                    statusCode: 201,
-                    body: JSON.stringify({
-
-                        message: 'hello world with POST',
-                    }),
-                };
-            });
+            return { users };
+        });
