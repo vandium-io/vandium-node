@@ -536,6 +536,42 @@ describe( MODULE_PATH, function() {
                 expect( cookiesStub.parse.calledOnce ).to.be.true;
             });
 
+            it( 'queryStringParameters and pathParameters are set', function() {
+
+                let state = {
+
+                    event: Object.assign( {}, require( './put-with-cookies-event.json' ) ),
+                    context: {}
+                }
+
+                state.event.queryStringParameters = {};
+                state.event.pathParameters = {};
+
+                let instance = new APIHandler().PUT( ()=> {});
+                instance.executePreprocessors( state );
+
+                expect( state.event.queryStringParameters ).to.eql( {} );
+                expect( state.event.pathParameters ).to.eql( {} );
+            });
+
+            it( 'queryStringParameters and pathParameters are undefined', function() {
+
+                let state = {
+
+                    event: Object.assign( {}, require( './put-with-cookies-event.json' ) ),
+                    context: {}
+                }
+
+                delete state.event.queryStringParameters;
+                delete state.event.pathParameters;
+
+                let instance = new APIHandler().PUT( ()=> {});
+                instance.executePreprocessors( state );
+
+                expect( state.event.queryStringParameters ).to.eql( {} );
+                expect( state.event.pathParameters ).to.eql( {} );
+            });
+
             it( 'fail: when method does not exist', function() {
 
                 let instance = new APIHandler().POST( () => {} );
