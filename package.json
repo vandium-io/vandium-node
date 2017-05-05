@@ -4,9 +4,12 @@
   "description": "AWS Lambda framework for building functions using Node.js for API Gateway, IoT applications, and other AWS events",
   "main": "lib/index.js",
   "keywords": [
+    "AWS Lambda",
+    "AWS Lambda Framework",
     "JWT",
     "AWS",
     "Lambda",
+    "framework",
     "validation",
     "wrapper",
     "api",
