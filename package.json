@@ -45,7 +45,6 @@
   },
   "devDependencies": {
     "app-root-path": "^2.0.1",
-    "aws-sdk": "^2.2.39",
     "bluebird": "^3.3.4",
     "chai": "^3.4.1",
     "dotenv": "^4.0.0",
