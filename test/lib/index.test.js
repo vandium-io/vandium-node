@@ -22,21 +22,19 @@ describe( 'lib/index', function() {
 
     beforeEach( function() {
 
+        // remove config file
         try {
 
-            try {
-
-                fs.unlinkSync( appRoot + '/vandium.json' );
-            }
-            catch( err ) {
-
-                // ignore
-            }
-
+            fs.unlinkSync( appRoot + '/vandium.json' );
         }
         catch( err ) {
 
+            if( err.code !== 'ENOENT' ) {
 
+                // some other reason that we couldn't remove the config file - not good
+                throw err;
+            }
+            // else ignore
         }
 
         envRestorer.restore();
