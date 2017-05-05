@@ -4,6 +4,8 @@
 
 const expect = require( 'chai' ).expect;
 
+const fs = require( 'fs' );
+
 const LambdaTester = require( 'lambda-tester' );
 
 const appRoot = require( 'app-root-path' );
