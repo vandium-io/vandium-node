@@ -3,7 +3,8 @@
 
 # Vandium
 
-[AWS Lambda](https://aws.amazon.com/lambda/details) framework for building functions using [Node.js](https://nodejs.org) for [API Gateway](https://aws.amazon.com/api-gateway), IoT applications, and other AWS events.
+[AWS Lambda](https://aws.amazon.com/lambda/details) framework for building functions using [Node.js](https://nodejs.org) for
+[API Gateway](https://aws.amazon.com/api-gateway), IoT applications, and other AWS events.
 
 ## Features
 * Simplifies writing lambda handlers
@@ -127,6 +128,13 @@ exports.handler = vandium.api()
 
 The individual HTTP methods have their own independent paths inside the proxied handler, each with their own ability to validate specific
 event parameters as required.
+
+
+## Compatibility Issues with Vandium 3 Projects
+
+Vandium 4's event handler mechanism allows targeted handling of event specific scenarios and thus code written using Vandium 3.x will
+**not** be compatible with this version. To migrate your Vandium 3 code, use a targeted event handler or the
+[`generic`](docs/events/generic.md) event.
 
 
 ## Documentation
