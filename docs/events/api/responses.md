@@ -76,7 +76,7 @@ exports.handler = vandium.api()
                 headers: {
 
                     header1: 'HEADER_1_VALUE',
-                    header1: 'HEADER_2_VALUE'
+                    header2: 'HEADER_2_VALUE'
                 },
 
                 body: {
