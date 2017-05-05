@@ -6,23 +6,41 @@ const expect = require( 'chai' ).expect;
 
 const LambdaTester = require( 'lambda-tester' );
 
-const configUtils = require( './config-utils' );
+const appRoot = require( 'app-root-path' );
+
+const proxyquire = require( 'proxyquire' );
 
 const VANDIUM_MODULE_PATH = '../../lib/index';
 
-const vandium = require( VANDIUM_MODULE_PATH );
-
 const envRestorer = require( 'env-restorer' );
 
-//require( '../lib/logger' ).setLevel( 'debug' );
+describe( 'lib/index', function() {
 
-describe( 'index', function() {
+    let vandium;
 
     beforeEach( function() {
 
-        configUtils.removeConfig();
+        try {
+
+            try {
+
+                fs.unlinkSync( appRoot + '/vandium.json' );
+            }
+            catch( err ) {
+
+                // ignore
+            }
+
+        }
+        catch( err ) {
+
+
+        }
 
         envRestorer.restore();
+
+        // fresh copy please
+        vandium = proxyquire( VANDIUM_MODULE_PATH, {} );
     });
 
     after( function() {
@@ -45,7 +63,7 @@ describe( 'index', function() {
                     .PUT( (event) => {
 
                         expect( event.httpMethod ).to.equal( 'PUT' );
-                        
+
                         return 'ok'
                     })
                 )
