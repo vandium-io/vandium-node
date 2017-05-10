@@ -1,5 +1,12 @@
 # Change Log
 
+## 4.1.0 (TBD)
+
+Updated:
+
+* JWT: Public key with or without armor will be parsed and reformatted to make it easier to use the RS256 algorithm
+
+
 ## 4.0.0 (2017-05-05)
 
 New:

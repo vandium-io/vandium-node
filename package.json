@@ -1,6 +1,6 @@
 {
   "name": "vandium",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "AWS Lambda framework for building functions using Node.js for API Gateway, IoT applications, and other AWS events",
   "main": "lib/index.js",
   "keywords": [
