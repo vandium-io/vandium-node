@@ -37,6 +37,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "@vandium/event-identifier": "^1.0.0",
+    "aws-xray-sdk-core": "^1.1.0",
     "cookie": "^0.3.1",
     "joi": "^10.4.1",
     "joi-json": "^2.0.1",
