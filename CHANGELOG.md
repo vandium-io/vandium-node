@@ -1,10 +1,14 @@
 # Change Log
 
-## 4.1.0 (TBD)
+## 4.1.0 (2017-05-18)
 
 Updated:
 
 * JWT: Public key with or without armor will be parsed and reformatted to make it easier to use the RS256 algorithm
+
+Fix:
+
+* Joi validation provider was pre-loading the library which cause compatibility issues with new version of Joi
 
 
 ## 4.0.0 (2017-05-05)
