@@ -1,5 +1,12 @@
 # Change Log
 
+## 4.2.0 (2017-07-17)
+
+Updated:
+
+* JWT for API Gateway now removes 'Bearer' prefix. Thanks @RobBrazier
+
+
 ## 4.1.0 (2017-05-18)
 
 Updated:
