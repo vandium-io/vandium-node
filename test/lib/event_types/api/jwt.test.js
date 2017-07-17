@@ -322,34 +322,35 @@ describe( MODULE_PATH, function() {
             });
 
             it( 'jwt enabled, Bearer in header value', function() {
-              let instance = new JWTValidator( {
 
-                  algorithm: 'HS256',
-                  key: 'super-secret',
-                  token: 'headers.Authorization'
-              });
+                let instance = new JWTValidator( {
 
-              let event = {
+                    algorithm: 'HS256',
+                    key: 'super-secret',
+                    token: 'headers.Authorization'
+                });
 
-                  headers: {
+                let event = {
+
+                    headers: {
 
                       Authorization: 'Bearer jwt-here'
-                  }
-              };
+                    }
+                };
 
-              const decoded = { claim1: 1, claim2: 2 };
+                const decoded = { claim1: 1, claim2: 2 };
 
-              jwtStub.decode.returns( decoded );
+                jwtStub.decode.returns( decoded );
 
-              instance.validate( event );
+                instance.validate( event );
 
-              expect( jwtStub.decode.calledOnce ).to.be.true;
-              expect( jwtStub.decode.firstCall.args ).to.eql( [ 'jwt-here', 'HS256', 'super-secret' ] );
+                expect( jwtStub.decode.calledOnce ).to.be.true;
+                expect( jwtStub.decode.firstCall.args ).to.eql( [ 'jwt-here', 'HS256', 'super-secret' ] );
 
-              expect( jwtStub.validateXSRF.called ).to.be.false;
+                expect( jwtStub.validateXSRF.called ).to.be.false;
 
-              expect( event.jwt ).to.exist;
-              expect( event.jwt ).to.eql( decoded );
+                expect( event.jwt ).to.exist;
+                expect( event.jwt ).to.eql( decoded );
             });
 
             it( 'jwt enabled, with xsrf', function() {
