@@ -12,13 +12,31 @@ const appRoot = require( 'app-root-path' );
 
 const proxyquire = require( 'proxyquire' );
 
+const freshy = require( 'freshy' );
+
 const VANDIUM_MODULE_PATH = '../../lib/index';
 
-const envRestorer = require( 'env-restorer' );
+
+//const envRestorer = require( 'env-restorer' );
 
 describe( 'lib/index', function() {
 
     let vandium;
+
+    let envRestorer;
+
+    before( function() {
+
+        envRestorer = require( 'env-restorer' ).snapshot();
+
+        // return require( '../xray_stub' ).start()
+        //     .then( ()=> {
+        //
+        //         console.log( process.env.AWS_XRAY_DAEMON_ADDRESS );
+        //
+        //         envRestorer = require( 'env-restorer' ).snapshot();
+        //     });
+    });
 
     beforeEach( function() {
 
@@ -37,10 +55,32 @@ describe( 'lib/index', function() {
             // else ignore
         }
 
-        envRestorer.restore();
+        //envRestorer.restore();
 
-        // fresh copy please
-        vandium = proxyquire( VANDIUM_MODULE_PATH, {} );
+        //freshy.unload( VANDIUM_MODULE_PATH );
+        freshy.unload( '../xray_stub' );
+        freshy.unload( 'aws-xray-sdk-core' );
+        //freshy.unload( 'continuation-local-storage' );
+
+        process.env.LAMBDA_TASK_ROOT = require( 'app-root-path' );
+
+        return require( '../xray_stub' ).start()
+            .then( ()=> {
+
+                vandium = require( VANDIUM_MODULE_PATH );
+
+            });
+
+        // console.log( process.env._X_AMZN_TRACE_ID );
+        // console.log( process.env.AWS_XRAY_DAEMON_ADDRESS );
+        //
+        // // fresh copy please
+        // vandium = proxyquire( VANDIUM_MODULE_PATH, {} );
+    });
+
+    afterEach( function() {
+
+        return require( '../xray_stub' ).stop();
     });
 
     after( function() {
