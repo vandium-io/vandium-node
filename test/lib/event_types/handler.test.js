@@ -115,6 +115,19 @@ describe( 'lib/event_types/handler', function() {
         });
     });
 
+    describe( '.callbackWaitsForEmptyEventLoop', function() {
+
+        it( 'normal operation', function() {
+
+            let instance = new Handler();
+            expect( instance._configuration.callbackWaitsForEmptyEventLoop ).to.not.exist;
+
+            let returnValue = instance.callbackWaitsForEmptyEventLoop( false );
+            expect( instance._configuration.callbackWaitsForEmptyEventLoop ).to.equal( false );
+            expect( returnValue ).to.equal( instance );
+        });
+    });
+
     describe( '.finally', function() {
 
         it( 'normal operation', function() {
@@ -544,7 +557,7 @@ describe( 'lib/event_types/handler', function() {
 
                     expect( beforeStub.calledOnce ).to.be.true;
                     expect( handlerStub.called ).to.be.false;
-                    
+
                     done();
                 }
                 catch( e ) {
@@ -666,6 +679,84 @@ describe( 'lib/event_types/handler', function() {
                 }
             });
         });
+
+        it( 'handler with context.callbackWaitsForEmptyEventLoop = false', function( done ) {
+
+            let instance = new Handler();
+
+            let lambda = instance.handler( function( event, context  ) {
+
+                    expect( context.getRemainingTimeInMillis ).to.exist;
+                    expect( context.getRemainingTimeInMillis() ).to.equal( 1000 );
+                    context.callbackWaitsForEmptyEventLoop = false;
+
+                    return 42;
+                } ).createLambda();
+
+            let event = {};
+            let context = {
+
+                getRemainingTimeInMillis() { return 1000; }
+            };
+
+            lambda( event, context, (err, result) => {
+
+                try {
+
+                    expect( err ).to.not.exist;
+                    expect( result ).to.equal( 42 );
+
+                    expect( context.callbackWaitsForEmptyEventLoop ).to.exist;
+                    expect( context.callbackWaitsForEmptyEventLoop ).to.be.false;
+
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
+        it( 'handler (err result) with callbackWaitsForEmptyEventLoop( false ) set', function( done ) {
+
+            let instance = new Handler();
+
+            let lambda = instance.callbackWaitsForEmptyEventLoop( false )
+                    .handler( function( event, context  ) {
+
+                        expect( context.getRemainingTimeInMillis ).to.exist;
+                        expect( context.getRemainingTimeInMillis() ).to.equal( 1000 );
+
+                        throw new Error( 'bang' );
+                    })
+                    .createLambda();
+
+            let event = {};
+            let context = {
+
+                getRemainingTimeInMillis() { return 1000; }
+            };
+
+            lambda( event, context, (err, result) => {
+
+                try {
+
+                    expect( err ).to.exist;
+                    expect( result ).to.not.exist;
+
+                    expect( context.callbackWaitsForEmptyEventLoop ).to.exist;
+                    expect( context.callbackWaitsForEmptyEventLoop ).to.be.false;
+
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
 
         it( 'fail when handler not defined', function( done ) {
 
