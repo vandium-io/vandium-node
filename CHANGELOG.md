@@ -2,6 +2,16 @@
 
 ## 4.3.0 (TBD)
 
+New:
+
+* `.before()` added to allow handlers to perform initialization operations. Thanks @wasenbr
+* `.callbackWaitsForEmptyEventLoop` add to define how the callback works. Thanks @wasenbr
+
+Fix:
+
+* `event.body` not being parsed or validated correctly. Thanks @RobBrazier
+
+
 ## 4.2.0 (2017-07-17)
 
 Updated:
