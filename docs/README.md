@@ -221,8 +221,8 @@ exports.handler = vandium.api()
         });
 ```
 
-The individual HTTP methods have their own independent paths inside the proxied handler, each with their own ability to validate specific
-event parameters as required.
+The individual HTTP methods have their own independent paths inside the proxied handler, each with their own ability to validate
+specific event parameters as required. If the value of `event.body` contains an encoded JSON object, it will be parsed and validated.
 
 See the [api](events/api) documentation for additional information on how to create API event handlers.
 
@@ -401,6 +401,53 @@ exports.handler = vandium.generic()
     });
 ```
 
+## Initializing before event handler is called
+
+Vandium provides the opportunity for initialization code to be executed on each invocation of your handler. The `before()` method is used to define code that gets called before the handler to do things like open a database connection or connect with a cache instance.
+
+The following example demonstrates how you can use the `before()` method to open a cache before the handler is called:
+
+```js
+const vandium = require( 'vandium' );
+
+const User = require( './user' );
+
+const cache = require( './cache' );
+
+exports.handler = vandium.api()
+        .before( (context) => {
+
+            return cache.connect();
+        })
+        .GET( (event, context) => {
+
+                // handle get request
+                return User.get( event.pathParmeters.name );
+            })
+        .POST( {
+
+                // validate
+                body: {
+
+                    name: vandium.types.string().min(4).max(200).required()
+                }
+            },
+            (event) => {
+
+                // handle POST request
+                return User.create( event.body.name );
+            });
+```
+
+The code inside the `before()` method can be:
+* Synchronous
+* Asynchronous (in the form of `(context, callback)=> {}`)
+* Promise
+
+And any result returned will be stored in `context.additional` and can be accessed in the handler and `finally()` methods.
+
+**Note:** If an exception is thrown in the `before()` method, then the `finally()` method will not be called.
+
 ## Cleaning up after event handlers
 
 You can clean up and free resources using the `finally()` method on all event handlers. The `finally()` method is executed after each
@@ -417,6 +464,10 @@ const User = require( './user' );
 const cache = require( './cache' );
 
 exports.handler = vandium.api()
+        .before( (context) => {
+
+            return cache.connect();
+        })
         .GET( (event) => {
 
                 // handle get request
@@ -442,8 +493,8 @@ exports.handler = vandium.api()
         });
 ```
 
-**Note:** If an exception is thrown during the validation and verification, such as JWT processing, phase prior to your code execution,
-then the code inside `finally()` will not get called.
+**Note:** If an exception is thrown during the validation and verification, such as JWT processing, phase prior to your code
+execution, then the code inside `finally()` will not get called.
 
 ## Configuration via `vandium.json`
 
