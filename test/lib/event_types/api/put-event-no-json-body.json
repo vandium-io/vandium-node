@@ -28,6 +28,6 @@
         "resourcePath": "/",
         "apiId": "33hqk9a57e"
     },
-    "body": "{\r\n\t\"name\": \"   John Doe\"\r\n}",
+    "body": "John Doe",
     "isBase64Encoded": false
 }
