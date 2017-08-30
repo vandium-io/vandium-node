@@ -46,7 +46,7 @@
   "devDependencies": {
     "app-root-path": "^2.0.1",
     "bluebird": "^3.3.4",
-    "chai": "^4.1.0",
+    "chai": "^4.1.1",
     "dotenv": "^4.0.0",
     "env-restorer": "^1.0.0",
     "freshy": "^1.0.2",
@@ -54,10 +54,10 @@
     "jwt-builder": "^1.0.0",
     "lambda-tester": "^3.0.2",
     "lov": "^1.0.1",
-    "mocha": "^3.0.2",
+    "mocha": "^3.5.0",
     "node-rsa": "^0.4.2",
     "proxyquire": "^1.7.9",
-    "sinon": "^2.1.0",
+    "sinon": "^3.2.1",
     "uuid": "^3.0.1"
   }
 }
