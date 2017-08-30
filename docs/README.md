@@ -11,6 +11,7 @@
 * Cross Site Request Forgery (XSRF) detection when using JWT
 * SQL Injection (SQLi) detection and protection
 * Lambda Proxy Resource support for AWS API Gateway
+* Handler initialization for allocating resources
 * Post handler execution to allow deallocation of resources
 * Forces values into correct types
 * Handles uncaught exceptions
