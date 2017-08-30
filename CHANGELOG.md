@@ -1,6 +1,6 @@
 # Change Log
 
-## 4.3.0 (TBD)
+## 4.3.0 (2017-08-30)
 
 New:
 
@@ -11,6 +11,9 @@ Fix:
 
 * `event.body` not being parsed or validated correctly. Thanks @RobBrazier
 
+Updated:
+
+* Test dependencies
 
 ## 4.2.0 (2017-07-17)
 
