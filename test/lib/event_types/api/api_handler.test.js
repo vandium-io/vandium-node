@@ -426,6 +426,11 @@ describe( MODULE_PATH, function() {
                 expect( state.event.body ).to.be.an( 'Object' );
                 expect( state.event.body.name ).to.exist;
                 expect( state.event.body.name ).to.equal( '   John Doe' );
+                expect( Object.getOwnPropertyNames( state.event.body ).length ).to.equal( 1 );
+
+                // rawBody should be present
+                expect( state.event.rawBody ).to.be.a( 'String' );
+                expect( state.event.rawBody ).to.equal( "{\r\n\t\"name\": \"   John Doe\"\r\n}" );
             });
 
             it( 'simple request with non-json body', function() {
@@ -460,6 +465,10 @@ describe( MODULE_PATH, function() {
                 // string encoded body should get parsed
                 expect( state.event.body ).to.be.a( 'String' );
                 expect( state.event.body ).to.equal( 'John Doe' );
+
+                // rawBody should be present
+                expect( state.event.rawBody ).to.be.a( 'String' );
+                expect( state.event.rawBody ).to.equal( 'John Doe' );
             });
 
             it( 'request without cookies', function() {
