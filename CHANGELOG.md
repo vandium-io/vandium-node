@@ -1,5 +1,11 @@
 # Change Log
 
+## 4.4.1 (2017-09-12)
+
+Internal:
+
+* `mocha` test dependency is now run using a global install
+
 ## 4.4.0 (2017-09-12)
 
 Updated:

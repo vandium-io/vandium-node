@@ -465,6 +465,7 @@ describe( MODULE_PATH, function() {
                 // string encoded body should get parsed
                 expect( state.event.body ).to.be.a( 'String' );
                 expect( state.event.body ).to.equal( 'John Doe' );
+
                 // rawBody should be present
                 expect( state.event.rawBody ).to.be.a( 'String' );
                 expect( state.event.rawBody ).to.equal( 'John Doe' );
