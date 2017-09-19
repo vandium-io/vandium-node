@@ -8,6 +8,7 @@
 * Powerful input validation
 * Works with [Serverless](https://serverless.com/)
 * JSON Web Token (JWT) verification and validation
+* Automatic loading of environment variables from SSM Parameter Store
 * Cross Site Request Forgery (XSRF) detection when using JWT
 * SQL Injection (SQLi) detection and protection
 * Lambda Proxy Resource support for AWS API Gateway
@@ -520,6 +521,22 @@ file is a standard JSON file with the following structure:
     }
 }
 ```
+
+## Automatic Loading of Environment Variables from SSM Parameter Store
+
+Vandium can automatically load environment variable values from the [AWS SSM Parameter Store](http://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-paramstore.html). The environment variables are
+loaded synchronously and thus will be set before any other code is loaded. To provide the SSM path where the environment variables
+are located, set the `VANDIUM_PARAM_STORE_PATH` environment variable at deployment time. We recommend using a path-based approach to
+storing environment variables using the following convention:
+
+    /<group name>/<stage>/env
+
+where the `<group name>` might be the name of the service or function name, and the `<stage>` would represent "production", "test", etc.
+
+The format is user defined by the path and all values underneath the path will be loaded from SSM.
+
+**Note:*** Please ensure that your Lambda function has the correct permissions to access the SSM Parameter Store including access to
+custom KMS keys (if used to encrypt secrets).
 
 ## Compatibility Issues with Vandium 3 Projects
 

@@ -1,5 +1,11 @@
 # Change Log
 
+## 4.5.0 (2017-09-19)
+
+New:
+
+* Automatic loading of environment variables from AWS SSM Parameter Store
+
 ## 4.4.2 (2017-09-13)
 
 Internal:
