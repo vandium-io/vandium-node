@@ -1,5 +1,42 @@
 # Change Log
 
+## 4.5.0 (2017-09-19)
+
+New:
+
+* Automatic loading of environment variables from AWS SSM Parameter Store
+
+## 4.4.2 (2017-09-13)
+
+Internal:
+
+* `mocha` test dependency is now run using a global install
+
+## 4.4.0 (2017-09-12)
+
+Updated:
+
+* Added `event.rawBody` to API Gateway requests. Thanks @msteckyefantis
+
+Internal:
+
+* Updated test dependencies
+
+## 4.3.0 (2017-08-30)
+
+New:
+
+* `.before()` added to allow handlers to perform initialization operations. Thanks @wasenbr
+* `.callbackWaitsForEmptyEventLoop` add to define how the callback works. Thanks @wasenbr
+
+Fix:
+
+* `event.body` not being parsed or validated correctly. Thanks @RobBrazier
+
+Updated:
+
+* Test dependencies
+
 ## 4.2.0 (2017-07-17)
 
 Updated:

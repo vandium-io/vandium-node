@@ -83,8 +83,8 @@ exports.handler = vandium.api()
         });
 ```
 
-The individual HTTP methods have their own independent paths inside the proxied handler, each with their own ability to validate specific
-event parameters as required.
+The individual HTTP methods have their own independent paths inside the proxied handler, each with their own ability to validate
+specific event parameters as required. If the value of `event.body` contains an encoded JSON object, it will be parsed and validated.
 
 ## HTTP Methods
 

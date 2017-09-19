@@ -1,6 +1,6 @@
 {
   "name": "vandium",
-  "version": "4.2.0",
+  "version": "4.5.0",
   "description": "AWS Lambda framework for building functions using Node.js for API Gateway, IoT applications, and other AWS events",
   "main": "lib/index.js",
   "keywords": [
@@ -30,14 +30,14 @@
     "node": ">=6.10"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha --recursive",
-    "coverage": "./node_modules/.bin/istanbul cover node_modules/mocha/bin/_mocha -- -R spec --recursive"
+    "test": "mocha --recursive",
+    "coverage": "./node_modules/.bin/istanbul cover _mocha -- -R spec --recursive"
   },
   "author": "Vandium Software Inc.",
   "license": "BSD-3-Clause",
   "dependencies": {
     "@vandium/event-identifier": "^1.0.0",
-    "aws-xray-sdk-core": "^1.1.0",
+    "aws-param-env": "^1.1.0",
     "cookie": "^0.3.1",
     "joi": "^10.4.1",
     "joi-json": "^2.0.1",
@@ -47,18 +47,17 @@
   "devDependencies": {
     "app-root-path": "^2.0.1",
     "bluebird": "^3.3.4",
-    "chai": "^4.1.0",
+    "chai": "^4.1.2",
     "dotenv": "^4.0.0",
     "env-restorer": "^1.0.0",
     "freshy": "^1.0.2",
     "istanbul": "^0.4.2",
     "jwt-builder": "^1.0.0",
-    "lambda-tester": "^3.0.2",
+    "lambda-tester": "^3.1.0",
     "lov": "^1.0.1",
-    "mocha": "^3.0.2",
     "node-rsa": "^0.4.2",
     "proxyquire": "^1.7.9",
-    "sinon": "^2.1.0",
+    "sinon": "^3.2.1",
     "uuid": "^3.0.1"
   }
 }
