@@ -1,5 +1,11 @@
 # Change Log
 
+## 4.6.0 (TBD)
+
+Updated:
+
+* Support for `isBase64Encoded` for API Gateway responses. Thanks @pkalamegham
+
 ## 4.5.0 (2017-09-19)
 
 New:

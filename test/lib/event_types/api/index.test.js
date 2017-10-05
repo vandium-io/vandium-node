@@ -181,6 +181,63 @@ describe( MODULE_PATH, function() {
             });
         });
 
+        it( 'normal operation, with result containing a Buffer instance', function( done ) {
+
+            let handler = apiHandler();
+            let sampleBase64Png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVQYV2P4DwABAQEAWk1v8QAAAABJRU5ErkJggg==';
+
+            handler.GET( () => {
+                return {
+                    headers: {
+                        'Content-Type': 'image/png'
+                    },
+                    body: Buffer.from( sampleBase64Png, 'base64' )
+                }
+            });
+
+            let event = require( './get-event.json' );
+
+            handler( event, {}, (err,result) => {
+
+                try {
+
+                    expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, body: sampleBase64Png, isBase64Encoded: true } );
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
+        it( 'normal operation, with result containing a Buffer instance', function( done ) {
+
+            let handler = apiHandler();
+            let sampleBase64Png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVQYV2P4DwABAQEAWk1v8QAAAABJRU5ErkJggg==';
+
+            handler.header( 'Content-Type', 'image/png' )
+                   .GET( () => {
+
+                    return Buffer.from( sampleBase64Png, 'base64' );
+                });
+
+            let event = require( './get-event.json' );
+
+            handler( event, {}, (err,result) => {
+
+                try {
+
+                    expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, body: sampleBase64Png, isBase64Encoded: true } );
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
         it( 'handle JWT failure', function( done ) {
 
             let handler = apiHandler()
