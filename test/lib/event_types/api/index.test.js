@@ -41,7 +41,7 @@ describe( MODULE_PATH, function() {
 
                 try {
 
-                    expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'put called' } );
+                    expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'put called', isBase64Encoded: false } );
                     done();
                 }
                 catch( e ) {
@@ -82,7 +82,7 @@ describe( MODULE_PATH, function() {
 
                 try {
 
-                    expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'put called' } );
+                    expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'put called', isBase64Encoded: false } );
                     done();
                 }
                 catch( e ) {
@@ -137,9 +137,98 @@ describe( MODULE_PATH, function() {
                             "Access-Control-Allow-Credentials": "true",
                             "Access-Control-Allow-Origin": "https://whatever.vandium.io"
                         },
+                        isBase64Encoded: false,
                         body: 'put called'
                     });
 
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
+        it( 'normal operation, with base64 encoded binary', function( done ) {
+
+            let handler = apiHandler();
+            let sampleBase64Png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVQYV2P4DwABAQEAWk1v8QAAAABJRU5ErkJggg==';
+
+            handler.GET( {}, ( evt ) => {
+                return {
+                    headers: {
+                        'Content-Type': 'image/png'
+                    },
+                    isBase64Encoded: true,
+                    body: sampleBase64Png
+                }
+            });
+
+            let event = require( './get-event.json' );
+
+            handler( event, {}, (err,result) => {
+
+                try {
+
+                    expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, body: sampleBase64Png, isBase64Encoded: true } );
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
+        it( 'normal operation, with result containing a Buffer instance', function( done ) {
+
+            let handler = apiHandler();
+            let sampleBase64Png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVQYV2P4DwABAQEAWk1v8QAAAABJRU5ErkJggg==';
+
+            handler.GET( () => {
+                return {
+                    headers: {
+                        'Content-Type': 'image/png'
+                    },
+                    body: Buffer.from( sampleBase64Png, 'base64' )
+                }
+            });
+
+            let event = require( './get-event.json' );
+
+            handler( event, {}, (err,result) => {
+
+                try {
+
+                    expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, body: sampleBase64Png, isBase64Encoded: true } );
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
+        it( 'normal operation, with result containing a Buffer instance', function( done ) {
+
+            let handler = apiHandler();
+            let sampleBase64Png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVQYV2P4DwABAQEAWk1v8QAAAABJRU5ErkJggg==';
+
+            handler.header( 'Content-Type', 'image/png' )
+                   .GET( () => {
+
+                    return Buffer.from( sampleBase64Png, 'base64' );
+                });
+
+            let event = require( './get-event.json' );
+
+            handler( event, {}, (err,result) => {
+
+                try {
+
+                    expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, body: sampleBase64Png, isBase64Encoded: true } );
                     done();
                 }
                 catch( e ) {
