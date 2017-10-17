@@ -1,8 +1,6 @@
-# Vandium
+![Vanidum](./vandium.png)
 
 [AWS Lambda](https://aws.amazon.com/lambda/details) framework for building functions using [Node.js](https://nodejs.org) for [API Gateway](https://aws.amazon.com/api-gateway), IoT applications, and other AWS events.
-
-![Vanidum](./vandium.png)
 
 ## Features
 * Simplifies writing lambda handlers

@@ -1,13 +1,11 @@
+![Vanidum](docs/vandium.png)
+
 [![Build Status](https://travis-ci.org/vandium-io/vandium-node.svg?branch=master)](https://travis-ci.org/vandium-io/vandium-node)
 [![npm version](https://badge.fury.io/js/vandium.svg)](https://badge.fury.io/js/vandium)
-
-# Vandium
 
 [AWS Lambda](https://aws.amazon.com/lambda/details) framework for building functions using [Node.js](https://nodejs.org) for
 [API Gateway](https://aws.amazon.com/api-gateway), IoT applications, and other AWS events.
 
-
-![Vanidum](docs/vandium.png)
 
 ## Features
 * Simplifies writing lambda handlers
