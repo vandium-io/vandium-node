@@ -193,6 +193,23 @@ describe( 'lib/index', function() {
                     expect( result ).to.equal( 'ok' );
                 });
         });
+        
+        it( 'custom event', function() {
+            
+            expect( vandium.scheduled ).to.exist;
+
+            return LambdaTester( vandium.scheduled( { customEvent: true }, (event) => {
+
+                    expect( event ).to.eql( { one: 1, two: 'II', three: 'three' } );
+
+                    return 'ok';
+                }))
+                .event( { one: 1, two: 'II', three: 'three' } )
+                .expectResult( (result) => {
+
+                    expect( result ).to.equal( 'ok' );
+                });
+        });
     });
 
     describe( '.cloudwatch', function() {
