@@ -508,9 +508,9 @@ file is a standard JSON file with the following structure:
     "jwt": {
 
         "algorithm": "<algorithm-type>",
-        "publicKey": "<public key",         // if using RS256
+        "publicKey": "<public key>",        // if using RS256
         "secret": "<secret value>",         // if using HS256, HS384 or HS512
-        "token": "<token path inside event",
+        "token": "<token path inside event>",
         "xsrf": "true | false",
         "xsrfToken": "<xsrf token path inside element>",
         "xsrfClaim": "<xsrf claim path inside jwt element>"

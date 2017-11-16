@@ -196,7 +196,7 @@ const vandium = require( 'vandium' );
 exports.handler = vandium.api()
         .cors( {
 
-            allowOrigin: 'https://app.vandium.io',
+            allowOrigin: 'https://app.example.com',
             allowCredentials: true
         })
         .GET( (event) => {
