@@ -30,8 +30,7 @@
     "node": ">=6.10"
   },
   "scripts": {
-    "test": "mocha --recursive",
-    "coverage": "./node_modules/.bin/istanbul cover _mocha -- -R spec --recursive"
+    "test": "nyc mocha --recursive"
   },
   "author": "Vandium Software Inc.",
   "license": "BSD-3-Clause",
@@ -51,11 +50,11 @@
     "dotenv": "^4.0.0",
     "env-restorer": "^1.0.0",
     "freshy": "^1.0.2",
-    "istanbul": "^0.4.2",
     "jwt-builder": "^1.0.0",
     "lambda-tester": "^3.1.0",
     "lov": "^1.0.1",
     "node-rsa": "^0.4.2",
+    "nyc": "^11.3.0",
     "proxyquire": "^1.7.9",
     "sinon": "^4.0.0",
     "uuid": "^3.0.1"
