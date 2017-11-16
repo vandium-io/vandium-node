@@ -193,9 +193,9 @@ describe( 'lib/index', function() {
                     expect( result ).to.equal( 'ok' );
                 });
         });
-        
-        it( 'custom event', function() {
-            
+
+        it( 'custom event using JSON object', function() {
+
             expect( vandium.scheduled ).to.exist;
 
             return LambdaTester( vandium.scheduled( { customEvent: true }, (event) => {
@@ -205,6 +205,23 @@ describe( 'lib/index', function() {
                     return 'ok';
                 }))
                 .event( { one: 1, two: 'II', three: 'three' } )
+                .expectResult( (result) => {
+
+                    expect( result ).to.equal( 'ok' );
+                });
+        });
+
+        it( 'custom event using constant value', function() {
+
+            expect( vandium.scheduled ).to.exist;
+
+            return LambdaTester( vandium.scheduled( { customEvent: true }, (event) => {
+
+                    expect( event ).to.equal( 42 );
+
+                    return 'ok';
+                }))
+                .event( 42 )
                 .expectResult( (result) => {
 
                     expect( result ).to.equal( 'ok' );
