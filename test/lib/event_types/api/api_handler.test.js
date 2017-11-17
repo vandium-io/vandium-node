@@ -93,6 +93,20 @@ describe( MODULE_PATH, function() {
                 expect( instance._jwt.algorithm ).to.equal( 'HS256' );
                 expect( instance._jwt.key ).to.equal( 'secret' );
             });
+
+            it( 'called without arguments', function() {
+
+                let instance = new APIHandler();
+                expect( instance._jwt ).to.exist;
+                expect( instance._jwt.enabled ).to.be.false;
+
+                let returnValue = instance.jwt();
+
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._jwt ).to.exist;
+                expect( instance._jwt.enabled ).to.be.false;
+            });
         });
 
         describe( '.headers', function() {
@@ -145,6 +159,15 @@ describe( MODULE_PATH, function() {
                     header3: 'C',
                     header4: 'D'
                 });
+            });
+
+            it( 'called without arguments', function() {
+
+              let instance = new APIHandler();
+              expect( instance._headers ).to.eql( {} );
+
+              instance.headers();
+              expect( instance._headers ).to.eql( {} );
             });
         });
 
@@ -306,6 +329,15 @@ describe( MODULE_PATH, function() {
                     'Access-Control-Max-Age': '600',
                     'Access-Control-Allow-Headers': 'allowed-header-here'
                 });
+            });
+
+            it( 'called without arguments', function() {
+
+              let instance = new APIHandler();
+              expect( instance._headers ).to.eql( {} );
+
+              instance.cors();
+              expect( instance._headers ).to.eql( {} );
             });
         });
 
