@@ -32,6 +32,16 @@
   "scripts": {
     "test": "nyc mocha --recursive"
   },
+  "nyc": {
+    "check-coverage": true,
+    "include": [
+      "lib/**/*.js"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ]
+  },
   "author": "Vandium Software Inc.",
   "license": "BSD-3-Clause",
   "dependencies": {
