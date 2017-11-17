@@ -117,7 +117,17 @@ describe( 'lib/event_types/handler', function() {
 
     describe( '.callbackWaitsForEmptyEventLoop', function() {
 
-        it( 'normal operation', function() {
+      it( 'default operation', function() {
+
+          let instance = new Handler();
+          expect( instance._configuration.callbackWaitsForEmptyEventLoop ).to.not.exist;
+
+          let returnValue = instance.callbackWaitsForEmptyEventLoop();
+          expect( instance._configuration.callbackWaitsForEmptyEventLoop ).to.equal( true );
+          expect( returnValue ).to.equal( instance );
+      });
+
+        it( 'set to false', function() {
 
             let instance = new Handler();
             expect( instance._configuration.callbackWaitsForEmptyEventLoop ).to.not.exist;
