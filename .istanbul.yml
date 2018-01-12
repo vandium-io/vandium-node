@@ -1,3 +1,0 @@
-instrumentation:
-    include-all-sources: true
-    excludes: [ 'examples/**' ]
