@@ -830,7 +830,7 @@ describe( MODULE_PATH, function() {
                 expect( resultObject.result.body ).to.equal( 'this is the uncompressed body' );
             });
 
-            it( 'gzip feature enabled', function() {
+            it( 'gzip feature enabled, body is a string', function() {
 
                 let instance = new APIHandler().gzipResponse();
 
@@ -850,6 +850,79 @@ describe( MODULE_PATH, function() {
                 let uncompressed = unzipped.toString();
 
                 expect( uncompressed ).to.equal( 'this is the uncompressed body' );
+            });
+
+            it( 'gzip feature enabled, body is an object', function() {
+
+                let instance = new APIHandler().gzipResponse();
+
+                let context = {
+
+                    event: { headers: {} }
+                };
+
+                let obj = {
+
+                    one: 1,
+                    two: 'II',
+                    three: [3]
+                };
+
+                let resultObject = instance.processResult( obj, context );
+
+                expect( resultObject.result ).to.exist;
+                expect( resultObject.result.headers[ 'Content-Encoding' ] ).to.equal( 'gzip' );
+                expect( resultObject.result.isBase64Encoded ).to.be.true;
+
+                let unzipped = zlib.gunzipSync( new Buffer( resultObject.result.body, 'base64' ) );
+
+                let uncompressed = unzipped.toString();
+
+                expect( JSON.parse( uncompressed ) ).to.eql( obj );
+            });
+
+            it( 'gzip feature enabled, body is a buffer', function() {
+
+                let instance = new APIHandler().gzipResponse();
+
+                let context = {
+
+                    event: { headers: {} }
+                };
+
+                let controlBody = new Buffer( 'this is a test' );
+
+                let resultObject = instance.processResult( controlBody, context );
+
+                expect( resultObject.result ).to.exist;
+                expect( resultObject.result.headers[ 'Content-Encoding' ] ).to.equal( 'gzip' );
+                expect( resultObject.result.isBase64Encoded ).to.be.true;
+
+                let unzipped = zlib.gunzipSync( new Buffer( resultObject.result.body, 'base64' ) );
+
+                expect( unzipped ).to.eql( controlBody );
+            });
+
+            it( 'gzip feature enabled, body is a primative', function() {
+
+                let instance = new APIHandler().gzipResponse();
+
+                let context = {
+
+                    event: { headers: {} }
+                };
+
+                let controlBody = 42;
+
+                let resultObject = instance.processResult( controlBody, context );
+
+                expect( resultObject.result ).to.exist;
+                expect( resultObject.result.headers[ 'Content-Encoding' ] ).to.equal( 'gzip' );
+                expect( resultObject.result.isBase64Encoded ).to.be.true;
+
+                let unzipped = zlib.gunzipSync( new Buffer( resultObject.result.body, 'base64' ) );
+
+                expect( unzipped.toString() ).to.equal( '42' );
             });
 
             it( 'gzip feature enabled, missing headers object', function() {
