@@ -1,5 +1,20 @@
 # Change Log
 
+## 4.7.0 (TBD)
+
+New:
+
+* Automatically gzips responses for API Gateway handlers when `accept-encoding` is set to `gzip`. Thanks @wasenbr
+
+Updated:
+
+* Scheduled event handler modified to allow custom event types. Thanks @wasenbr
+
+Internal:
+
+* Migrated code coverage from istanbul to nyc.
+* Mocha 5.0 now a dev dependency
+
 ## 4.6.0 (2017-10-16)
 
 Updated:
