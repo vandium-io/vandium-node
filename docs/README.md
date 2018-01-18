@@ -49,7 +49,7 @@ exports.handler = vandium.api()
 Vandium targets specific event types to allow validation and targeting of specific event specific data. The following event types are
 supported by the framework:
 
-- [api](api)
+- [api](apigateway.md)
 - [cloudformation](cloudformation.md)
 - [cloudwatch](cloudwatch.md)
 - [cognito](cognito.md)
