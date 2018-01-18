@@ -1,6 +1,6 @@
 {
   "name": "vandium",
-  "version": "4.6.0",
+  "version": "4.7.0",
   "description": "AWS Lambda framework for building functions using Node.js for API Gateway, IoT applications, and other AWS events",
   "main": "lib/index.js",
   "keywords": [
@@ -63,7 +63,7 @@
     "jwt-builder": "^1.0.0",
     "lambda-tester": "^3.1.0",
     "lov": "^1.0.1",
-    "mocha": "^4.0.1",
+    "mocha": "^5.0.0",
     "node-rsa": "^0.4.2",
     "nyc": "^11.3.0",
     "proxyquire": "^1.7.9",
