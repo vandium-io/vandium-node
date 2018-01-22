@@ -30,7 +30,9 @@ Install via npm
 
 # Getting Started
 
-Vandium creates event specific handlers to reduce the amount of code than one needs to maintain.
+Vandium creates event specific handlers to reduce the amount of code than one
+needs to maintain. The following handler code will response with a message when
+executed using the AWS API Gateway with a `GET` request:
 
 ```js
 const vandium = require( 'vandium' );
@@ -41,6 +43,52 @@ exports.handler = vandium.api()
 
 			// return greeting
 			return 'Hello ' + event.pathParmeters.name + '!';
+		});
+```
+
+The framework can process asynchronous responses using promises. The following
+code returns a User object from a datastore asynchronously:
+
+```js
+const vandium = require( 'vandium' );
+
+// our datastore access object
+const Users = require( './users' );
+
+// handler for an api gateway event
+exports.handler = vandium.api()
+		.GET( (event) => {
+
+			// returns a promise that resolves the User by name
+			return Users.getUser( event.pathParmeters.name );
+		});
+```
+
+Additionally, resources can be closed at the end, success or failure, of the
+handler. Failure to close resources might cause the lambda function to timeout
+or run for longer than is required. The following code demonstrates closing a
+cache after the handler has been called:
+
+```js
+const vandium = require( 'vandium' );
+
+// our datastore access object
+const Users = require( './users' );
+
+// object caching - automatically connects on first access
+const cache = require( './cache' );
+
+// handler for an api gateway event
+exports.handler = vandium.api()
+		.GET( (event) => {
+
+			// returns a promise that resolves the User by name
+			return Users.getUser( event.pathParmeters.name );
+		})
+		.finally( () => {
+
+			// returns a promise that closes the cache connection
+			return cache.close();
 		});
 ```
 

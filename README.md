@@ -34,111 +34,67 @@ Install via npm.
 
 ## Getting Started
 
-Vandium creates event specific handlers to reduce the amount of code than one needs to maintain. Vandium will automatically detect and
-validate that the event is intended for the target service. For example, creating a handler for S3 events:
+Vandium creates event specific handlers to reduce the amount of code than one
+needs to maintain. The following handler code will response with a message when
+executed using the AWS API Gateway with a `GET` request:
 
 ```js
 const vandium = require( 'vandium' );
 
-// handler for an s3 event
-exports.handler = vandium.s3( (records) => {
+// handler for an api gateway event
+exports.handler = vandium.api()
+		.GET( (event) => {
 
-        let bucket = record[0].s3.bucket.name;
-        let key = record[0].s3.object.key;
-
-        console.log( `event triggered on bucket: ${bucket}, key: ${key}` );
-    });
+			// return greeting
+			return 'Hello ' + event.pathParmeters.name + '!';
+		});
 ```
 
-For handling API Gateway proxy events, Vandium simplifies JWT processing, input validation and method handling while reducing overall code
-that you need to write, maintain and test. Typical handler for a `GET` method request for API Gateway would look like:
+The framework can process asynchronous responses using promises. The following
+code returns a User object from a datastore asynchronously:
 
 ```js
 const vandium = require( 'vandium' );
 
-const User = require( './user' );
+// our datastore access object
+const Users = require( './users' );
 
+// handler for an api gateway event
+exports.handler = vandium.api()
+		.GET( (event) => {
+
+			// returns a promise that resolves the User by name
+			return Users.getUser( event.pathParmeters.name );
+		});
+```
+
+Additionally, resources can be closed at the end, success or failure, of the
+handler. Failure to close resources might cause the lambda function to timeout
+or run for longer than is required. The following code demonstrates closing a
+cache after the handler has been called:
+
+```js
+const vandium = require( 'vandium' );
+
+// our datastore access object
+const Users = require( './users' );
+
+// object caching - automatically connects on first access
 const cache = require( './cache' );
 
+// handler for an api gateway event
 exports.handler = vandium.api()
-        .GET( (event) => {
+		.GET( (event) => {
 
-                // handle get request
-                return User.get( event.pathParameters.name );
-            })
-        .finally( () => {
+			// returns a promise that resolves the User by name
+			return Users.getUser( event.pathParmeters.name );
+		})
+		.finally( () => {
 
-            // close the cache if open - gets executed on every call
-            return cache.close();
-        });
+			// returns a promise that closes the cache connection
+			return cache.close();
+		});
 ```
-
-In the above example, the handler will validate that the event is for API Gateway and that it is a `GET` HTTP request. Note that the `User`
-module used Promises to handle the asynchronous calls, this simplifies the code, enhances readability and reduces complexity.
-
-Vandium allows you to create a compound function for handling different types of HTTP requests.
-
-```js
-const vandium = require( 'vandium' );
-
-const User = require( './user' );
-
-const cache = require( './cache' );
-
-exports.handler = vandium.api()
-        .GET( (event) => {
-
-                // handle get request
-                return User.get( event.pathParameters.name );
-            })
-        .POST( {
-
-                // validate
-                body: {
-
-                    name: vandium.types.string().min(4).max(200).required()
-                }
-            },
-            (event) => {
-
-                // handle POST request
-                return User.create( event.body.name );
-            })
-        .PATCH( {
-
-                // validate
-                body: {
-
-                    age: vandium.types.number().min(0).max(130)
-                }
-            },
-            (event) => {
-
-                // handle PATCH request
-                return User.update( event.pathParameters.name, event.body );
-            })
-        .DELETE( (event) => {
-
-                // handle DELETE request
-                return User.delete( event.pathParameters.name );
-            })
-        .finally( () => {
-
-            // close the cache if open - gets executed on every call
-            return cache.close();
-        });
-```
-
-The individual HTTP methods have their own independent paths inside the proxied handler, each with their own ability to validate specific
-event parameters as required.
-
-
-## Compatibility Issues with Vandium 3 Projects
-
-Vandium 4's event handler mechanism allows targeted handling of event specific scenarios and thus code written using Vandium 3.x will
-**not** be compatible with this version. To migrate your Vandium 3 code, use a targeted event handler or the
-[`generic`](docs/events/generic.md) event.
-
 
 ## Documentation
 
@@ -147,7 +103,6 @@ For documentation on how to use vandium in your project, please see our [documen
 ## Feedback
 
 We'd love to get feedback on how to make this tool better. Feel free to contact us at `feedback@vandium.io`
-
 
 ## License
 
