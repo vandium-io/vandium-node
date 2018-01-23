@@ -96,6 +96,20 @@ exports.handler = vandium.api()
 		});
 ```
 
+Vandium supports the following types of AWS Lambda events:
+
+- API Gateway
+- Cloudformation
+- Cloudwatch
+- Cognito
+- Dynamodb
+- Kinesis
+- Alexa
+- S3
+- Scheduled
+- SES
+- SNS
+
 ## Documentation
 
 For documentation on how to use vandium in your project, please see our [documentation](docs) page.
