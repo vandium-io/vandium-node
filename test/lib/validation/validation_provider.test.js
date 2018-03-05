@@ -82,7 +82,7 @@ describe( MODULE_PATH, function() {
 
                 engine.validate.returns( { error: new Error( 'bang' ) } );
 
-                expect( provider.validate.bind( provider, values, schema, options ) ).to.throw( 'bang' );
+                expect( provider.validate.bind( provider, values, schema, options ) ).to.throw( /bang/ );
 
                 expect( engine.validate.calledOnce ).to.be.true;
                 expect( engine.validate.withArgs( values, schema, options ).calledOnce ).to.be.true;
