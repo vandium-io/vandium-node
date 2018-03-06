@@ -147,7 +147,7 @@ describe( MODULE_PATH, function() {
                     }
                 };
 
-                expect( instance.validate.bind( instance, event ) ).to.throw( '"name" is required' );
+                expect( instance.validate.bind( instance, event ) ).to.throw( /"name" is required/ );
             });
 
             it( 'undefined value objects', function() {
