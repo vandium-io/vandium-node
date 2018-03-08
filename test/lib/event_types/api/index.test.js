@@ -270,5 +270,46 @@ describe( MODULE_PATH, function() {
                 }
             });
         });
+
+        it( 'validation failure', function( done ) {
+
+            let handler = apiHandler();
+
+            handler.GET( {}, function() { return 'get called'; });
+            handler.DELETE( {}, function() { return 'delete called'; });
+
+            handler.PUT( {
+
+                body: {
+
+                    name: vandium.types.string().trim().required(),
+                    age: vandium.types.number().required()
+                }
+
+            }, ( evt ) => {
+
+                expect( evt.body.name ).to.equal( 'John Doe' );     // event contains padded input
+
+                return 'put called';
+            });
+
+            let event = require( './put-event.json' );
+
+            handler( event, {}, (err,result) => {
+
+                try {
+
+                    expect( result.statusCode ).to.equal( 400 );
+                    expect( result.body ).to.contain( '"type":"ValidationError"' );
+                    expect( result.isBase64Encoded ).to.be.false;
+                    expect( result.headers ).to.eql( {} );
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
     });
 });
