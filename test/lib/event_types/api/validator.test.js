@@ -147,7 +147,17 @@ describe( MODULE_PATH, function() {
                     }
                 };
 
-                expect( instance.validate.bind( instance, event ) ).to.throw( /"name" is required/ );
+                try {
+
+                    instance.validate( event );
+                    throw new Error( 'Validation expected to fail' );
+                }
+                catch( err ) {
+
+                    expect( err.name ).to.equal( 'ValidationError' );
+                    expect( err ).to.nested.contain(  /"name" is required/ );
+                    expect( err.statusCode ).to.equal( 400 );
+                }
             });
 
             it( 'undefined value objects', function() {
