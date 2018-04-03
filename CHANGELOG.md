@@ -1,5 +1,11 @@
 # Change Log
 
+## 4.8.0 (2018-04-03)
+
+Updated:
+
+* Status code set to 400 when validation error occurs when using API Gateway event. Thanks @lironess
+
 ## 4.7.0 (2018-01-23)
 
 Updated:
