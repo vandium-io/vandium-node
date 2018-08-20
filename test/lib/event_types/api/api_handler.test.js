@@ -467,6 +467,46 @@ describe( MODULE_PATH, function() {
                 expect( state.event.rawBody ).to.equal( "{\r\n\t\"name\": \"   John Doe\"\r\n}" );
             });
 
+            it( 'simple request with formURLEncoded body', function() {
+
+                let instance = new APIHandler().PUT( () => {} );
+
+                let state = {
+
+                    event: Object.assign({}, require( './put-event-form-url-encoded-body.json' ) ),
+                    context: {}
+                }
+
+                let jwtValidateSpy = sinon.spy( instance._jwt, 'validate' );
+                let protectionValidateSpy = sinon.spy( instance._protection, 'validate' );
+
+                expect( state.event.cookies ).to.not.exist;
+                expect( state.executor ).to.not.exist;
+
+                instance.executePreprocessors( state );
+
+                expect( state.event.cookies ).to.exist;
+                expect( state.event.cookies ).to.eql( {} );
+
+                expect( state.executor ).to.exist;
+
+                expect( jwtValidateSpy.calledOnce ).to.be.true;
+                expect( jwtValidateSpy.firstCall.args ).to.eql( [ state.event ] );
+
+                expect( protectionValidateSpy.calledOnce ).to.be.true;
+                expect( protectionValidateSpy.firstCall.args ).to.eql( [ state.event ] );
+
+                // queryString encoded body should get parsed
+                expect( state.event.body ).to.be.an( 'Object' );
+                expect( state.event.body.name ).to.exist;
+                expect( state.event.body.name ).to.equal( 'John Doe' );
+                expect( Object.getOwnPropertyNames( state.event.body ).length ).to.equal( 1 );
+
+                // rawBody should be present
+                expect( state.event.rawBody ).to.be.a( 'String' );
+                expect( state.event.rawBody ).to.equal( "name=John%20Doe" );
+            });
+
             it( 'simple request with non-json body', function() {
 
                 let instance = new APIHandler().PUT( () => {} );
