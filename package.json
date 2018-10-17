@@ -1,6 +1,6 @@
 {
   "name": "vandium",
-  "version": "4.8.0",
+  "version": "5.0.0-alpha",
   "description": "AWS Lambda framework for building functions using Node.js for API Gateway, IoT applications, and other AWS events",
   "main": "lib/index.js",
   "keywords": [
@@ -27,7 +27,7 @@
     "url": "https://github.com/vandium-io/vandium-node.git"
   },
   "engines": {
-    "node": ">=6.10"
+    "node": ">=8.10"
   },
   "scripts": {
     "test": "nyc mocha --recursive"
@@ -49,7 +49,7 @@
     "aws-param-env": "^1.2.0",
     "cookie": "^0.3.1",
     "joi": "^12.0.0",
-    "joi-json": "^2.0.1",
+    "joi-json": "^2.1.0",
     "jwt-simple": "0.5.x",
     "vandium-utils": "^1.2.0"
   },
@@ -57,17 +57,17 @@
     "app-root-path": "^2.0.1",
     "bluebird": "^3.3.4",
     "chai": "^4.1.2",
-    "dotenv": "^4.0.0",
+    "dotenv": "^6.0.0",
     "env-restorer": "^1.0.0",
     "freshy": "^1.0.2",
     "jwt-builder": "^1.0.0",
     "lambda-tester": "^3.1.0",
     "lov": "^1.0.1",
     "mocha": "^5.0.0",
-    "node-rsa": "^0.4.2",
-    "nyc": "^11.3.0",
-    "proxyquire": "^1.7.9",
-    "sinon": "^4.0.0",
+    "node-rsa": "^1.0.1",
+    "nyc": "^13.0.1",
+    "proxyquire": "^2.1.0",
+    "sinon": "^6.3.4",
     "uuid": "^3.0.1"
   }
 }
