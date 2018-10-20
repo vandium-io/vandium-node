@@ -24,7 +24,7 @@
 * Promise support
 * Automatically trimmed strings for input event data
 * Low startup overhead
-* AWS Lambda Node.js 6.10.x compatible
+* AWS Lambda Node.js 8.10.x compatible
 
 
 ## Installation
