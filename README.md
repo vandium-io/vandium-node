@@ -35,7 +35,7 @@ Install via npm.
 ## Getting Started
 
 Vandium creates event specific handlers to reduce the amount of code than one
-needs to maintain. The following handler code will response with a message when
+needs to maintain. The following handler code will respond with a message when
 executed using the AWS API Gateway with a `GET` request:
 
 ```js
