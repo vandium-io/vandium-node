@@ -1,5 +1,16 @@
 # Change Log
 
+## 4.9.0 (TBD)
+
+Updated:
+
+* Improved error handling to provide custom body structure. Thanks @dkreuer
+
+Fixed:
+
+* Documentation typos. Thanks @StellarTabi
+
+
 ## 4.8.0 (2018-04-03)
 
 Updated:
