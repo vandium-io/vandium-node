@@ -45,7 +45,7 @@
   "author": "Vandium Software Inc.",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "@vandium/event-identifier": "^1.0.0",
+    "@vandium/event-identifier": "^2.0.0",
     "aws-param-env": "^1.2.0",
     "cookie": "^0.3.1",
     "joi": "^14.0.0",
