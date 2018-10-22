@@ -1,5 +1,20 @@
 # Change Log
 
+## 4.9.0 (2018-10-22)
+
+Updated:
+
+* Validation now uses Joi 14.0
+* Improved error handling to provide custom body structure. Thanks @dkreuer
+
+Fixed:
+
+* Documentation typos. Thanks @StellarTabi
+
+Internal:
+
+* Updated test dependencies
+
 ## 4.8.0 (2018-04-03)
 
 Updated:
