@@ -16,9 +16,45 @@ const VANDIUM_MODULE_PATH = '../../lib/index';
 
 const envRestorer = require( 'env-restorer' );
 
+
 describe( 'lib/index', function() {
 
     let vandium;
+
+    function getEvent( type, json ) {
+
+        if( !json ) {
+
+            json = `${type}.json`;
+        }
+
+        return require( `../json/${json}` );
+    }
+
+    function doHandlerValidation( desc, type, verifier, json ) {
+
+        it( desc, function() {
+
+            expect( vandium[ type ] ).to.exist;
+
+            return LambdaTester( vandium[ type ]( (eventData) => {
+
+                    verifier( eventData );
+
+                    return 'ok';
+                }))
+                .event( getEvent( type, json ) )
+                .expectResult( (result) => {
+
+                    expect( result ).to.equal( 'ok' );
+                });
+        });
+    }
+
+    function validateHandler( type, verifier, json ) {
+
+        doHandlerValidation( 'normal operation', type, verifier, json );
+    }
 
     beforeEach( function() {
 
@@ -58,7 +94,6 @@ describe( 'lib/index', function() {
 
             expect( vandium.api ).to.exist;
 
-
             return LambdaTester( vandium.api()
                     .PUT( (event) => {
 
@@ -75,123 +110,12 @@ describe( 'lib/index', function() {
         });
     });
 
-    describe( '.s3', function() {
-
-        it( 'normal operation', function() {
-
-            expect( vandium.s3 ).to.exist;
-
-            return LambdaTester( vandium.s3( (records) => {
-
-                    expect( records[0].s3.bucket.name ).to.equal( 'sourcebucket' );
-
-                    return 'ok';
-                }))
-                .event( require( '../json/s3-put.json' ) )
-                .expectResult( (result) => {
-
-                    expect( result ).to.equal( 'ok' );
-                });
-        });
-    });
-
-    describe( '.dyanmodb', function() {
-
-        it( 'normal operation', function() {
-
-            expect( vandium.dynamodb ).to.exist;
-
-            return LambdaTester( vandium.dynamodb( (records) => {
-
-                    expect( records[0].dynamodb ).to.exist;
-
-                    return 'ok';
-                }))
-                .event( require( '../json/dynamodb.json' ) )
-                .expectResult( (result) => {
-
-                    expect( result ).to.equal( 'ok' );
-                });
-        });
-    });
-
-    describe( '.sns', function() {
-
-        it( 'normal operation', function() {
-
-            expect( vandium.sns ).to.exist;
-
-            return LambdaTester( vandium.sns( (records) => {
-
-                    expect( records[0].Sns ).to.exist;
-
-                    return 'ok';
-                }))
-                .event( require( '../json/sns.json' ) )
-                .expectResult( (result) => {
-
-                    expect( result ).to.equal( 'ok' );
-                });
-        });
-    });
-
-    describe( '.ses', function() {
-
-        it( 'normal operation', function() {
-
-            expect( vandium.ses ).to.exist;
-
-            return LambdaTester( vandium.ses( (records) => {
-
-                    expect( records[0].ses ).to.exist;
-
-                    return 'ok';
-                }))
-                .event( require( '../json/ses.json' ) )
-                .expectResult( (result) => {
-
-                    expect( result ).to.equal( 'ok' );
-                });
-        });
-    });
-
-    describe( '.kinesis', function() {
-
-        it( 'normal operation', function() {
-
-            expect( vandium.kinesis ).to.exist;
-
-            return LambdaTester( vandium.kinesis( (records) => {
-
-                    expect( records[0].kinesis ).to.exist;
-
-                    return 'ok';
-                }))
-                .event( require( '../json/kinesis.json' ) )
-                .expectResult( (result) => {
-
-                    expect( result ).to.equal( 'ok' );
-                });
-        });
-    });
 
     describe( '.scheduled', function() {
 
-        it( 'normal operation', function() {
+        validateHandler( 'scheduled', (event) => {
 
-            expect( vandium.scheduled ).to.exist;
-
-            return LambdaTester( vandium.scheduled( (event) => {
-
-                    expect( event[ 'detail-type' ] ).to.exist;
-
-                    return 'ok';
-                }))
-                .event( require( '../json/scheduled.json' ) )
-                .expectResult( (result) => {
-
-                    expect( result ).to.equal( 'ok' );
-                });
+            expect( event[ 'detail-type' ] ).to.exist;
         });
 
         it( 'custom event using JSON object', function() {
@@ -229,83 +153,56 @@ describe( 'lib/index', function() {
         });
     });
 
-    describe( '.cloudwatch', function() {
 
-        it( 'normal operation', function() {
+    // records
+    [
+        // type, verificationProperty
+        [ 'dynamodb', 'dynamodb' ],
+        [ 'sns', 'Sns' ],
+        [ 'ses', 'ses' ],
+        [ 'kinesis', 'kinesis' ],
+        [ 'sqs', 'messageId' ],
+        [ 's3', 's3' ],
+        [ 'cloudfront', 'cf' ],
+        [ 'firehose', 'kinesisRecordMetadata', 'kinesis-firehose.json' ]
 
-            expect( vandium.cloudwatch ).to.exist;
+    ].forEach( function( typeInfo ) {
 
-            return LambdaTester( vandium.cloudwatch( (event) => {
+        let type = typeInfo[0];
+        let verificationProperty = typeInfo[1];
+        let json = typeInfo[2];
 
-                    expect( event.awslogs ).to.exist;
+        describe( `.${type}`, function() {
 
-                    return 'ok';
-                }))
-                .event( require( '../json/cloudwatch.json' ) )
-                .expectResult( (result) => {
+            validateHandler( type, (records) => {
 
-                    expect( result ).to.equal( 'ok' );
-                });
+                expect( records[0][verificationProperty] ).to.exist;
+            }, json );
         });
     });
 
-    describe( '.cloudformation', function() {
+    // simple
+    [
 
-        it( 'normal operation', function() {
+        [ 'lex', 'currentIntent' ],
+        [ 'cognito', 'identityId' ],
+        [ 'cloudformation', 'StackId' ],
+        [ 'cloudwatch', 'awslogs' ],
+        [ 'config', 'invokingEvent' ],
+        [ 'iotButton', 'clickType', 'iot-button.json' ]
 
-            expect( vandium.cloudformation ).to.exist;
+    ].forEach( function( typeInfo ) {
 
-            return LambdaTester( vandium.cloudformation( (event) => {
+        let type = typeInfo[0];
+        let verificationProperty = typeInfo[1];
+        let json = typeInfo[2];
 
-                    expect( event.StackId ).to.exist;
+        describe( `.${type}`, function() {
 
-                    return 'ok';
-                }))
-                .event( require( '../json/cloudformation.json' ) )
-                .expectResult( (result) => {
+            validateHandler( type, (event) => {
 
-                    expect( result ).to.equal( 'ok' );
-                });
-        });
-    });
-
-    describe( '.cognito', function() {
-
-        it( 'normal operation', function() {
-
-            expect( vandium.cognito ).to.exist;
-
-            return LambdaTester( vandium.cognito( (event) => {
-
-                    expect( event.identityId ).to.exist;
-
-                    return 'ok';
-                }))
-                .event( require( '../json/cognito.json' ) )
-                .expectResult( (result) => {
-
-                    expect( result ).to.equal( 'ok' );
-                });
-        });
-    });
-
-    describe( '.lex', function() {
-
-        it( 'normal operation', function() {
-
-            expect( vandium.lex ).to.exist;
-
-            return LambdaTester( vandium.lex( (event) => {
-
-                    expect( event.currentIntent ).to.exist;
-
-                    return 'ok';
-                }))
-                .event( require( '../json/lex.json' ) )
-                .expectResult( (result) => {
-
-                    expect( result ).to.equal( 'ok' );
-                });
+                expect( event[verificationProperty] ).to.exist;
+            }, json );
         });
     });
 });
