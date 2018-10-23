@@ -117,6 +117,35 @@ describe( 'lib/event_types/record', function() {
         });
     });
 
+    it( 'normal operation for "records" vs "Records"', function( done ) {
+
+        let myHandler = function( records, context, callback ) {
+
+                    callback( null, records[0].recordId );
+                };
+
+        let after = sinon.stub();
+
+        let lambda = record( 'kinesis-firehose', { /* options*/ }, myHandler ).finally(  after );
+
+        lambda( require( '../../json/kinesis-firehose.json' ), { /*context*/}, (err, result) => {
+
+            try {
+
+                expect( err ).to.not.exist;
+                expect( result ).to.equal( 'record1' );
+
+                expect( after.calledOnce ).to.be.true;
+                expect( after.firstCall.args.length ).to.equal( 1 );
+                done();
+            }
+            catch( e ) {
+
+                done( e );
+            }
+        });
+    });
+
     it( 'fail for unknown record', function( done ) {
 
         let myHandler = sinon.stub();
