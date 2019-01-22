@@ -997,7 +997,7 @@ exports.handler = vandium.api()
 
                 throw new Error( 'User Not Found' );
             })
-        .onError( (err) => {
+        .onError( (err, event. context ) => {
 
             if( err.message.indexOf( 'Not Found' ) > -1 ) {
 
