@@ -845,18 +845,23 @@ describe( MODULE_PATH, function() {
 
                 let instance = new APIHandler();
 
-                instance.onError( (err) => {
-
-                    err.status = 404;
-                });
-
                 let context = {
 
-                    event: Object.assign( {}, require( './put-event.json' ) )
+                    event: Object.assign( {}, require( './put-event.json' ) ),
+                    functionName: 'myTestLambdaFunc'
                 };
 
 
                 let error = new Error( 'not found' );
+
+                instance.onError( (err, _event, _context ) => {
+
+                    expect( _event ).to.equal( context.event );
+                    expect( _context ).to.equal( context );
+                    expect( _context.functionName ).to.equal( context.functionName );
+
+                    err.status = 404;
+                });
 
                 let resultObject = instance.processError( error, context );
 

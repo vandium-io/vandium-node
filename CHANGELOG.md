@@ -1,5 +1,11 @@
 # Change Log
 
+## 4.10.0 (2019-01-22)
+
+Updated:
+
+* Added `event` and `context` objects to `onError()`
+
 ## 4.9.0 (2018-10-22)
 
 Updated:
