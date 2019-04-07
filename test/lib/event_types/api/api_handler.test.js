@@ -885,9 +885,54 @@ describe( MODULE_PATH, function() {
 
                 let instance = new APIHandler();
 
-                instance.onError( (err) => {
+                let context = {
+
+                    event: Object.assign( {}, require( './put-event.json' ) ),
+                    functionName: 'myTestLambdaFunc'
+                };
+
+
+                let error = new Error( 'not found' );
+
+                instance.onError( (err, _event, _context ) => {
+
+                    expect( _event ).to.equal( context.event );
+                    expect( _context ).to.equal( context );
+                    expect( _context.functionName ).to.equal( context.functionName );
 
                     err.status = 404;
+                });
+
+                let resultObject = instance.processError( error, context );
+
+                expect( resultObject.result.statusCode ).to.equal( 404 );
+                expect( resultObject.result.headers ).to.eql( {} );
+                expect( resultObject.result.body ).to.equal( '{"type":"Error","message":"not found"}' );
+            });
+
+            it( 'error with custom error handler updating error with body (handler does not return error)', function() {
+
+                let instance = new APIHandler();
+
+                instance.onError( (err) => {
+
+                    err.status = 400;
+
+                    // from https://tools.ietf.org/html/rfc7807
+                    err.body = {
+
+                        type: 'https://example.net/validation-error',
+                        title: "Your request parameters didn't validate.",
+                        'invalid-params': [ {
+
+                            name: "age",
+                            reason: "must be a positive integer"
+                        },
+                        {
+                            name: "color",
+                            reason: "must be 'green', 'red' or 'blue'"
+                        }]
+                    };
                 });
 
                 let context = {
@@ -896,13 +941,18 @@ describe( MODULE_PATH, function() {
                 };
 
 
-                let error = new Error( 'not found' );
+                let error = new Error( 'Validation Error' );
 
                 let resultObject = instance.processError( error, context );
 
-                expect( resultObject.result.statusCode ).to.equal( 404 );
+                expect( resultObject.result.statusCode ).to.equal( 400 );
                 expect( resultObject.result.headers ).to.eql( {} );
-                expect( resultObject.result.body ).to.equal( '{"type":"Error","message":"not found"}' );
+
+                let body = JSON.parse( resultObject.result.body );
+
+                expect( body.type ).to.equal( 'https://example.net/validation-error' );
+                expect( body.title ).to.equal( "Your request parameters didn't validate." );
+                expect( body[ 'invalid-params' ] ).to.exist;
             });
         });
     });

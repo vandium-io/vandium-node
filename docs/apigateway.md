@@ -966,7 +966,7 @@ exports.handler = vandium.api()
 
 The response object for a `GET` request would be:
 
-```js
+```json
 {
     "statusCode": 404,
     "headers": {},
@@ -976,7 +976,7 @@ The response object for a `GET` request would be:
 
 and the response object for a `PUT` request would be:
 
-```js
+```json
 {
     "statusCode": 404,
     "headers": {},
@@ -984,7 +984,48 @@ and the response object for a `PUT` request would be:
 }
 ```
 
-## Setting headers for all HTTP methods
+## Structured errors ([RFC 7807](https://tools.ietf.org/html/rfc7807))
+
+The `onError()` function can be used to provide structured error information by
+specifying a `body` as part of the exception:
+
+```js
+const vandium = require( 'vandium' );
+
+exports.handler = vandium.api()
+        .GET( (event) => {
+
+                throw new Error( 'User Not Found' );
+            })
+        .onError( (err, event. context ) => {
+
+            if( err.message.indexOf( 'Not Found' ) > -1 ) {
+
+                err.statusCode = 404;
+                err.body = {
+
+                    "type": "https://example.com/probs/not-found",
+                    "title": "user was not found",
+                    "detail": "The user was not found in the database"
+                };
+            }
+
+            return err;
+        });
+```
+
+The response object for a `GET` request would be:
+
+```json
+{
+    "statusCode": 404,
+    "headers": {},
+    "body": "{\"type\":\"https://example.com/probs/not-found\",\"title\":\"user was not found\",\"detail\": \"The user was not found in the database\"}"
+}
+```
+
+
+# Setting headers for all HTTP methods
 
 Use the `headers()` method on the `api` handler if you would like to set the headers for all responses and errors.
 
