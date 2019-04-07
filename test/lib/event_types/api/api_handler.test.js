@@ -29,6 +29,9 @@ describe( MODULE_PATH, function() {
                 expect( instance._jwt ).to.exist;
                 expect( instance._jwt.enabled ).to.be.false;
 
+                expect( instance._parseQuery ).to.exist;
+                expect( instance._parseQuery.enabled ).to.be.true;
+
                 expect( instance._headers ).to.eql( {} );
 
                 expect( instance._protection ).to.exist;
@@ -62,6 +65,48 @@ describe( MODULE_PATH, function() {
                 expect( instance._jwt.algorithm ).to.equal( 'HS256' );
                 expect( instance._jwt.key ).to.equal( 'secret' );
 
+
+                expect(instance._parseQuery).to.exist;
+                expect(instance._parseQuery.enabled).to.be.true;
+                
+                expect( instance._headers ).to.eql( {} );
+
+                expect( instance._protection ).to.exist;
+                expect( instance._protection.sql.mode ).to.equal( 'fail' );
+
+                expect( instance.methodHandlers ).to.eql( {} );
+                expect( instance._onErrorHandler ).to.exist;
+                expect( instance.afterFunc ).to.exist;
+                expect( instance._onErrorHandler ).to.exist;
+            });
+
+            it( 'with options disabling formURLEncoding', function() {
+
+                let instance = new APIHandler( {
+
+                    jwt: {
+
+                        algorithm: 'HS256',
+                        key: 'secret'
+                    },
+                    protection: {
+
+                        mode: 'fail'
+                    },
+                    parseQuery: false
+                });
+
+                expect( instance._type ).to.equal( 'apigateway' );
+
+                expect( instance._jwt ).to.exist;
+                expect( instance._jwt.enabled ).to.be.true;
+                expect( instance._jwt.algorithm ).to.equal( 'HS256' );
+                expect( instance._jwt.key ).to.equal( 'secret' );
+
+
+                expect(instance._parseQuery).to.exist;
+                expect(instance._parseQuery.enabled).to.be.false;
+                
                 expect( instance._headers ).to.eql( {} );
 
                 expect( instance._protection ).to.exist;
@@ -108,6 +153,23 @@ describe( MODULE_PATH, function() {
 
                 expect( instance._jwt ).to.exist;
                 expect( instance._jwt.enabled ).to.be.false;
+            });
+        });
+
+        describe( '.formURLEncoded', function() {
+
+            it( 'normal operation', function() {
+
+                let instance = new APIHandler();
+                expect( instance._parseQuery ).to.exist;
+                expect( instance._parseQuery.enabled ).to.be.true;
+
+                let returnValue = instance.formURLEncoded(false);
+
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._parseQuery ).to.exist;
+                expect( instance._parseQuery.enabled ).to.be.false;
             });
         });
 
@@ -390,6 +452,7 @@ describe( MODULE_PATH, function() {
                 expect( lambdaHandler.headers ).to.not.exist;
                 expect( lambdaHandler.protection ).to.not.exist;
                 expect( lambdaHandler.onError ).to.not.exist;
+                expect( lambdaHandler.formURLEncoded ).to.not.exist;
 
                 let instance = new APIHandler();
                 instance.addMethodsToHandler( lambdaHandler );
@@ -405,6 +468,9 @@ describe( MODULE_PATH, function() {
 
                 expect( lambdaHandler.onError ).to.exist;
                 expect( lambdaHandler.onError ).to.be.a( 'function' );
+
+                expect( lambdaHandler.formURLEncoded ).to.exist;
+                expect( lambdaHandler.formURLEncoded ).to.be.a( 'function' );
             });
         });
 
@@ -505,6 +571,45 @@ describe( MODULE_PATH, function() {
                 // rawBody should be present
                 expect( state.event.rawBody ).to.be.a( 'String' );
                 expect( state.event.rawBody ).to.equal( "name=John%20Doe" );
+            });
+
+            it( 'simple request with formURLEncoded body, parsing disabled', function() {
+
+                let instance = new APIHandler().formURLEncoded(false).PUT( () => {} );
+
+                let state = {
+
+                    event: Object.assign({}, require( './put-event-form-url-encoded-body.json' ) ),
+                    context: {}
+                }
+
+                let jwtValidateSpy = sinon.spy( instance._jwt, 'validate' );
+                let protectionValidateSpy = sinon.spy( instance._protection, 'validate' );
+
+                expect( state.event.cookies ).to.not.exist;
+                expect( state.executor ).to.not.exist;
+
+                instance.executePreprocessors( state );
+
+                expect( state.event.cookies ).to.exist;
+                expect( state.event.cookies ).to.eql( {} );
+
+                expect( state.executor ).to.exist;
+
+                expect( jwtValidateSpy.calledOnce ).to.be.true;
+                expect( jwtValidateSpy.firstCall.args ).to.eql( [ state.event ] );
+
+                expect( protectionValidateSpy.calledOnce ).to.be.true;
+                expect( protectionValidateSpy.firstCall.args ).to.eql( [ state.event ] );
+
+                // queryString encoded body should get parsed
+                expect( state.event.body ).to.be.a( 'String' );
+                expect( state.event.body ).to.equal( 'name=John%20Doe' );
+                expect( state.event.body.name ).to.not.exist;
+
+                // rawBody should be present
+                expect( state.event.rawBody ).to.be.a( 'String' );
+                expect( state.event.rawBody ).to.equal( 'name=John%20Doe' );
             });
 
             it( 'simple request with non-json body', function() {
@@ -757,7 +862,7 @@ describe( MODULE_PATH, function() {
 
                 it( `defined headers for ${test[0]}`, function() {
 
-                    let instance = new APIHandler().headers( {header1: "1", header2: "2"});
+                    let instance = new APIHandler().headers( { header1: "1", header2: "2" } );
 
                     let context = {
 
