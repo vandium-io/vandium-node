@@ -10,6 +10,8 @@ const zlib = require( 'zlib' );
 
 const proxyquire = require( 'proxyquire' );
 
+const cookie = require( 'cookie' );
+
 const MODULE_PATH = 'lib/event_types/api/api_handler';
 
 const APIHandler = require( '../../../../' + MODULE_PATH );
@@ -733,7 +735,7 @@ describe( MODULE_PATH, function() {
                     expect( resultObject.result.body ).to.equal( 'OK' );
                 });
 
-                it( `result value for ${test[0]}`, function() {
+                it( `result value with single Set-Cookie header for ${test[0]}`, function() {
 
                     let instance = new APIHandler();
 
@@ -744,20 +746,40 @@ describe( MODULE_PATH, function() {
 
                     context.event.httpMethod = test[0];
 
+                    const resultCookie = { 
+                        name: 'first',
+                        value: 'cookie',
+                        options: {
+                            domain: 'domain.name',
+                            encode: encodeURIComponent,
+                            expires: new Date(),
+
+                            httpOnly: true,
+                            maxAge: 1000,
+                            path: '/',
+                            sameSite: true,
+                            secure: false,
+                        }
+                    }
+
                     let resultObject = instance.processResult( {
 
                         statusCode: 999,
-
+                        setCookie: resultCookie,
                         headers: {
 
                             header1: "1",
-                            header2: "2"
+                            header2: "2",
                         },
                         body: { ok: true }
                     }, context );
 
                     expect( resultObject.result.statusCode ).to.equal( 999 );
-                    expect( resultObject.result.headers ).to.eql( { header1: "1", header2: "2" } );
+                    expect( resultObject.result.headers ).to.eql( { 
+                        header1: "1", 
+                        header2: "2", 
+                        'Set-Cookie': cookie.serialize( resultCookie.name, resultCookie.value, resultCookie.options ), 
+                    });
                     expect( resultObject.result.body ).to.equal( "{\"ok\":true}");
                 });
             });
