@@ -618,7 +618,7 @@ describe( MODULE_PATH, function() {
                 expect( cookiesStub.parse.calledOnce ).to.be.true;
             });
 
-            it( 'queryStringParameters and pathParameters are set', function() {
+            it( 'queryStringParameters, multiValueQueryStringParameters and pathParameters are set', function() {
 
                 let state = {
 
@@ -626,17 +626,39 @@ describe( MODULE_PATH, function() {
                     context: {}
                 }
 
-                state.event.queryStringParameters = {};
+                state.event.queryStringParameters = { param1: 'value1'};
+                state.event.multiValueQueryStringParameters = { param1: [ 'value1' ] };
                 state.event.pathParameters = {};
 
                 let instance = new APIHandler().PUT( ()=> {});
                 instance.executePreprocessors( state );
 
-                expect( state.event.queryStringParameters ).to.eql( {} );
+                expect( state.event.queryStringParameters ).to.eql( { param1: 'value1'} );
+                expect( state.event.multiValueQueryStringParameters ).to.eql( { param1: [ 'value1' ] } );
                 expect( state.event.pathParameters ).to.eql( {} );
             });
 
-            it( 'queryStringParameters and pathParameters are undefined', function() {
+            it( 'multiValueQueryStringParameters is set with unique values, queryStringParameters and pathParameters are set', function() {
+
+                let state = {
+
+                    event: Object.assign( {}, require( './put-with-cookies-event.json' ) ),
+                    context: {}
+                }
+
+                state.event.queryStringParameters = { param1: 'value1' };
+                state.event.multiValueQueryStringParameters = { param1: [ 'value1' ], param2: [ 'value2', 'value3' ] };
+                state.event.pathParameters = {};
+
+                let instance = new APIHandler().PUT( ()=> {});
+                instance.executePreprocessors( state );
+
+                expect( state.event.queryStringParameters ).to.eql( { param1: 'value1'} );
+                expect( state.event.multiValueQueryStringParameters ).to.eql( { param1: [ 'value1' ], param2: [ 'value2', 'value3' ] } );
+                expect( state.event.pathParameters ).to.eql( {} );
+            });
+
+            it( 'queryStringParameters, multiValueQueryStringParameters and pathParameters are undefined', function() {
 
                 let state = {
 
@@ -645,12 +667,14 @@ describe( MODULE_PATH, function() {
                 }
 
                 delete state.event.queryStringParameters;
+                delete state.event.multiValueQueryStringParameters;
                 delete state.event.pathParameters;
 
                 let instance = new APIHandler().PUT( ()=> {});
                 instance.executePreprocessors( state );
 
                 expect( state.event.queryStringParameters ).to.eql( {} );
+                expect( state.event.multiValueQueryStringParameters ).to.eql( {} );
                 expect( state.event.pathParameters ).to.eql( {} );
             });
 

@@ -14,7 +14,14 @@
         "CloudFront-Viewer-Country": "CA",
         "Cookie": "firstcookie=chocolate; secondcookie=chip; thirdcookie=strawberry"
     },
-    "queryStringParameters": null,
+    "queryStringParameters": { 
+        "param1": "value1"
+    },
+    "multiValueQueryStringParameters": { 
+        "param1": [ 
+            "value1" 
+        ]
+    },
     "pathParameters": null,
     "stageVariables": null,
     "requestContext": {
