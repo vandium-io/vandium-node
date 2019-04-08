@@ -109,6 +109,80 @@ describe( MODULE_PATH, function() {
                 expect( instance._jwt ).to.exist;
                 expect( instance._jwt.enabled ).to.be.false;
             });
+
+            it( 'called with boolean argument = true', function() {
+
+                let instance = new APIHandler();
+                expect( instance._jwt ).to.exist;
+                expect( instance._jwt.enabled ).to.be.false;
+
+                let returnValue = instance.jwt(true);
+
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._jwt ).to.exist;
+                expect( instance._jwt.enabled ).to.be.false;
+            });
+
+            it( 'called with boolean argument = false, env vars not set', function() {
+
+                const VANDIUM_JWT_ALGORITHM = process.env.VANDIUM_JWT_ALGORITHM;
+
+                delete process.env.VANDIUM_JWT_ALGORITHM;
+                
+                let instance = new APIHandler();
+                expect( instance._jwt ).to.exist;
+                expect( instance._jwt.enabled ).to.be.false;
+
+                let returnValue = instance.jwt(false);
+
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._jwt ).to.exist;
+                expect( instance._jwt.enabled ).to.be.false;
+
+                process.env.VANDIUM_JWT_ALGORITHM = VANDIUM_JWT_ALGORITHM;
+            });
+
+            it( 'called with boolean argument = false, env vars set for algorithm', function() {
+
+                process.env.VANDIUM_JWT_ALGORITHM = 'HS256';
+                process.env.VANDIUM_JWT_SECRET = 'super-secret';
+                
+                let instance = new APIHandler();
+                expect( instance._jwt ).to.exist;
+                expect( instance._jwt.enabled ).to.be.true;
+
+                let returnValue = instance.jwt(false);
+
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._jwt ).to.exist;
+                expect( instance._jwt.enabled ).to.be.false;
+
+                delete process.env.VANDIUM_JWT_ALGORITHM;
+                delete process.env.VANDIUM_JWT_SECRET;
+            });
+
+            it( 'called with object argument, enabled = false, env vars set for algorithm', function() {
+
+                process.env.VANDIUM_JWT_ALGORITHM = 'HS256';
+                process.env.VANDIUM_JWT_SECRET = 'super-secret';
+                
+                let instance = new APIHandler();
+                expect( instance._jwt ).to.exist;
+                expect( instance._jwt.enabled ).to.be.true;
+
+                let returnValue = instance.jwt( { enabled: false } );
+
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._jwt ).to.exist;
+                expect( instance._jwt.enabled ).to.be.false;
+
+                delete process.env.VANDIUM_JWT_ALGORITHM;
+                delete process.env.VANDIUM_JWT_SECRET;
+            });
         });
 
         describe( '.headers', function() {
@@ -717,7 +791,7 @@ describe( MODULE_PATH, function() {
 
                 it( `defined headers for ${test[0]}`, function() {
 
-                    let instance = new APIHandler().headers( {header1: "1", header2: "2"});
+                    let instance = new APIHandler().headers( { header1: "1", header2: "2" });
 
                     let context = {
 
@@ -748,10 +822,9 @@ describe( MODULE_PATH, function() {
 
                         statusCode: 999,
 
-                        headers: {
-
-                            header1: "1",
-                            header2: "2"
+                        headers: { 
+                            header1: '1', 
+                            header2: '2', 
                         },
                         body: { ok: true }
                     }, context );
