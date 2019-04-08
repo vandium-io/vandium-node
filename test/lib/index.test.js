@@ -70,7 +70,7 @@ describe( 'lib/index', function() {
                 .event( require( '../json/apigateway.json' ) )
                 .expectResult( (result) => {
 
-                    expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'ok', isBase64Encoded: false } );
+                    expect( result ).to.eql( { statusCode: 200, headers: {}, multiValueHeaders: {}, body: 'ok', isBase64Encoded: false } );
                 });
         });
     });

@@ -244,6 +244,166 @@ describe( MODULE_PATH, function() {
             });
         });
 
+        describe( '.multiValueHeaders', function() {
+
+            it( 'normal operation', function() {
+
+                let instance = new APIHandler();
+                expect( instance._multiValueHeaders ).to.eql( {} );
+
+                let newHeaders = {
+
+                    header1: [ 'A', 'B' ],
+                };
+
+                let returnValue = instance.multiValueHeaders( newHeaders );
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._multiValueHeaders ).to.eql( newHeaders );
+                expect( instance._multiValueHeaders ).to.not.equal( newHeaders );  // should be cloned
+            });
+
+            it( 'called multple times to compound items', function() {
+
+                let instance = new APIHandler();
+                expect( instance._multiValueHeaders ).to.eql( {} );
+
+                let newHeaders = {
+
+                    header1: [ 'A', 'B' ],
+                };
+
+                let returnValue = instance.multiValueHeaders( newHeaders );
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._multiValueHeaders ).to.eql( newHeaders );
+
+                let newNewHeaders = {
+
+                    header1: [ 'C', 'D' ],
+                    header2: [ 'E', 'F' ],
+                };
+
+                instance.multiValueHeaders( newNewHeaders );
+                expect( instance._multiValueHeaders ).to.eql( {
+
+                    header1: [ 'A', 'B', 'C', 'D' ],
+                    header2: [ 'E', 'F' ],
+                });
+            });
+
+            it( 'called without arguments', function() {
+
+              let instance = new APIHandler();
+              expect( instance._multiValueHeaders ).to.eql( {} );
+
+              instance.multiValueHeaders();
+              expect( instance._multiValueHeaders ).to.eql( {} );
+            });
+        });
+
+        describe( '.multiValueHeader', function() {
+
+            it( 'normal operation', function() {
+
+                let instance = new APIHandler();
+                expect( instance._multiValueHeaders ).to.eql( {} );
+
+                let returnValue = instance.multiValueHeader( 'header1', [ 'A' ] );
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._multiValueHeaders ).to.eql( {
+
+                    header1: [ 'A' ],
+                });
+
+                instance.multiValueHeader( 'header2', 'B' );
+                expect( instance._multiValueHeaders ).to.eql( {
+
+                    header1: [ 'A' ],
+                    header2: [ 'B' ],
+                });
+            });
+
+            it( 'name is not set', function() {
+
+                let instance = new APIHandler();
+                expect( instance._multiValueHeaders ).to.eql( {} );
+
+                let returnValue = instance.multiValueHeader();
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._multiValueHeaders ).to.eql( {} );
+            });
+
+            it( 'value not set', function() {
+
+                let instance = new APIHandler();
+                expect( instance._multiValueHeaders ).to.eql( {} );
+
+                let returnValue = instance.multiValueHeader( 'myHeader' );
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._multiValueHeaders ).to.eql( {} );
+            });
+
+            it( 'value is false', function() {
+
+                let instance = new APIHandler();
+                expect( instance._multiValueHeaders ).to.eql( {} );
+
+                let returnValue = instance.multiValueHeader( 'myHeader', false );
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._multiValueHeaders ).to.eql( {
+
+                    myHeader: [ "false" ]
+                });
+            });
+
+            it( 'value is null', function() {
+
+                let instance = new APIHandler();
+                expect( instance._multiValueHeaders ).to.eql( {} );
+
+                let returnValue = instance.multiValueHeader( 'myHeader', null );
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._multiValueHeaders ).to.eql( {} );
+            });
+
+            it( 'key already exists', function() {
+
+                let instance = new APIHandler().multiValueHeader( 'header1', [ 'val1', 'val2' ] );
+                expect( instance._multiValueHeaders ).to.eql( { header1 : [ 'val1', 'val2' ] } );
+
+                let returnValue = instance.multiValueHeader( 'header1', [ 'val3' ] );
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._multiValueHeaders ).to.eql( { header1 : [ 'val1', 'val2', 'val3' ] } );
+            });
+
+            it( 'value is a single string or primitive and key does not exist', function() {
+
+                let instance = new APIHandler().multiValueHeader( 'header1', 'val1' );
+                expect( instance._multiValueHeaders ).to.eql( { header1 : [ 'val1' ] } );
+
+                let returnValue = instance.multiValueHeader( 'header2', 12 );
+                expect( instance._multiValueHeaders ).to.eql( { header1: [ 'val1' ], header2 : [ '12' ] } );
+            });
+
+            it( 'value is a single string or primitive and key already exists', function() {
+
+                let instance = new APIHandler().multiValueHeader( 'header1', 'val1' );
+                expect( instance._multiValueHeaders ).to.eql( { header1 : [ 'val1' ] } );
+
+                let returnValue = instance.multiValueHeader( 'header1', [ 'val2' ] );
+                expect( returnValue ).to.equal( instance );
+
+                expect( instance._multiValueHeaders ).to.eql( { header1 : [ 'val1', 'val2' ] } );
+            });
+        });
+
         describe( '.cors', function() {
 
             it( 'normal operation with partial cors', function() {
@@ -717,7 +877,7 @@ describe( MODULE_PATH, function() {
 
                 it( `defined headers for ${test[0]}`, function() {
 
-                    let instance = new APIHandler().headers( {header1: "1", header2: "2"});
+                    let instance = new APIHandler().headers( { header1: "1", header2: "2" });
 
                     let context = {
 
@@ -730,6 +890,24 @@ describe( MODULE_PATH, function() {
 
                     expect( resultObject.result.statusCode ).to.equal( test[1] );
                     expect( resultObject.result.headers ).to.eql( { header1: "1", header2: "2" } );
+                    expect( resultObject.result.body ).to.equal( 'OK' );
+                });
+
+                it( `defined multiValueHeaders for ${test[0]}`, function() {
+
+                    let instance = new APIHandler().multiValueHeaders( { 'Set-Cookie': [ 'val1', 'val2' ] } );
+
+                    let context = {
+
+                        event: Object.assign( {}, require( './put-event.json' ) )
+                    };
+
+                    context.event.httpMethod = test[0];
+
+                    let resultObject = instance.processResult( 'OK', context );
+
+                    expect( resultObject.result.statusCode ).to.equal( test[1] );
+                    expect( resultObject.result.multiValueHeaders ).to.eql( { 'Set-Cookie': [ 'val1', 'val2' ] } );
                     expect( resultObject.result.body ).to.equal( 'OK' );
                 });
 
@@ -748,16 +926,20 @@ describe( MODULE_PATH, function() {
 
                         statusCode: 999,
 
-                        headers: {
+                        multiValueHeaders: { 
+                            'Set-Cookie': [ 'val1', 'val2' ] 
+                        },
 
-                            header1: "1",
-                            header2: "2"
+                        headers: { 
+                            header1: '1', 
+                            header2: '2', 
                         },
                         body: { ok: true }
                     }, context );
 
                     expect( resultObject.result.statusCode ).to.equal( 999 );
                     expect( resultObject.result.headers ).to.eql( { header1: "1", header2: "2" } );
+                    expect( resultObject.result.multiValueHeaders ).to.eql( { 'Set-Cookie': ['val1', 'val2'] } );
                     expect( resultObject.result.body ).to.equal( "{\"ok\":true}");
                 });
             });

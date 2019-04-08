@@ -41,7 +41,13 @@ describe( MODULE_PATH, function() {
 
                 try {
 
-                    expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'put called', isBase64Encoded: false } );
+                    expect( result ).to.eql( { 
+                        statusCode: 200, 
+                        headers: {}, 
+                        multiValueHeaders: {}, 
+                        body: 'put called', 
+                        isBase64Encoded: false 
+                    });
                     done();
                 }
                 catch( e ) {
@@ -69,8 +75,8 @@ describe( MODULE_PATH, function() {
                 expect( evt.cookies ).to.eql( {
 
                     firstcookie: 'chocolate',
-                  secondcookie: 'chip',
-                  thirdcookie: 'strawberry'
+                    secondcookie: 'chip',
+                    thirdcookie: 'strawberry'
                 });
 
                 return 'put called';
@@ -82,7 +88,13 @@ describe( MODULE_PATH, function() {
 
                 try {
 
-                    expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'put called', isBase64Encoded: false } );
+                    expect( result ).to.eql( { 
+                        statusCode: 200, 
+                        headers: {}, 
+                        multiValueHeaders: {}, 
+                        body: 'put called', 
+                        isBase64Encoded: false 
+                    });
                     done();
                 }
                 catch( e ) {
@@ -137,6 +149,7 @@ describe( MODULE_PATH, function() {
                             "Access-Control-Allow-Credentials": "true",
                             "Access-Control-Allow-Origin": "https://whatever.vandium.io"
                         },
+                        multiValueHeaders: {},
                         isBase64Encoded: false,
                         body: 'put called'
                     });
@@ -171,7 +184,7 @@ describe( MODULE_PATH, function() {
 
                 try {
 
-                    expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, body: sampleBase64Png, isBase64Encoded: true } );
+                    expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, multiValueHeaders: {}, body: sampleBase64Png, isBase64Encoded: true } );
                     done();
                 }
                 catch( e ) {
@@ -201,7 +214,7 @@ describe( MODULE_PATH, function() {
 
                 try {
 
-                    expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, body: sampleBase64Png, isBase64Encoded: true } );
+                    expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, multiValueHeaders: {}, body: sampleBase64Png, isBase64Encoded: true } );
                     done();
                 }
                 catch( e ) {
@@ -228,7 +241,13 @@ describe( MODULE_PATH, function() {
 
                 try {
 
-                    expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, body: sampleBase64Png, isBase64Encoded: true } );
+                    expect( result ).to.eql( { 
+                        statusCode: 200, 
+                        headers: { 'Content-Type': 'image/png'}, 
+                        multiValueHeaders: {}, 
+                        body: sampleBase64Png, 
+                        isBase64Encoded: true 
+                    });
                     done();
                 }
                 catch( e ) {
