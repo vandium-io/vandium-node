@@ -79,6 +79,18 @@ describe( MODULE_PATH, function() {
                 scanner.scan( event );
             });
 
+            it( 'html code', function() {
+
+                let scanner = new SQLScanner( { mode: 'fail' } );
+
+                let event = {
+
+                    escapeComment1: '&lt;p&gt;--&lt;/p&gt;'
+                };
+
+                scanner.scan( event );
+            });
+
             [
                 [ "admin' --", 'ESCAPED_COMMENT' ],
                 [ "admin'--", 'ESCAPED_COMMENT' ],
