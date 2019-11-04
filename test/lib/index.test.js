@@ -187,7 +187,7 @@ describe( 'lib/index', function() {
         [ 'lex', 'currentIntent' ],
         [ 'cognito', 'identityId' ],
         [ 'cloudformation', 'StackId' ],
-        [ 'cloudwatch', 'awslogs' ],
+        [ 'logs', 'awslogs' ],
         [ 'config', 'invokingEvent' ],
         [ 'iotButton', 'clickType', 'iot-button.json' ]
 

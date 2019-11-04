@@ -50,7 +50,7 @@ describe( 'lib/event_types/typed', function() {
                 context: {}
             };
 
-            eventIdentifierStub.identify.returns( 's3' );
+            eventIdentifierStub.identify.returns( { type: 's3' } );
 
             instance.executePreprocessors( state );
 
@@ -68,7 +68,7 @@ describe( 'lib/event_types/typed', function() {
                 context: {}
             };
 
-            eventIdentifierStub.identify.returns( 'sns' );
+            eventIdentifierStub.identify.returns( { type: 'sns' } );
 
             expect( instance.executePreprocessors.bind( instance, state ) ).to.throw( 'Expected event type of s3 but identified as sns' );
 

@@ -44,7 +44,7 @@ describe( 'lib/event_types/index', function() {
     // basic types
     [
         'cloudformation',
-        'cloudwatch',
+        'logs',
         'cognito',
         'lex',
         'scheduled'
