@@ -1,5 +1,12 @@
 # Change Log
 
+## 4.11.0 (TBD)
+
+Updated:
+
+* `onError()` now accepts async functions
+
+
 ## 4.10.0 (2019-01-22)
 
 Updated:

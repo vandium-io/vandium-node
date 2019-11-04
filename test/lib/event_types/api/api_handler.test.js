@@ -782,7 +782,7 @@ describe( MODULE_PATH, function() {
 
         describe( '.processError', function() {
 
-            it( 'generic error', function() {
+            it( 'generic error', async function() {
 
                 let instance = new APIHandler();
 
@@ -794,14 +794,14 @@ describe( MODULE_PATH, function() {
 
                 let error = new Error( 'bang' );
 
-                let resultObject = instance.processError( error, context );
+                let resultObject = await instance.processError( error, context );
 
                 expect( resultObject.result.statusCode ).to.equal( 500 );
                 expect( resultObject.result.headers ).to.eql( {} );
                 expect( resultObject.result.body ).to.equal( '{"type":"Error","message":"bang"}' );
             });
 
-            it( 'error with status', function() {
+            it( 'error with status', async function() {
 
                 let instance = new APIHandler();
 
@@ -814,14 +814,14 @@ describe( MODULE_PATH, function() {
                 let error = new Error( 'not found' );
                 error.status = 404;
 
-                let resultObject = instance.processError( error, context );
+                let resultObject = await instance.processError( error, context );
 
                 expect( resultObject.result.statusCode ).to.equal( 404 );
                 expect( resultObject.result.headers ).to.eql( {} );
                 expect( resultObject.result.body ).to.equal( '{"type":"Error","message":"not found"}' );
             });
 
-            it( 'error with statusCode', function() {
+            it( 'error with statusCode', async function() {
 
                 let instance = new APIHandler();
 
@@ -830,18 +830,17 @@ describe( MODULE_PATH, function() {
                     event: Object.assign( {}, require( './put-event.json' ) )
                 };
 
-
                 let error = new Error( 'not found' );
                 error.statusCode = 404;
 
-                let resultObject = instance.processError( error, context );
+                let resultObject = await instance.processError( error, context );
 
                 expect( resultObject.result.statusCode ).to.equal( 404 );
                 expect( resultObject.result.headers ).to.eql( {} );
                 expect( resultObject.result.body ).to.equal( '{"type":"Error","message":"not found"}' );
             });
 
-            it( 'error with custom error handler updating error (handler does not return error)', function() {
+            it( 'error with custom error handler updating error (handler does not return error)', async function() {
 
                 let instance = new APIHandler();
 
@@ -863,14 +862,50 @@ describe( MODULE_PATH, function() {
                     err.status = 404;
                 });
 
-                let resultObject = instance.processError( error, context );
+                let resultObject = await instance.processError( error, context );
 
                 expect( resultObject.result.statusCode ).to.equal( 404 );
                 expect( resultObject.result.headers ).to.eql( {} );
                 expect( resultObject.result.body ).to.equal( '{"type":"Error","message":"not found"}' );
             });
 
-            it( 'error with custom error handler updating error with body (handler does not return error)', function() {
+            it( 'error with custom async error handler updating error (handler does not return error)', async function() {
+
+                let instance = new APIHandler();
+
+                let context = {
+
+                    event: Object.assign( {}, require( './put-event.json' ) ),
+                    functionName: 'myTestLambdaFunc'
+                };
+
+
+                let error = new Error( 'not found' );
+
+                instance.onError( async (err, _event, _context ) => {
+
+                    expect( _event ).to.equal( context.event );
+                    expect( _context ).to.equal( context );
+                    expect( _context.functionName ).to.equal( context.functionName );
+
+                    return new Promise( (resolve) => {
+
+                        setTimeout( () => {
+
+                            err.status = 404;
+                            resolve();
+                        }, 20 );
+                    });
+                });
+
+                let resultObject = await instance.processError( error, context );
+
+                expect( resultObject.result.statusCode ).to.equal( 404 );
+                expect( resultObject.result.headers ).to.eql( {} );
+                expect( resultObject.result.body ).to.equal( '{"type":"Error","message":"not found"}' );
+            });
+
+            it( 'error with custom error handler updating error with body (handler does not return error)', async function() {
 
                 let instance = new APIHandler();
 
@@ -903,7 +938,7 @@ describe( MODULE_PATH, function() {
 
                 let error = new Error( 'Validation Error' );
 
-                let resultObject = instance.processError( error, context );
+                let resultObject = await instance.processError( error, context );
 
                 expect( resultObject.result.statusCode ).to.equal( 400 );
                 expect( resultObject.result.headers ).to.eql( {} );

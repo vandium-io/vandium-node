@@ -93,9 +93,63 @@ describe( 'lib/event_types/handler', function() {
 
             let error = new Error( 'bang' );
 
-            let processed = instance.processError( error, {} );
+            return instance.processError( error, {} )
+                .then( processed => {
 
-            expect( processed ).to.eql( { error } );
+                    expect( processed ).to.eql( { error } );
+                });
+        });
+
+        it( 'normal operation (async)', function() {
+
+            let instance = new Handler();
+
+            instance.processError = async ( error, {} ) => {
+
+                return new Promise( (resolve) => {
+
+                    setTimeout( () => {
+
+                        resolve( { error, code: '500' } );
+                    }, 20);
+                });
+            };
+
+            let error = new Error( 'bang' );
+
+            return instance.processError( error, {} )
+                .then( processed => {
+
+                    expect( processed ).to.eql( { error, code: '500' } );
+                });
+        });
+
+        it( 'exception throw while executing (async)', function() {
+
+            let instance = new Handler();
+
+            instance.processError = async ( error, {} ) => {
+
+                return new Promise( (resolve, reject) => {
+
+                    setTimeout( () => {
+
+                        reject( new Error( 'boom') );
+                    }, 20);
+                });
+            };
+
+            let error = new Error( 'bang' );
+
+            return instance.processError( error, {} )
+                .then( processed => {
+
+                    expect( processed ).to.be.undefined;
+                })
+                .catch( err => {
+
+                    expect( err.message ).to.equal( 'boom' );
+                });
         });
     });
 
@@ -784,6 +838,47 @@ describe( 'lib/event_types/handler', function() {
 
                     expect( err ).to.exist;
                     expect( err.message ).to.equal( 'handler not defined' );
+
+                    expect( result ).to.not.exist;
+
+                    done();
+                }
+                catch( e ) {
+
+                    done( e );
+                }
+            });
+        });
+
+        it( 'exception throw while executing processError()', function( done ) {
+
+            let instance = new Handler();
+
+            instance.processError = async ( error, {} ) => {
+
+                return new Promise( (resolve, reject) => {
+
+                    setTimeout( () => {
+
+                        reject( new Error( 'boom') );
+                    }, 20);
+                });
+            };
+
+            let lambda = instance.createLambda();
+
+            let event = {};
+            let context = {
+
+                getRemainingTimeInMillis() { return 1000; }
+            };
+
+            lambda( event, context, (err, result) => {
+
+                try {
+
+                    expect( err ).to.exist;
+                    expect( err.message ).to.equal( 'boom' );
 
                     expect( result ).to.not.exist;
 

@@ -45,28 +45,29 @@
   "author": "Vandium Software Inc.",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "@vandium/event-identifier": "^2.0.0",
+    "@vandium/event-identifier": "^3.0.0",
     "aws-param-env": "^1.2.0",
-    "cookie": "^0.3.1",
-    "joi": "^14.0.0",
+    "cookie": "^0.4.0",
+    "joi": "^14.3.1",
     "joi-json": "^2.1.0",
-    "jwt-simple": "0.5.x",
+    "jwt-simple": "^0.5.6",
     "vandium-utils": "^1.2.0"
   },
   "devDependencies": {
-    "app-root-path": "^2.0.1",
-    "bluebird": "^3.3.4",
+    "app-root-path": "^3.0.0",
+    "bluebird": "^3.7.1",
     "chai": "^4.1.2",
-    "dotenv": "^6.1.0",
+    "dotenv": "^8.2.0",
     "env-restorer": "^1.0.0",
     "freshy": "^1.0.2",
     "jwt-builder": "^1.0.0",
-    "lambda-tester": "^3.1.0",
-    "mocha": "^5.0.0",
-    "node-rsa": "^1.0.1",
-    "nyc": "^13.3.0",
-    "proxyquire": "^2.1.0",
-    "sinon": "^7.0.0",
-    "uuid": "^3.0.1"
+    "lambda-tester": "^3.6.0",
+    "lov": "^1.0.1",
+    "mocha": "^6.2.2",
+    "node-rsa": "^1.0.6",
+    "nyc": "^14.1.1",
+    "proxyquire": "^2.1.3",
+    "sinon": "^7.5.0",
+    "uuid": "^3.3.3"
   }
 }
