@@ -33,6 +33,11 @@ describe( 'lib/jwt/utils', function() {
 
             expect( utils.resolveAlgorithm.bind( null ) ).to.throw( 'authentication error: missing algorithm' );
         });
+
+        it( 'fail when algorithm is missing', function() {
+
+            expect( utils.resolveAlgorithm.bind( null, null ) ).to.throw( 'authentication error: missing algorithm' );
+        });
     });
 
 
@@ -115,7 +120,6 @@ describe( 'lib/jwt/utils', function() {
         });
 
         it( 'generate key with armor', function() {
-
 
             const data = 'this is a something to sign';
 
