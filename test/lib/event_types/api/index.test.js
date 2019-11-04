@@ -14,7 +14,7 @@ describe( MODULE_PATH, function() {
 
     describe( 'handler', function() {
 
-        it( 'normal operation', function( done ) {
+        it( 'normal operation', async function() {
 
             let handler = apiHandler();
 
@@ -37,21 +37,12 @@ describe( MODULE_PATH, function() {
 
             let event = require( './put-event.json' );
 
-            handler( event, {}, (err,result) => {
+            let result = await handler( event, {} );
 
-                try {
-
-                    expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'put called', isBase64Encoded: false } );
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'put called', isBase64Encoded: false } );
         });
 
-        it( 'normal operation, with cookie', function( done ) {
+        it( 'normal operation, with cookie', async function() {
 
             let handler = apiHandler();
 
@@ -78,21 +69,12 @@ describe( MODULE_PATH, function() {
 
             let event = require( './put-with-cookies-event.json' );
 
-            handler( event, {}, (err,result) => {
+            const result = await handler( event, {} );
 
-                try {
-
-                    expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'put called', isBase64Encoded: false } );
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'put called', isBase64Encoded: false } );
         });
 
-        it( 'normal operation, with headers and cors', function( done ) {
+        it( 'normal operation, with headers and cors', async function() {
 
             let handler = apiHandler();
 
@@ -124,33 +106,23 @@ describe( MODULE_PATH, function() {
 
             let event = require( './put-event.json'  );
 
-            handler( event, {}, (err,result) => {
+            const result = await handler( event, {} );
 
-                try {
+            expect( result ).to.eql( {
 
-                    expect( result ).to.eql( {
-
-                        statusCode: 200,
-                        headers: {
-                            header1: 'HEADER1',
-                            header2: 'HEADER2',
-                            "Access-Control-Allow-Credentials": "true",
-                            "Access-Control-Allow-Origin": "https://whatever.vandium.io"
-                        },
-                        isBase64Encoded: false,
-                        body: 'put called'
-                    });
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
+                statusCode: 200,
+                headers: {
+                    header1: 'HEADER1',
+                    header2: 'HEADER2',
+                    "Access-Control-Allow-Credentials": "true",
+                    "Access-Control-Allow-Origin": "https://whatever.vandium.io"
+                },
+                isBase64Encoded: false,
+                body: 'put called'
             });
         });
 
-        it( 'normal operation, with base64 encoded binary', function( done ) {
+        it( 'normal operation, with base64 encoded binary', async function() {
 
             let handler = apiHandler();
             let sampleBase64Png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVQYV2P4DwABAQEAWk1v8QAAAABJRU5ErkJggg==';
@@ -167,21 +139,12 @@ describe( MODULE_PATH, function() {
 
             let event = require( './get-event.json' );
 
-            handler( event, {}, (err,result) => {
+            const result = await handler( event, {} );
 
-                try {
-
-                    expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, body: sampleBase64Png, isBase64Encoded: true } );
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, body: sampleBase64Png, isBase64Encoded: true } );
         });
 
-        it( 'normal operation, with result containing a Buffer instance', function( done ) {
+        it( 'normal operation, with result containing a Buffer instance', async function() {
 
             let handler = apiHandler();
             let sampleBase64Png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVQYV2P4DwABAQEAWk1v8QAAAABJRU5ErkJggg==';
@@ -197,21 +160,12 @@ describe( MODULE_PATH, function() {
 
             let event = require( './get-event.json' );
 
-            handler( event, {}, (err,result) => {
+            const result = await handler( event, {} );
 
-                try {
-
-                    expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, body: sampleBase64Png, isBase64Encoded: true } );
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, body: sampleBase64Png, isBase64Encoded: true } );
         });
 
-        it( 'normal operation, with result containing a Buffer instance', function( done ) {
+        it( 'normal operation, with result containing a Buffer instance', async function() {
 
             let handler = apiHandler();
             let sampleBase64Png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVQYV2P4DwABAQEAWk1v8QAAAABJRU5ErkJggg==';
@@ -224,21 +178,12 @@ describe( MODULE_PATH, function() {
 
             let event = require( './get-event.json' );
 
-            handler( event, {}, (err,result) => {
+            const result = await handler( event, {} );
 
-                try {
-
-                    expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, body: sampleBase64Png, isBase64Encoded: true } );
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( result ).to.eql( { statusCode: 200, headers: { 'Content-Type': 'image/png'}, body: sampleBase64Png, isBase64Encoded: true } );
         });
 
-        it( 'handle JWT failure', function( done ) {
+        it( 'handle JWT failure', async function() {
 
             let handler = apiHandler()
                 .jwt( {
@@ -255,23 +200,13 @@ describe( MODULE_PATH, function() {
 
             let event = require( './put-event.json'  );
 
-            handler( event, {}, (err,result) => {
+            const result = await handler( event, {} );
 
-                try {
-
-                    expect( result.statusCode ).to.equal( 403 );
-                    expect( result.body ).to.equal( '{"type":"AuthenticationFailureError","message":"authentication error: missing jwt token"}' );
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( result.statusCode ).to.equal( 403 );
+            expect( result.body ).to.equal( '{"type":"AuthenticationFailureError","message":"authentication error: missing jwt token"}' );
         });
 
-        it( 'validation failure', function( done ) {
+        it( 'validation failure', async function() {
 
             let handler = apiHandler();
 
@@ -295,21 +230,12 @@ describe( MODULE_PATH, function() {
 
             let event = require( './put-event.json' );
 
-            handler( event, {}, (err,result) => {
+            const result = await handler( event, {} );
 
-                try {
-
-                    expect( result.statusCode ).to.equal( 400 );
-                    expect( result.body ).to.contain( '"type":"ValidationError"' );
-                    expect( result.isBase64Encoded ).to.be.false;
-                    expect( result.headers ).to.eql( {} );
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( result.statusCode ).to.equal( 400 );
+            expect( result.body ).to.contain( '"type":"ValidationError"' );
+            expect( result.isBase64Encoded ).to.be.false;
+            expect( result.headers ).to.eql( {} );
         });
     });
 });

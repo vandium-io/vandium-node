@@ -10,7 +10,7 @@ const record = require( '../../../lib/event_types/record' );
 
 describe( 'lib/event_types/record', function() {
 
-    it( 'normal operation, no options, no callback, no finally', function( done ) {
+    it( 'normal operation, no options, no callback, no finally', async function() {
 
         let myHandler = function( records ) {
 
@@ -19,26 +19,12 @@ describe( 'lib/event_types/record', function() {
 
         let lambda = record( 's3', myHandler );
 
-        expect( lambda ).to.be.a( 'function' );
-        expect( lambda.length ).to.equal( 3 );
+        const result = await lambda( require( './s3-put' ), { /*context*/} );
 
-        lambda( require( './s3-put' ), { /*context*/}, (err, result) => {
-
-            try {
-
-                expect( err ).to.not.exist;
-                expect( result ).to.equal( 'HappyFace.jpg' );
-
-                done();
-            }
-            catch( e ) {
-
-                done( e );
-            }
-        });
+        expect( result ).to.equal( 'HappyFace.jpg' );
     });
 
-    it( 'normal operation, options, no callback, no finally', function( done ) {
+    it( 'normal operation, options, no callback, no finally', async function() {
 
         let myHandler = function( records ) {
 
@@ -47,23 +33,12 @@ describe( 'lib/event_types/record', function() {
 
         let lambda = record( 's3', { /* options*/ }, myHandler );
 
-        lambda( require( './s3-put' ), { /*context*/}, (err, result) => {
+        const result = await lambda( require( './s3-put' ), { /*context*/} );
 
-            try {
-
-                expect( err ).to.not.exist;
-                expect( result ).to.equal( 'HappyFace.jpg' );
-
-                done();
-            }
-            catch( e ) {
-
-                done( e );
-            }
-        });
+        expect( result ).to.equal( 'HappyFace.jpg' );
     });
 
-    it( 'normal operation, options, callback, no finally', function( done ) {
+    it( 'normal operation, options, callback, no finally', async function() {
 
         let myHandler = function( records, context, callback ) {
 
@@ -72,23 +47,12 @@ describe( 'lib/event_types/record', function() {
 
         let lambda = record( 's3', { /* options*/ }, myHandler );
 
-        lambda( require( './s3-put' ), { /*context*/}, (err, result) => {
+        const result = await lambda( require( './s3-put' ), { /*context*/} );
 
-            try {
-
-                expect( err ).to.not.exist;
-                expect( result ).to.equal( 'HappyFace.jpg' );
-
-                done();
-            }
-            catch( e ) {
-
-                done( e );
-            }
-        });
+        expect( result ).to.equal( 'HappyFace.jpg' );
     });
 
-    it( 'normal operation, options, callback, finally', function( done ) {
+    it( 'normal operation, options, callback, finally', async function() {
 
         let myHandler = function( records, context, callback ) {
 
@@ -99,25 +63,15 @@ describe( 'lib/event_types/record', function() {
 
         let lambda = record( 's3', { /* options*/ }, myHandler ).finally(  after );
 
-        lambda( require( './s3-put' ), { /*context*/}, (err, result) => {
+        const result = await lambda( require( './s3-put' ), { /*context*/} );
 
-            try {
+        expect( result ).to.equal( 'HappyFace.jpg' );
 
-                expect( err ).to.not.exist;
-                expect( result ).to.equal( 'HappyFace.jpg' );
-
-                expect( after.calledOnce ).to.be.true;
-                expect( after.firstCall.args.length ).to.equal( 1 );
-                done();
-            }
-            catch( e ) {
-
-                done( e );
-            }
-        });
+        expect( after.calledOnce ).to.be.true;
+        expect( after.firstCall.args.length ).to.equal( 1 );
     });
 
-    it( 'normal operation for "records" vs "Records"', function( done ) {
+    it( 'normal operation for "records" vs "Records"', async function() {
 
         let myHandler = function( records, context, callback ) {
 
@@ -128,25 +82,15 @@ describe( 'lib/event_types/record', function() {
 
         let lambda = record( 'kinesis-firehose', { /* options*/ }, myHandler ).finally(  after );
 
-        lambda( require( '../../json/kinesis-firehose.json' ), { /*context*/}, (err, result) => {
+        const result = await lambda( require( '../../json/kinesis-firehose.json' ), { /*context*/} );
 
-            try {
+        expect( result ).to.equal( 'record1' );
 
-                expect( err ).to.not.exist;
-                expect( result ).to.equal( 'record1' );
-
-                expect( after.calledOnce ).to.be.true;
-                expect( after.firstCall.args.length ).to.equal( 1 );
-                done();
-            }
-            catch( e ) {
-
-                done( e );
-            }
-        });
+        expect( after.calledOnce ).to.be.true;
+        expect( after.firstCall.args.length ).to.equal( 1 );
     });
 
-    it( 'fail for unknown record', function( done ) {
+    it( 'fail for unknown record', async function() {
 
         let myHandler = sinon.stub();
 
@@ -154,25 +98,18 @@ describe( 'lib/event_types/record', function() {
 
         let lambda = record( 's3', { /* options*/ }, myHandler ).finally(  after );
 
-        lambda( { "Records": [
-                { whatever: {} }
-            ]}, { /*context*/}, (err, result) => {
+        try {
 
-            try {
+            await lambda( { "Records": [ { whatever: {} } ]}, { /*context*/} );
 
-                expect( err ).to.exist;
-                expect( err.message ).to.contain( 'Expected event type of s3' );
+            should.fail( 'should throw error' );
+        }
+        catch( err ) {
 
-                expect( result ).to.not.exist;
-                expect( myHandler.called ).to.be.false;
-                expect( after.called ).to.be.false;
+            expect( err.message ).to.contain( 'Expected event type of s3' );
 
-                done();
-            }
-            catch( e ) {
-
-                done( e );
-            }
-        });
+            expect( myHandler.called ).to.be.false;
+            expect( after.called ).to.be.false;
+        }
     });
 });

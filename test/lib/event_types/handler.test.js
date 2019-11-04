@@ -2,7 +2,7 @@
 
 /*jshint expr: true*/
 
-const expect = require( 'chai' ).expect;
+const { should, expect } = require( 'chai' );
 
 const sinon = require( 'sinon' );
 
@@ -226,7 +226,7 @@ describe( 'lib/event_types/handler', function() {
 
     describe( '.execute', function() {
 
-        it( 'handler with result, no finally', function( done ) {
+        it( 'handler with result, no finally', async function() {
 
             let instance = new Handler();
 
@@ -244,23 +244,12 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            const result = await lambda( event, context );
 
-                try {
-
-                    expect( err ).to.not.exist;
-                    expect( result ).to.equal( 42 );
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( result ).to.equal( 42 );
         });
 
-        it( 'handler with result with finally', function( done ) {
+        it( 'handler with result with finally', async function() {
 
             let instance = new Handler();
 
@@ -282,24 +271,13 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            let result = await lambda( event, context );
 
-                try {
-
-                    expect( err ).to.not.exist;
-                    expect( result ).to.equal( 42 );
-                    expect( after.calledOnce ).to.be.true;
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( result ).to.equal( 42 );
+            expect( after.calledOnce ).to.be.true;
         });
 
-        it( 'handler with result with finally that throws uncaught exception', function( done ) {
+        it( 'handler with result with finally that throws uncaught exception', async function() {
 
             let instance = new Handler();
 
@@ -321,24 +299,13 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            const result = await lambda( event, context );
 
-                try {
-
-                    expect( err ).to.not.exist;
-                    expect( result ).to.equal( 42 );
-                    expect( after.calledOnce ).to.be.true;
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( result ).to.equal( 42 );
+            expect( after.calledOnce ).to.be.true;
         });
 
-        it( 'handler with result with async finally', function( done ) {
+        it( 'handler with result with async finally', async function() {
 
             let instance = new Handler();
 
@@ -361,24 +328,14 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            const result = await lambda( event, context );
 
-                try {
+            expect( result ).to.equal( 42 );
 
-                    expect( err ).to.not.exist;
-                    expect( result ).to.equal( 42 );
-
-                    expect( afterStub.calledOnce ).to.be.true;
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( afterStub.calledOnce ).to.be.true;
         });
 
-        it( 'handler with result with finally', function( done ) {
+        it( 'handler with result with finally', async function() {
 
             let instance = new Handler();
 
@@ -400,24 +357,13 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            const result = await lambda( event, context );
 
-                try {
-
-                    expect( err ).to.not.exist;
-                    expect( result ).to.equal( 42 );
-                    expect( after.calledOnce ).to.be.true;
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( result ).to.equal( 42 );
+            expect( after.calledOnce ).to.be.true;
         });
 
-        it( 'handler with result with finally that throws uncaught exception', function( done ) {
+        it( 'handler with result with finally that throws uncaught exception', async function() {
 
             let instance = new Handler();
 
@@ -439,24 +385,13 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            const result = await lambda( event, context );
 
-                try {
-
-                    expect( err ).to.not.exist;
-                    expect( result ).to.equal( 42 );
-                    expect( after.calledOnce ).to.be.true;
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( result ).to.equal( 42 );
+            expect( after.calledOnce ).to.be.true;
         });
 
-        it( 'handler with result and before (sync)', function( done ) {
+        it( 'handler with result and before (sync)', async function() {
 
             let instance = new Handler();
 
@@ -482,24 +417,14 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            const result = await lambda( event, context );
 
-                try {
+            expect( result ).to.equal( 42 );
 
-                    expect( err ).to.not.exist;
-                    expect( result ).to.equal( 42 );
-
-                    expect( beforeStub.calledOnce ).to.be.true;
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( beforeStub.calledOnce ).to.be.true;
         });
 
-        it( 'handler with result and before (promise)', function( done ) {
+        it( 'handler with result and before (promise)', async function() {
 
             let instance = new Handler();
 
@@ -525,23 +450,13 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            const result = await lambda( event, context );
 
-                try {
-
-                    expect( err ).to.not.exist;
-                    expect( result ).to.equal( 42 );
-                    expect( beforeStub.calledOnce ).to.be.true;
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( result ).to.equal( 42 );
+            expect( beforeStub.calledOnce ).to.be.true;
         });
 
-        it( 'handler with result and before (async)', function( done ) {
+        it( 'handler with result and before (async)', async function() {
 
             let instance = new Handler();
 
@@ -570,24 +485,14 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            const result = await lambda( event, context );
 
-                try {
+            expect( result ).to.equal( 42 );
 
-                    expect( err ).to.not.exist;
-                    expect( result ).to.equal( 42 );
-
-                    expect( beforeStub.calledOnce ).to.be.true;
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( beforeStub.calledOnce ).to.be.true;
         });
 
-        it( 'handler with result and before has exception', function( done ) {
+        it( 'handler with result and before has exception', async function() {
 
             let instance = new Handler();
 
@@ -610,28 +515,22 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            try {
 
-                try {
+                await lambda( event, context );
 
-                    expect( err ).to.exist;
-                    expect( err.message ).to.equal( 'bang' );
+                should.fail( 'result shoudl not be returned' );
+            }
+            catch( err ) {
 
-                    expect( result ).to.not.exist;
+                expect( err.message ).to.equal( 'bang' );
 
-                    expect( beforeStub.calledOnce ).to.be.true;
-                    expect( handlerStub.called ).to.be.false;
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+                expect( beforeStub.calledOnce ).to.be.true;
+                expect( handlerStub.called ).to.be.false;
+            }
         });
 
-        it( 'handler with context.callbackWaitsForEmptyEventLoop = true', function( done ) {
+        it( 'handler with context.callbackWaitsForEmptyEventLoop = true', async function() {
 
             let instance = new Handler();
 
@@ -650,25 +549,14 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            const result = await lambda( event, context );
 
-                try {
+            expect( result ).to.equal( 42 );
 
-                    expect( err ).to.not.exist;
-                    expect( result ).to.equal( 42 );
-
-                    expect( context.callbackWaitsForEmptyEventLoop ).to.not.exist;
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( context.callbackWaitsForEmptyEventLoop ).to.not.exist;
         });
 
-        it( 'handler with context.callbackWaitsForEmptyEventLoop = false', function( done ) {
+        it( 'handler with context.callbackWaitsForEmptyEventLoop = false', async function() {
 
             let instance = new Handler();
 
@@ -687,26 +575,15 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            const result = await lambda( event, context );
 
-                try {
+            expect( result ).to.equal( 42 );
 
-                    expect( err ).to.not.exist;
-                    expect( result ).to.equal( 42 );
-
-                    expect( context.callbackWaitsForEmptyEventLoop ).to.exist;
-                    expect( context.callbackWaitsForEmptyEventLoop ).to.be.false;
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( context.callbackWaitsForEmptyEventLoop ).to.exist;
+            expect( context.callbackWaitsForEmptyEventLoop ).to.be.false;
         });
 
-        it( 'handler (err result) with context.callbackWaitsForEmptyEventLoop = false', function( done ) {
+        it( 'handler (err result) with context.callbackWaitsForEmptyEventLoop = false', async function() {
 
             let instance = new Handler();
 
@@ -725,26 +602,20 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            try {
 
-                try {
+                await lambda( event, context );
 
-                    expect( err ).to.exist;
-                    expect( result ).to.not.exist;
+                should.fail( 'should throw error' );
+            }
+            catch( err ) {
 
-                    expect( context.callbackWaitsForEmptyEventLoop ).to.exist;
-                    expect( context.callbackWaitsForEmptyEventLoop ).to.be.false;
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+                expect( context.callbackWaitsForEmptyEventLoop ).to.exist;
+                expect( context.callbackWaitsForEmptyEventLoop ).to.be.false;
+            }
         });
 
-        it( 'handler with context.callbackWaitsForEmptyEventLoop = false', function( done ) {
+        it( 'handler with context.callbackWaitsForEmptyEventLoop = false', async function() {
 
             let instance = new Handler();
 
@@ -763,26 +634,15 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            const result = await lambda( event, context );
 
-                try {
+            expect( result ).to.equal( 42 );
 
-                    expect( err ).to.not.exist;
-                    expect( result ).to.equal( 42 );
-
-                    expect( context.callbackWaitsForEmptyEventLoop ).to.exist;
-                    expect( context.callbackWaitsForEmptyEventLoop ).to.be.false;
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+            expect( context.callbackWaitsForEmptyEventLoop ).to.exist;
+            expect( context.callbackWaitsForEmptyEventLoop ).to.be.false;
         });
 
-        it( 'handler (err result) with callbackWaitsForEmptyEventLoop( false ) set', function( done ) {
+        it( 'handler (err result) with callbackWaitsForEmptyEventLoop( false ) set', async function() {
 
             let instance = new Handler();
 
@@ -802,27 +662,21 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            try {
 
-                try {
+                await lambda( event, context );
 
-                    expect( err ).to.exist;
-                    expect( result ).to.not.exist;
+                should.fail( 'should throw error' );
+            }
+            catch( err ) {
 
-                    expect( context.callbackWaitsForEmptyEventLoop ).to.exist;
-                    expect( context.callbackWaitsForEmptyEventLoop ).to.be.false;
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+                expect( context.callbackWaitsForEmptyEventLoop ).to.exist;
+                expect( context.callbackWaitsForEmptyEventLoop ).to.be.false;
+            }
         });
 
 
-        it( 'fail when handler not defined', function( done ) {
+        it( 'fail when handler not defined', async function() {
 
             let lambda = new Handler().createLambda();
 
@@ -832,25 +686,19 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            try {
 
-                try {
+                await lambda( event, context );
 
-                    expect( err ).to.exist;
-                    expect( err.message ).to.equal( 'handler not defined' );
+                should.fail( 'should throw error' );
+            }
+            catch( err ) {
 
-                    expect( result ).to.not.exist;
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+                expect( err.message ).to.equal( 'handler not defined' );
+            }
         });
 
-        it( 'exception throw while executing processError()', function( done ) {
+        it( 'exception throw while executing processError()', async function() {
 
             let instance = new Handler();
 
@@ -873,22 +721,16 @@ describe( 'lib/event_types/handler', function() {
                 getRemainingTimeInMillis() { return 1000; }
             };
 
-            lambda( event, context, (err, result) => {
+            try {
 
-                try {
+                await lambda( event, context );
 
-                    expect( err ).to.exist;
-                    expect( err.message ).to.equal( 'boom' );
+                should.fail( 'should throw error' );
+            }
+            catch( err ) {
 
-                    expect( result ).to.not.exist;
-
-                    done();
-                }
-                catch( e ) {
-
-                    done( e );
-                }
-            });
+                expect( err.message ).to.equal( 'boom' );
+            }
         });
     });
 });

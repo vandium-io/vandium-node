@@ -10,7 +10,7 @@ const basic = require( '../../../lib/event_types/basic' );
 
 describe( 'lib/event_types/basic', function() {
 
-    it( 'normal operation, no options, no callback, no finally', function( done ) {
+    it( 'normal operation, no options, no callback, no finally', async function() {
 
         let myHandler = function( event ) {
 
@@ -19,26 +19,12 @@ describe( 'lib/event_types/basic', function() {
 
         let lambda = basic( 's3', myHandler );
 
-        expect( lambda ).to.be.a( 'function' );
-        expect( lambda.length ).to.equal( 3 );
+        const result = await lambda( require( './s3-put' ), { /*context*/} );
 
-        lambda( require( './s3-put' ), { /*context*/}, (err, result) => {
-
-            try {
-
-                expect( err ).to.not.exist;
-                expect( result ).to.equal( 'HappyFace.jpg' );
-
-                done();
-            }
-            catch( e ) {
-
-                done( e );
-            }
-        });
+        expect( result ).to.equal( 'HappyFace.jpg' );
     });
 
-    it( 'normal operation, options, no callback, no finally', function( done ) {
+    it( 'normal operation, options, no callback, no finally', async function() {
 
         let myHandler = function( event ) {
 
@@ -47,23 +33,12 @@ describe( 'lib/event_types/basic', function() {
 
         let lambda = basic( 's3', { /* options*/ }, myHandler );
 
-        lambda( require( './s3-put' ), { /*context*/}, (err, result) => {
+        const result = await lambda( require( './s3-put' ), { /*context*/} );
 
-            try {
-
-                expect( err ).to.not.exist;
-                expect( result ).to.equal( 'HappyFace.jpg' );
-
-                done();
-            }
-            catch( e ) {
-
-                done( e );
-            }
-        });
+        expect( result ).to.equal( 'HappyFace.jpg' );
     });
 
-    it( 'normal operation, options, callback, no finally', function( done ) {
+    it( 'normal operation, options, callback, no finally', async function() {
 
         let myHandler = function( event ) {
 
@@ -72,23 +47,12 @@ describe( 'lib/event_types/basic', function() {
 
         let lambda = basic( 's3', { /* options*/ }, myHandler );
 
-        lambda( require( './s3-put' ), { /*context*/}, (err, result) => {
+        const result = await lambda( require( './s3-put' ), { /*context*/} );
 
-            try {
-
-                expect( err ).to.not.exist;
-                expect( result ).to.equal( 'HappyFace.jpg' );
-
-                done();
-            }
-            catch( e ) {
-
-                done( e );
-            }
-        });
+        expect( result ).to.equal( 'HappyFace.jpg' );
     });
 
-    it( 'normal operation, options, callback, finally', function( done ) {
+    it( 'normal operation, options, callback, finally', async function() {
 
         let myHandler = function( event, context, callback ) {
 
@@ -99,25 +63,15 @@ describe( 'lib/event_types/basic', function() {
 
         let lambda = basic( 's3', { /* options*/ }, myHandler ).finally(  after );
 
-        lambda( require( './s3-put' ), { /*context*/}, (err, result) => {
+        const result = await lambda( require( './s3-put' ), { /*context*/} );
 
-            try {
+        expect( result ).to.equal( 'HappyFace.jpg' );
 
-                expect( err ).to.not.exist;
-                expect( result ).to.equal( 'HappyFace.jpg' );
-
-                expect( after.calledOnce ).to.be.true;
-                expect( after.firstCall.args.length ).to.equal( 1 );
-                done();
-            }
-            catch( e ) {
-
-                done( e );
-            }
-        });
+        expect( after.calledOnce ).to.be.true;
+        expect( after.firstCall.args.length ).to.equal( 1 );
     });
 
-    it( 'fail for unknown type', function( done ) {
+    it( 'fail for unknown type', async function() {
 
         let myHandler = sinon.stub();
 
@@ -125,25 +79,20 @@ describe( 'lib/event_types/basic', function() {
 
         let lambda = basic( 's3', { /* options*/ }, myHandler ).finally(  after );
 
-        lambda( { "Records": [
-                { whatever: {} }
-            ]}, { /*context*/}, (err, result) => {
+        try {
 
-            try {
+            const result = await lambda( { "Records": [
+                    { whatever: {} }
+                ]}, { /*context*/} );
 
-                expect( err ).to.exist;
-                expect( err.message ).to.contain( 'Expected event type of s3' );
+            fail( 'should not get here' );
+        }
+        catch( err ) {
 
-                expect( result ).to.not.exist;
-                expect( myHandler.called ).to.be.false;
-                expect( after.called ).to.be.false;
+            expect( err.message ).to.contain( 'Expected event type of s3' );
 
-                done();
-            }
-            catch( e ) {
-
-                done( e );
-            }
-        });
+            expect( myHandler.called ).to.be.false;
+            expect( after.called ).to.be.false;
+        }
     });
 });

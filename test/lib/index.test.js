@@ -44,7 +44,7 @@ describe( 'lib/index', function() {
                     return 'ok';
                 }))
                 .event( getEvent( type, json ) )
-                .expectResult( (result) => {
+                .expectResolve( (result) => {
 
                     expect( result ).to.equal( 'ok' );
                 });
@@ -103,7 +103,7 @@ describe( 'lib/index', function() {
                     })
                 )
                 .event( require( '../json/apigateway.json' ) )
-                .expectResult( (result) => {
+                .expectResolve( (result) => {
 
                     expect( result ).to.eql( { statusCode: 200, headers: {}, body: 'ok', isBase64Encoded: false } );
                 });
@@ -129,7 +129,7 @@ describe( 'lib/index', function() {
                     return 'ok';
                 }))
                 .event( { one: 1, two: 'II', three: 'three' } )
-                .expectResult( (result) => {
+                .expectResolve( (result) => {
 
                     expect( result ).to.equal( 'ok' );
                 });
@@ -146,7 +146,7 @@ describe( 'lib/index', function() {
                     return 'ok';
                 }))
                 .event( 42 )
-                .expectResult( (result) => {
+                .expectResolve( (result) => {
 
                     expect( result ).to.equal( 'ok' );
                 });
