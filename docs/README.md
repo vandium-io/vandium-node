@@ -253,12 +253,9 @@ custom KMS keys (if used to encrypt secrets).
 # Support for Node 8
 If you require support for Node 8, then use Vandium 4.x
 
-# Compatibility Issues with Vandium 3 Projects
+# Breaking Changes from Vandium 4.x
 
-Vandium 4's event handler mechanism allows targeted handling of event specific scenarios and thus code written using Vandium 3.x will
-**not** be compatible with this version. To migrate your Vandium 3 code, use a targeted event handler or the
-[`generic`](docs/events/generic.md) event.
-
+The `cloudwatch` event has now been renamed to `logs` and this will require a source code change.
 
 # Feedback
 
