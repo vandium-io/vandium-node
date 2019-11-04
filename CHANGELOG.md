@@ -1,11 +1,25 @@
 # Change Log
 
-## 4.11.0 (TBD)
+
+## 5.0.0 (TBD)
+
+New:
+
+* mongodb injection attack detection
+
+Breaking:
+
+* `cloudwatch` event type renamed to `logs`
 
 Updated:
 
 * `onError()` now accepts async functions
 
+Internal:
+
+* Unit tests refactored
+* Updated dependencies
+* nodejs 10.16+ required
 
 ## 4.10.0 (2019-01-22)
 

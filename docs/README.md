@@ -20,7 +20,7 @@
 * Promise support
 * Automatically trimmed strings for input event data
 * Low startup overhead
-* AWS Lambda Node.js 8.10.x compatible
+* AWS Lambda Node.js 10.x compatible
 
 # Installation
 
@@ -99,7 +99,7 @@ supported by the framework:
 
 - [api](apigateway.md)
 - [cloudformation](cloudformation.md)
-- [cloudwatch](cloudwatch.md)
+- [logs](logs.md)
 - [cognito](cognito.md)
 - [dynamodb](dynamodb.md)
 - [generic](generic.md)
@@ -250,8 +250,8 @@ The format is user defined by the path and all values underneath the path will b
 **Note:*** Please ensure that your Lambda function has the correct permissions to access the SSM Parameter Store including access to
 custom KMS keys (if used to encrypt secrets).
 
-# Support for Node 4.3.2
-If you require support for the previous version of Node.js (4.x) then use Vandium 3.x
+# Support for Node 8
+If you require support for Node 8, then use Vandium 4.x
 
 # Compatibility Issues with Vandium 3 Projects
 

@@ -1,6 +1,6 @@
-# `cloudwatch` Event type
+# `logs` Event type
 
-The `cloudwatch` event type allows you to handle events generated from AWS Cloud Watch operations. The following is a sample event from the
+The `logs` event type allows you to handle events generated from AWS Cloud Watch operations. The following is a sample event from the
 AWS Lambda documentation:
 
 ```JSON
@@ -12,12 +12,12 @@ AWS Lambda documentation:
 }
 ```
 
-To map the event using Vandium, we would use the `cloudwatch()` handler:
+To map the event using Vandium, we would use the `logs()` handler:
 
 ```js
 const vandium = require( 'vandium' );
 
-exports.handler = vandium.cloudwatch( (event, context) => {
+exports.handler = vandium.logs( (event, context) => {
 
         // do something with the data
     });
@@ -29,7 +29,7 @@ using Promises, then you can provide a callback parameter in your code.
 ```js
 const vandium = require( 'vandium' );
 
-exports.handler = vandium.cloudwatch( (event, context, callback) => {
+exports.handler = vandium.logs( (event, context, callback) => {
 
         // do something with the data
 
