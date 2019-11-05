@@ -5,6 +5,7 @@
 
 New:
 
+* Simplified Api Gateway event handlers with the addition of `validation()` and `handler()` methods
 * mongodb injection attack detection
 
 Breaking:

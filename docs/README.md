@@ -137,15 +137,16 @@ exports.handler = vandium.api()
                 // handle get request
                 return User.get( event.pathParmeters.name );
             })
-        .POST( {
+        .POST()
+		 	.validation({
 
                 // validate
                 body: {
 
                     name: vandium.types.string().min(4).max(200).required()
                 }
-            },
-            (event) => {
+            })
+			.handler( (event) => {
 
                 // handle POST request
                 return User.create( event.body.name );
@@ -187,15 +188,16 @@ exports.handler = vandium.api()
                 // handle get request
                 return User.get( event.pathParmeters.name );
             })
-        .POST( {
+        .POST()
+			.validation({
 
                 // validate
                 body: {
 
                     name: vandium.types.string().min(4).max(200).required()
                 }
-            },
-            (event) => {
+            })
+			.handler( (event) => {
 
                 // handle POST request
                 return User.create( event.body.name );

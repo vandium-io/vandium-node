@@ -45,28 +45,30 @@ exports.handler = vandium.api()
                 // handle get request
                 return User.get( event.pathParameters.name );
             })
-        .POST( {
+        .POST()
+            .validation( {
 
                 // validate
                 body: {
 
                     name: vandium.types.string().min(4).max(200).required()
                 }
-            },
-            (event) => {
+            })
+            .handler( (event) => {
 
                 // handle POST request
                 return User.create( event.body.name );
             })
-        .PATCH( {
+        .PATCH()
+            .validation({
 
                 // validate
                 body: {
 
                     age: vandium.types.number().min(0).max(130)
                 }
-            },
-            (event) => {
+            })
+            .handler( (event) => {
 
                 // handle PATCH request
                 return User.update( event.pathParameters.name, event.body );
@@ -110,35 +112,23 @@ exports.handler = vandium.api()
 
                 // handle get request
             })
-        .POST( {
+        .POST()
+            .validation({
 
                 // validate
                 body: {
 
                     name: vandium.types.string().min(4).max(200).required()
                 }
-            },
-            (event, context) => {
+            })
+            .handler( (event, context) => {
 
                 // handle POST request
                 return User.create( event.body.name );
-            })
-        .PATCH( {
-
-                // validate
-                body: {
-
-                    age: vandium.types.number().min(0).max(130)
-                }
-            },
-            (event, context, callback) => {
-
-                // do something
-                callback( null, 'updated!' );
             });
 ```
 
-**Note:** Although the `context` parameter is available, Vandium will disable `context.succeed()`, `context.fail()` and `context.done()`
+**Note:** Although the `context` parameter is available, Vandium will remove `context.succeed()`, `context.fail()` and `context.done()`
 methods.
 
 # Validation of Event Elements

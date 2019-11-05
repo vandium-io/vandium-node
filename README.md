@@ -61,11 +61,19 @@ const Users = require( './users' );
 
 // handler for an api gateway event
 exports.handler = vandium.api()
-		.GET( (event) => {
+		.GET()
+		 	.validation({
 
-			// returns a promise that resolves the User by name
-			return Users.getUser( event.pathParmeters.name );
-		});
+				pathParmeters: {
+
+					name: 'string:min=1,max=100,required'
+				}
+			})
+			.handler( async (event) => {
+
+				// returns a promise that resolves the User by name
+				return await Users.getUser( event.pathParmeters.name );
+			});
 ```
 
 Additionally, resources can be closed at the end, success or failure, of the
@@ -84,7 +92,7 @@ const cache = require( './cache' );
 
 // handler for an api gateway event
 exports.handler = vandium.api()
-		.GET( (event) => {
+		.GET((event) => {
 
 			// returns a promise that resolves the User by name
 			return Users.getUser( event.pathParmeters.name );
