@@ -99,7 +99,7 @@ The `api` event handler supports the following HTTP methods:
 * DELETE
 * HEAD
 
-Each method handler can have an optional validation section, specified before the handler, to ensure the supplied request information is
+Each method handler can have an optional validation section, specified before the handler using `validation()`, to ensure the supplied request information is
 valid before any logic gets executed. Method handlers can receive additional information to allow them access to more information
 as needed. Revisiting the example in the "Getting Started" section, we can expand the method handlers to illustrate how one might want to
 access the `context` parameter or perform traditional asynchronous calls using a `callback` function.
