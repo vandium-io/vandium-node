@@ -54,7 +54,7 @@
     "joi": "^14.3.1",
     "joi-json": "^3.0.0",
     "jwt-simple": "^0.5.6",
-    "vandium-utils": "^1.2.0"
+    "vandium-utils": "^2.0.0"
   },
   "devDependencies": {
     "app-root-path": "^3.0.0",
@@ -64,7 +64,7 @@
     "env-restorer": "^1.0.0",
     "freshy": "^1.0.2",
     "jwt-builder": "^1.0.0",
-    "lambda-tester": "^3.6.0",
+    "lambda-tester": "^4.0.0",
     "lov": "^1.0.1",
     "mocha": "^6.2.2",
     "node-rsa": "^1.0.6",
