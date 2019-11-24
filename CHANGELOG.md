@@ -2,6 +2,9 @@
 
 ## 5.1.0 (TBD)
 
+Updated:
+
+* Documentation and updated way to opt out of JWT validation. thanks @riotrah
 
 
 ## 5.0.0 (2019-11-23)

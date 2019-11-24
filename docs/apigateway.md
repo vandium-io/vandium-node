@@ -668,8 +668,6 @@ exports.handler = vandium.api()
         // other method handlers...
 ```
 
-
-
 ## Configuration via Environment Variables
 
 Environment variables can be used to configure support for JWT processing. The following environment variables can be used:
@@ -722,6 +720,24 @@ exports.handler = vandium.api()
                 // handle get request
             });
 ```
+
+## Disabling JWT support when environment/configuration is set
+
+To programmatically disable JWT support for a specific handler when configured
+using environment variables and/or configuration files, use `false` as the parameter
+for the `jwt` method.
+
+```js
+const vandium = require( 'vandium' );
+
+exports.handler = vandium.api()
+        .jwt( false )
+        .POST( (event) => {
+
+                // JWT  will not be enforced
+            });
+```
+
 
 ## Additional Reading
 
