@@ -2,9 +2,13 @@
 
 ## 5.1.0 (TBD)
 
+New:
+
+* Support for `Set-Cookie`. Thanks @riotrah
+
 Updated:
 
-* Documentation and updated way to opt out of JWT validation. thanks @riotrah
+* Documentation and updated way to opt out of JWT validation. Thanks @riotrah
 
 
 ## 5.0.0 (2019-11-23)

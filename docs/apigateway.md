@@ -738,7 +738,6 @@ exports.handler = vandium.api()
             });
 ```
 
-
 ## Additional Reading
 
 For more information about JWT, see [RFC 7519](https://tools.ietf.org/html/rfc7519) and [RFC 7797](https://tools.ietf.org/html/rfc7797).
@@ -888,6 +887,40 @@ The response object would be:
     "body": "{\"id\":\"12345\",\"name\":\"john.doe\"}"
 }
 ```
+
+## `Set-Cookies`
+
+To set a response cookie, supply a `setCookie` value with either a serialized cookie or
+an object that contains a `name`, `value` and `options`.
+
+```js
+const vandium = require( 'vandium' );
+
+exports.handler = vandium.api()
+        .GET( (event) => {
+
+            // handle get request
+            return {
+
+                setCookie: {
+
+                    name: 'cartId',
+                    value: '1234',
+                    options: { /// options here }
+                },
+
+                body: {
+
+                    id: "12345",
+                    name: "john.doe"    
+                }
+            };
+        });
+```
+
+For more infomration about the option values, see the documentation in the
+[cookie module](https://github.com/jshttp/cookie#readme).
+
 
 ## Error Responses
 
