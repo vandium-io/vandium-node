@@ -131,6 +131,46 @@ exports.handler = vandium.api()
 **Note:** Although the `context` parameter is available, Vandium will remove `context.succeed()`, `context.fail()` and `context.done()`
 methods.
 
+# Body Encoding
+
+The default body encoding is set to `auto`, which will attempt to parse the `body`
+as JSON, Form URL Encoded and if unsuccessful the `body` will be kept "as is".
+
+## Form URL Encoded
+
+If you know that your data will be `application/x-www-form-urlencoded`, then you
+can set the body encoding as such using the `formURLEncoded()` method.
+
+```js
+const vandium = require( 'vandium' );
+
+exports.handler = vandium.api()
+        .POST()
+            .formURLEncoded()
+            .handler( (event) => {
+
+                // event.body will contain an object from parsing the form URL encoded body
+            });
+```
+
+## Disable Body Parsing
+
+To disable and skip body parsing, use the `skipBodyParse()` method, which will
+set the encoding to `none`.
+
+```js
+const vandium = require( 'vandium' );
+
+exports.handler = vandium.api()
+        .POST()
+            .skipBodyParse()
+            .handler( (event) => {
+
+                // event.body will remain unchanged
+            });
+```
+
+
 # Validation of Event Elements
 
 Vandium uses [Joi](https://github.com/hapijs/joi) as the engine for validation on specific elements inside the event. Validation schemas are
