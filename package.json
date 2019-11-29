@@ -30,7 +30,7 @@
     "node": ">=10.16"
   },
   "scripts": {
-    "test": "nyc mocha 'lib/**/__tests__/*' --recursive"
+    "test": "nyc mocha '**/__tests__/*' --recursive"
   },
   "nyc": {
     "check-coverage": true,
