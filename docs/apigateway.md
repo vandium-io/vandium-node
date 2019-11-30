@@ -902,7 +902,8 @@ exports.handler = vandium.api()
                 headers: {
 
                     header1: 'HEADER_1_VALUE',
-                    header1: 'HEADER_2_VALUE'
+                    header2: 'HEADER_2_VALUE',
+                    header3: [ 'HEADER_3_VALUE1', 'HEADER_3_VALUE2'  ]
                 },
 
                 body: {
@@ -923,6 +924,10 @@ The response object would be:
 
         "header1": "HEADER_1_VALUE",
         "header2": "HEADER_2_VALUE"
+    },
+    "multValueHeaders": {
+
+        "header3": ["HEADER_3_VALUE1", "HEADER_3_VALUE2"]
     },
     "body": "{\"id\":\"12345\",\"name\":\"john.doe\"}"
 }
@@ -957,6 +962,8 @@ exports.handler = vandium.api()
             };
         });
 ```
+
+The `setCookie` value can have an array of values, which Vanduim will process accordingly.
 
 For more infomration about the option values, see the documentation in the
 [cookie module](https://github.com/jshttp/cookie#readme).
