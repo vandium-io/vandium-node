@@ -10,6 +10,7 @@ New:
 
 Updated:
 
+* Validation now supports alternatives using the `[]` notation
 * Documentation and updated way to opt out of JWT validation. Thanks @riotrah
 
 Internal:
