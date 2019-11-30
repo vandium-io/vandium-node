@@ -4,12 +4,18 @@
 
 New:
 
+* `onResponse()` to allow changes to response object on `api` handlers
 * Support for `Set-Cookie`. Thanks @riotrah
+* Support for `multValueHeaders`, `multiValueQueryStringParameters`. Thanks @riotrah
 
 Updated:
 
 * Documentation and updated way to opt out of JWT validation. Thanks @riotrah
 
+Internal:
+
+* Refactored Tests
+* Updated dependenceis
 
 ## 5.0.0 (2019-11-23)
 
