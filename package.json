@@ -30,7 +30,8 @@
     "node": ">=10.16"
   },
   "scripts": {
-    "test": "nyc mocha '**/__tests__/*' --recursive"
+    "test": "nyc mocha '**/__tests__/*' --recursive",
+    "lint": "eslint"
   },
   "nyc": {
     "check-coverage": true,
@@ -62,6 +63,8 @@
     "chai": "^4.1.2",
     "dotenv": "^8.2.0",
     "env-restorer": "^1.0.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-mocha": "^6.2.2",
     "freshy": "^1.0.2",
     "jwt-builder": "^1.0.0",
     "lambda-tester": "^4.0.0",
