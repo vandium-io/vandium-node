@@ -4,9 +4,11 @@
 
 New:
 
-* `onResponse()` to allow changes to response object on `api` handlers
+* Added `onResponse()` to allow changes to response object on `api` handlers
 * Support for `Set-Cookie`. Thanks @riotrah
 * Support for `multValueHeaders`, `multiValueQueryStringParameters`. Thanks @riotrah
+* Validation properties now support `__allowUnknown` to raise an error if unknown
+properties are detected.
 
 Updated:
 
