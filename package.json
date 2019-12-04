@@ -1,6 +1,6 @@
 {
   "name": "vandium",
-  "version": "5.1.0-beta3",
+  "version": "5.1.0",
   "description": "AWS Lambda framework for building functions using Node.js for API Gateway, IoT applications, and other AWS events",
   "main": "lib/index.js",
   "keywords": [
@@ -53,7 +53,7 @@
     "@vandium/event-identifier": "^3.0.0",
     "aws-param-env": "^2.1.0",
     "cookie": "^0.4.0",
-    "joi-json": "^4.0.0-beta",
+    "joi-json": "^4.0.0",
     "jwt-simple": "^0.5.6",
     "qs": "^6.5.2",
     "vandium-utils": "^2.0.0"
@@ -67,7 +67,7 @@
     "eslint-plugin-mocha": "^6.2.2",
     "freshy": "^1.0.2",
     "jwt-builder": "^1.0.0",
-    "lambda-tester": "^4.0.0",
+    "lambda-tester": "^4.0.1",
     "lov": "^1.0.1",
     "mocha": "^6.2.2",
     "node-rsa": "^1.0.7",
