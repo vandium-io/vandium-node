@@ -1,6 +1,6 @@
 {
   "name": "vandium",
-  "version": "5.1.0",
+  "version": "6.0.0",
   "description": "AWS Lambda framework for building functions using Node.js for API Gateway, IoT applications, and other AWS events",
   "main": "lib/index.js",
   "keywords": [
@@ -27,7 +27,7 @@
     "url": "https://github.com/vandium-io/vandium-node.git"
   },
   "engines": {
-    "node": ">=10.16"
+    "node": ">=12"
   },
   "scripts": {
     "test": "nyc mocha '**/__tests__/*' --recursive",
