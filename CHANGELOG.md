@@ -1,5 +1,23 @@
 # Change Log
 
+## 6.0.0 (TBD)
+
+New:
+
+* `api` has an `authorization()` alias for `jwt()` to improve code readability
+
+Breaking:
+
+* `api` uses `event.headers.Authorization` as the default location of
+  the JWT token. Previous versions before `6.0.0` used `event.headers.jwt`.
+
+* Node 12.x and higher
+
+Internal:
+
+* New pipeline method for executing handler in an effort to allow greater future
+flexibility 
+
 ## 5.1.0 (2019-12-04)
 
 New:

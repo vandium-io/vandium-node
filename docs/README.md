@@ -20,7 +20,7 @@
 * Promise support
 * Automatically trimmed strings for input event data
 * Low startup overhead
-* AWS Lambda Node.js 10.x and 12.x compatible
+* AWS Lambda Node.js 12.x
 
 # Installation
 

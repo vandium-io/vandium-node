@@ -657,7 +657,7 @@ maxAge           | `Access-Control-Max-Age`
 allowHeaders     | `Access-Control-Allow-Headers`
 
 
-# JSON Web Tokens (JWT)
+# Authorization via JSON Web Tokens (JWT)
 
 Vandium can handle validation, enforcement and processing of JSON Web Token (JWT) values. Configuration can be provided either via code or
 through environment variables.
@@ -675,7 +675,7 @@ RS256     | RSA SHA256 (public-private key)
 
 ## Enabling JWT Programatically
 
-To enable JWT using code, use the `jwt()` function on the `api` handler. By specifying an algorithm, JWT processing is automatically enabled.
+To enable JWT using code, use the `authorization()` function on the `api` handler. By specifying an algorithm, JWT processing is automatically enabled.
 The `jwt` configuration format is:
 
 ```js
@@ -683,7 +683,7 @@ The `jwt` configuration format is:
     algorithm: 'RS256' | 'HS256' | 'HS384' | 'HS512',
     publicKey: '<public key>',          // if algorithm is 'RS256'
     secret: '<shared secret',           // if algorithm is 'HS256', 'HS384' or 'HS512'
-    token: '<token path>',              // path to jwt token. Defaults to 'headers.jwt'
+    token: '<token path>',              // path to jwt token. Defaults to 'headers.Authorization'
     xsrf: true | false,                 // enables xsrf verification. Defaults to false unless other xsrf* options are enabled
     xsrfToken: '<xsrf token path>',     // path to xsrf token. Defaults to 'headers.xsrf'
     xsrfClaim: '<xsrf claim path>'      // path to xsrf claim inside jwt. Defaults to 'nonce'
@@ -696,7 +696,7 @@ The following example enables JWT processing programmatically:
 const vandium = require( 'vandium' );
 
 exports.handler = vandium.api()
-        .jwt( {
+        .authorization( {
 
             algorithm: 'RS256'
             key: '<public key goes here>'
@@ -708,6 +708,9 @@ exports.handler = vandium.api()
         // other method handlers...
 ```
 
+Note: Vandium prior to version 6.0 used `jwt()` to configure support for authorization via JWT. This
+method will be deprecated in a future version.
+
 ## Configuration via Environment Variables
 
 Environment variables can be used to configure support for JWT processing. The following environment variables can be used:
@@ -718,7 +721,7 @@ VANDIUM_JWT_ALGORITHM   | Specifies the algorithm for JWT verification. Can be `
 VANDIUM_JWT_SECRET      | Secret key value for use with HMAC SHA algorithms: `HS256`, `HS384` and `HS512`
 VANDIUM_JWT_PUBKEY      | Public key used used with `RS256` algorithm
 VANDIUM_JWT_KEY         | Alias for either VANDIUM_JWT_SECRET or VANDIUM_JWT_PUBKEY
-VANDIUM_JWT_TOKEN_PATH  | Name of the token variable in the `event` object. Defaults to `headers.jwt`
+VANDIUM_JWT_TOKEN_PATH  | Name of the token variable in the `event` object. Defaults to `headers.Authorization`
 VANDIUM_JWT_USE_XSRF    | Enable or disable Cross Site Request Forgery (XSRF) token. Defaults to `false`
 VANDIUM_JWT_XSRF_TOKEN_PATH | Name of the XSRF token in the `event`. Defaults to `headers.xsrf`
 VANDIUM_JWT_XSRF_CLAIM_PATH | XSRF claim path inside JWT. Defaults to `nonce`
@@ -748,7 +751,7 @@ code segment shows how to access the token:
 const vandium = require( 'vandium' );
 
 exports.handler = vandium.api()
-        .jwt( {
+        .authorization( {
 
             algorithm: 'RS256'      // public key specified using env variable
         })
@@ -771,7 +774,7 @@ for the `jwt` method.
 const vandium = require( 'vandium' );
 
 exports.handler = vandium.api()
-        .jwt( false )
+        .authorization( false )
         .POST( (event) => {
 
                 // JWT  will not be enforced
