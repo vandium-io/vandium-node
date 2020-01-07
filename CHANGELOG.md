@@ -10,13 +10,14 @@ Breaking:
 
 * `api` uses `event.headers.Authorization` as the default location of
   the JWT token. Previous versions before `6.0.0` used `event.headers.jwt`.
-
 * Node 12.x and higher
+* Previous versions of Vandium prevented calls to `eval()` but turns out to be
+  more problematic.
 
 Internal:
 
 * New pipeline method for executing handler in an effort to allow greater future
-flexibility 
+flexibility
 
 ## 5.1.0 (2019-12-04)
 
