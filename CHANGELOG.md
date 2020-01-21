@@ -1,5 +1,12 @@
 # Change Log
 
+## 6.0.1 (2020-01-21)
+
+Internal:
+
+* `aws-sdk` now in `devDependencies`
+
+
 ## 6.0.0 (2020-01-07)
 
 New:
