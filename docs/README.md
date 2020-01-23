@@ -9,6 +9,7 @@
 * Powerful input validation
 * Works with [Serverless](https://serverless.com/)
 * JSON Web Token (JWT) verification and validation
+* JWK support for retrieving keys at startup
 * Automatic loading of environment variables from SSM Parameter Store
 * Cross Site Request Forgery (XSRF) detection when using JWT
 * SQL Injection (SQLi) detection and protection

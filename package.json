@@ -1,12 +1,13 @@
 {
   "name": "vandium",
-  "version": "6.0.1",
+  "version": "6.1.0",
   "description": "AWS Lambda framework for building functions using Node.js for API Gateway, IoT applications, and other AWS events",
   "main": "lib/index.js",
   "keywords": [
     "AWS Lambda",
     "AWS Lambda Framework",
     "JWT",
+    "JWK",
     "AWS",
     "Lambda",
     "framework",
@@ -54,6 +55,7 @@
     "aws-param-env": "^2.1.0",
     "cookie": "^0.4.0",
     "joi-json": "^4.0.0",
+    "jwk-to-pem": "^2.0.3",
     "jwt-simple": "^0.5.6",
     "qs": "^6.5.2",
     "vandium-utils": "^2.0.0"

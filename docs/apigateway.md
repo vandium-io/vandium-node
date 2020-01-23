@@ -728,6 +728,28 @@ VANDIUM_JWT_XSRF_CLAIM_PATH | XSRF claim path inside JWT. Defaults to `nonce`
 
 When the `VANDIUM_JWT_ALGORITHM` value is present, JWT processing is automatically enabled within Vandium.
 
+## Configuration via JWK
+
+A valid JWK can supply the algorithm type and key used to validate a JWT. Currently the
+only supported algorithm type is `RSA256`. The following example uses a JWK for authorization:
+
+```js
+const vandium = require( 'vandium' );
+
+const myJWK = { /* JWK defined here */ };
+
+exports.handler = vandium.api()
+        .authorization( {
+
+            jwk: myJWK
+        })
+        .GET( (event) => {
+
+                // handle get request
+            })
+        // other method handlers...
+```
+
 
 ## Claim enforcement
 
