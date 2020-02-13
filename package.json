@@ -31,7 +31,7 @@
     "node": ">=12"
   },
   "scripts": {
-    "test": "nyc mocha '**/__tests__/*' --recursive",
+    "test": "nyc mocha 'lib/**/__tests__/*' --recursive",
     "lint": "eslint"
   },
   "nyc": {
@@ -56,6 +56,7 @@
     "cookie": "^0.4.0",
     "joi-json": "^4.0.0",
     "jwk-to-pem": "^2.0.3",
+    "jwks-source": "^1.0.0",
     "jwt-simple": "^0.5.6",
     "qs": "^6.5.2",
     "vandium-utils": "^2.0.0"
