@@ -1,10 +1,10 @@
 # Change Log
 
-## 6.1.0 (TBD)
+## 6.1.0 (2020-02-13)
 
 New:
 
-* Can now supply a JWK to `authorization()` in `api()` handlers. 
+* Can now supply a JWK to `authorization()` in `api()` handlers.
 
 ## 6.0.1 (2020-01-21)
 
