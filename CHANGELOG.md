@@ -1,5 +1,15 @@
 # Change Log
 
+## 7.0.0 (TBD)
+
+New:
+
+* `apigateway` handler that contains defaults to reduce the code required to
+  implement a lambda handler.
+
+* Support for JWKS keys via `useJwks()`
+* 
+
 ## 6.1.0 (2020-02-13)
 
 New:
