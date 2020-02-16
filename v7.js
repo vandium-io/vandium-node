@@ -1,24 +1,24 @@
-const { apigateway, types } = require( 'vandium' );
+const { useJwks, createHandler, types } = require( 'vandium' );
 
-apigateway.useJwks( {
+// defined in
+// process.env.VANDIUM_AUTH_JWKS = 'awscognito:userPoolId:us-east-1_xxxxxxxx,region=us-east_1'
+useJwks();
 
-  provider: 'awscognito',
-  userPoolId: 'us-east-1_xxxxxxxx',
-  region: 'us-east-1'
-});
+exports.handler = createHandler( ( { apigateway } ) =>
 
-exports.handler = apigateway( (event, context ) => {
+    apigateway( ( event, context ) => {
 
-      // handler here
-  })
-  .requiresAuthorization()
-  .validation( {
+          // handler here
+    })
+    .requiresAuthorization()
+    .validation( {
 
-    body: {
+      body: {
 
-      firstName: types.string().required(),
-      lastName: types.string().required(),
-      age: types.number.range( 0, 120 ).required(),
-    }
-  })
-  .httpMethod( 'GET' );
+        firstName: types.string().required(),
+        lastName: types.string().required(),
+        age: types.number.range( 0, 120 ).required(),
+      }
+    })
+    .httpMethod( 'GET' )
+  );
