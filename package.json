@@ -63,7 +63,7 @@
   },
   "devDependencies": {
     "app-root-path": "^3.0.0",
-    "aws-sdk": "^2.618.0",
+    "aws-sdk": "^2.620.0",
     "chai": "^4.1.2",
     "dotenv": "^8.2.0",
     "env-restorer": "^1.0.0",
