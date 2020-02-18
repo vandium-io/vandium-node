@@ -8,7 +8,10 @@ New:
   implement a lambda handler.
 
 * Support for JWKS keys via `useJwks()`
-* 
+* `createHandler()` now the preferred way to create lambda handlers and allows
+  the use of hooks.
+* Handler hooks to inspect or stub functionality for testing purposes. Can be
+  used to bypass JWT validation in unit tests when private keys are unknown.
 
 ## 6.1.0 (2020-02-13)
 
