@@ -1,6 +1,6 @@
 {
   "name": "vandium",
-  "version": "7.0.0-Beta1",
+  "version": "7.0.0-Beta2",
   "description": "AWS Lambda framework for building functions using Node.js for API Gateway, IoT applications, and other AWS events",
   "main": "lib/index.js",
   "keywords": [
@@ -52,7 +52,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.0",
     "@vandium/event-identifier": "^3.0.0",
-    "aws-param-env": "^2.1.0",
+    "aws-param-env": "^3.0.0-Beta1",
     "cookie": "^0.4.0",
     "joi-json": "^4.0.0",
     "jwk-to-pem": "^2.0.3",
