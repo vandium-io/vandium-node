@@ -53,9 +53,9 @@
     "@hapi/joi": "^17.1.0",
     "@vandium/event-identifier": "^3.0.0",
     "aws-param-env": "^2.1.0",
-    "cookie": "^0.4.0",
+    "cookie": "^0.7.0",
     "joi-json": "^4.0.0",
-    "jwk-to-pem": "^2.0.3",
+    "jwk-to-pem": "^2.0.6",
     "jwt-simple": "^0.5.6",
     "qs": "^6.5.2",
     "vandium-utils": "^2.0.0"
