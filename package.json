@@ -55,7 +55,7 @@
     "aws-param-env": "^2.1.0",
     "cookie": "^0.4.0",
     "joi-json": "^4.0.0",
-    "jwk-to-pem": "^2.0.3",
+    "jwk-to-pem": "^2.0.7",
     "jwt-simple": "^0.5.6",
     "qs": "^6.5.2",
     "vandium-utils": "^2.0.0"
